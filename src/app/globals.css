@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  
+  body {
+    @apply text-neutral-900;
+    /* خلفية عصرية ناعمة جداً ومريحة للعين */
+    background-color: #f8faff;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(57, 73, 171, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(57, 73, 171, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(57, 73, 171, 0.03) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(57, 73, 171, 0.03) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+  
+  /* تحسين خط Cairo */
+  [lang="ar"] * {
+    font-family: var(--font-cairo) !important;
+  }
+}
+
+@layer components {
+  /* كارت زجاجي عصري */
+  .glass-card {
+    @apply bg-white border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-sm rounded-2xl transition-all duration-300;
+  }
+  
+  .glass-card:hover {
+    @apply shadow-[0_8px_30px_rgb(57,73,171,0.08)] -translate-y-1 bg-white/80;
+  }
+
+  /* الأزرار الجديدة */
+  .btn {
+    @apply px-6 py-3 rounded-xl font-bold transition-all duration-300 active:scale-95 flex items-center justify-center gap-2;
+  }
+  
+  .btn-primary {
+    @apply btn text-white shadow-[0_8px_16px_-8px_rgba(57,73,171,0.5)];
+    background: linear-gradient(135deg, #3949AB 0%, #4f5bb0 100%);
+  }
+  
+  .btn-primary:hover {
+    @apply shadow-[0_12px_24px_-10px_rgba(57,73,171,0.6)];
+    transform: translateY(-2px);
+  }
+
+  /* حقول الإدخال */
+  .input-modern {
+    @apply w-full px-4 py-3 bg-white border border-gray-100 rounded-xl text-base outline-none transition-all duration-300 font-medium;
+    box-shadow: 0 4px 20px -10px rgba(0,0,0,0.05);
+  }
+  
+  .input-modern:focus {
+    @apply border-[#3949AB]/30 ring-4 ring-[#3949AB]/5;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 30px -10px rgba(57,73,171,0.15);
+  }
+  
+  .input-modern::placeholder {
+    @apply text-gray-300 font-normal;
+  }
+}
+
+/* تأثيرات حركية ناعمة */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* تخصيص شريط التمرير */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E0E7FF;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3949AB;
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="rtl"] .table th,
+[dir="rtl"] .table td {
+  text-align: right;
+}
+
