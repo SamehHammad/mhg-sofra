@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نظام طباعة وإدارة الشيكات - الإطارات الشبكية</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f5f5;
+        min-height: 100vh;
+        padding: 0;
+      }
+      .header {
+        background: #fff;
+        border-bottom: 3px solid #000;
+        padding: 30px 40px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .title {
+        font-size: 32px;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+      .subtitle {
+        font-size: 16px;
+        color: #666;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 40px;
+      }
+      .intro-section {
+        background: #fff;
+        border: 2px solid #000;
+        padding: 30px;
+        margin-bottom: 40px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .intro-title {
+        font-size: 20px;
+        margin-bottom: 15px;
+        font-weight: 600;
+      }
+      .intro-text {
+        font-size: 15px;
+        line-height: 1.8;
+        color: #555;
+      }
+      .wireframe-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+      }
+      .wireframe-card {
+        background: #fff;
+        border: 2px solid #000;
+        padding: 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+      .wireframe-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      }
+      .card-header {
+        background: #000;
+        color: #fff;
+        padding: 20px;
+        border-bottom: 2px solid #000;
+      }
+      .wireframe-number {
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+      .card-body {
+        padding: 25px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .wireframe-title {
+        font-size: 18px;
+        margin-bottom: 15px;
+        font-weight: 600;
+        line-height: 1.5;
+      }
+      .wireframe-desc {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        flex-grow: 1;
+      }
+      .wireframe-link {
+        border: 2px solid #000;
+        padding: 12px 25px;
+        display: inline-block;
+        text-decoration: none;
+        color: #000;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: #fff;
+      }
+      .wireframe-link:hover {
+        background: #000;
+        color: #fff;
+      }
+      .footer {
+        background: #fff;
+        border-top: 3px solid #000;
+        padding: 30px 40px;
+        text-align: center;
+        margin-top: 60px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .footer-text {
+        font-size: 15px;
+        color: #666;
+      }
+      @media (max-width: 768px) {
+        .wireframe-grid {
+          grid-template-columns: 1fr;
+        }
+        .container {
+          padding: 0 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-content">
+        <h1 class="title">🏦 نظام طباعة وإدارة الشيكات</h1>
+        <p class="subtitle">الإطارات الشبكية - نسخة هيكلية بدون تصميم</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="intro-section">
+        <h2 class="intro-title">📋 نظرة عامة على النظام</h2>
+        <p class="intro-text">
+          هذه الإطارات الشبكية تمثل البنية الهيكلية لنظام طباعة وإدارة الشيكات
+          للمؤسسات المالية. تم تصميمها لتوضيح التخطيط والبنية فقط، بدون أي
+          تصميمات بصرية أو منطق برمجي. النظام يشمل 4 شاشات رئيسية تغطي كافة
+          العمليات من طباعة الشيكات الفردية إلى الطباعة المجمعة وإدارة السجلات.
+        </p>
+      </div>
+
+      <div class="wireframe-grid">
+        <div class="wireframe-card">
+          <div class="card-header">
+            <div class="wireframe-number">1️⃣</div>
+          </div>
+          <div class="card-body">
+            <div class="wireframe-title">شاشة طباعة الشيكات الرئيسية</div>
+            <div class="wireframe-desc">
+              الشاشة الأساسية لطباعة الشيكات الفردية مع معاينة مباشرة للشيك
+              وإدخال البيانات المطلوبة
+            </div>
+            <a href="01-main-check-printing.html" class="wireframe-link"
+              >عرض الإطار الشبكي →</a
+            >
+          </div>
+        </div>
+
+        <div class="wireframe-card">
+          <div class="card-header">
+            <div class="wireframe-number">2️⃣</div>
+          </div>
+          <div class="card-body">
+            <div class="wireframe-title">شاشة محرر نماذج الشيكات</div>
+            <div class="wireframe-desc">
+              أداة تصميم نماذج الشيكات مع إمكانية تحريك الحقول وتخصيص مواضعها على
+              الشيك
+            </div>
+            <a href="02-template-editor.html" class="wireframe-link"
+              >عرض الإطار الشبكي →</a
+            >
+          </div>
+        </div>
+
+        <div class="wireframe-card">
+          <div class="card-header">
+            <div class="wireframe-number">3️⃣</div>
+          </div>
+          <div class="card-body">
+            <div class="wireframe-title">شاشة الطباعة المجمعة</div>
+            <div class="wireframe-desc">
+              طباعة مجموعة من الشيكات دفعة واحدة من خلال استيراد ملف Excel مع
+              معاينة القائمة
+            </div>
+            <a href="03-batch-printing.html" class="wireframe-link"
+              >عرض الإطار الشبكي →</a
+            >
+          </div>
+        </div>
+
+        <div class="wireframe-card">
+          <div class="card-header">
+            <div class="wireframe-number">4️⃣</div>
+          </div>
+          <div class="card-body">
+            <div class="wireframe-title">شاشة سجل الشيكات المطبوعة</div>
+            <div class="wireframe-desc">
+              عرض وإدارة سجل جميع الشيكات المطبوعة مع إمكانيات البحث والتصفية
+              والترقيم
+            </div>
+            <a href="04-printed-checks-list.html" class="wireframe-link"
+              >عرض الإطار الشبكي →</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p class="footer-text">
+        إطارات شبكية هيكلية - بدون تصميم أو ألوان أو منطق برمجي
+        <br />
+        تم التصميم بنظام RTL للغة العربية
+      </p>
+    </div>
+  </body>
+</html>

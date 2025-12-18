@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>محرر نماذج الشيكات</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Cairo", sans-serif;
+        background: #f8f9fa;
+        min-height: 100vh;
+      }
+
+      /* Top Navigation Tabs */
+      .top-tabs {
+        background: #fff;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        padding: 0;
+        gap: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
+      .tab-item {
+        padding: 16px 30px;
+        border: none;
+        background: #f8f9fa;
+        text-decoration: none;
+        color: #6c757d;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 15px;
+      }
+      .tab-item.active {
+        background: #fff;
+        color: #212529;
+        border-bottom: 3px solid #212529;
+      }
+      .tab-item:hover {
+        background: #fff;
+        color: #212529;
+      }
+
+      /* Header Section */
+      .header-section {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 25px;
+        margin: 25px auto;
+        max-width: 1100px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #dee2e6;
+      }
+      .system-logo {
+        font-size: 22px;
+        font-weight: 700;
+        border: 2px solid #212529;
+        padding: 10px 25px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        color: #212529;
+      }
+      .language-selector {
+        border: 1px solid #dee2e6;
+        padding: 10px 18px;
+        background: #fff;
+        font-size: 14px;
+        font-family: "Cairo", sans-serif;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .header-controls {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .control-group {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .control-label {
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        color: #495057;
+      }
+      .control-dropdown {
+        width: 100%;
+        border: 1px solid #dee2e6;
+        padding: 12px 15px;
+        background: #fff;
+        text-align: right;
+        color: #495057;
+        font-family: "Cairo", sans-serif;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      /* Main Content Area */
+      .main-container {
+        margin: 25px auto;
+        max-width: 1100px;
+        display: flex;
+        gap: 20px;
+      }
+
+      /* Canvas Section */
+      .canvas-section {
+        flex: 1.6;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: #fff;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 2px solid #212529;
+        padding-bottom: 12px;
+        color: #212529;
+      }
+      .canvas {
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        min-height: 520px;
+        position: relative;
+        background: #f8f9fa;
+        padding: 30px;
+      }
+      .canvas-placeholder {
+        text-align: center;
+        color: #868e96;
+        font-size: 14px;
+        margin-bottom: 30px;
+      }
+      .field-box {
+        border: 2px dashed #6c757d;
+        padding: 10px 18px;
+        position: absolute;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        cursor: move;
+        font-size: 14px;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+      .field-1 {
+        top: 80px;
+        right: 50px;
+      }
+      .field-2 {
+        top: 160px;
+        right: 50px;
+      }
+      .field-3 {
+        top: 240px;
+        right: 50px;
+      }
+
+      /* Sidebar Section */
+      .sidebar-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* Panels */
+      .panel {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .panel-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        text-align: center;
+        border-bottom: 2px solid #212529;
+        padding-bottom: 10px;
+        color: #212529;
+      }
+      .available-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .field-category {
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 12px;
+        margin-bottom: 6px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #dee2e6;
+        color: #6c757d;
+      }
+      .field-category:first-child {
+        margin-top: 0;
+      }
+      .available-field-item {
+        border: 1px solid #dee2e6;
+        padding: 10px 15px;
+        text-align: center;
+        background: #fff;
+        cursor: grab;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 13px;
+        border-radius: 4px;
+      }
+      .available-field-item:hover {
+        background: #212529;
+        color: #fff;
+        transform: translateX(-3px);
+      }
+
+      /* Properties */
+      .property-group {
+        margin-bottom: 18px;
+      }
+      .property-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        text-align: right;
+        color: #495057;
+      }
+      .property-input {
+        width: 100%;
+        border: 1px solid #dee2e6;
+        padding: 10px 12px;
+        background: #fff;
+        font-size: 13px;
+        text-align: right;
+        font-family: "Cairo", sans-serif;
+        border-radius: 4px;
+      }
+      .property-input:focus {
+        outline: none;
+        border-color: #495057;
+      }
+      .property-row {
+        display: flex;
+        gap: 10px;
+      }
+      .property-input-small {
+        flex: 1;
+        border: 1px solid #dee2e6;
+        padding: 10px 12px;
+        background: #fff;
+        font-size: 13px;
+        text-align: right;
+        font-family: "Cairo", sans-serif;
+        border-radius: 4px;
+      }
+      .btn {
+        width: 100%;
+        border: 1px solid #212529;
+        padding: 12px 20px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #212529;
+        color: #fff;
+        margin-top: 10px;
+        font-family: "Cairo", sans-serif;
+        border-radius: 4px;
+      }
+      .btn:hover {
+        background: #343a40;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Image Upload Section */
+      .image-upload-section {
+        margin-bottom: 20px;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .image-upload-section:hover {
+        border-color: #212529;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .upload-icon {
+        font-size: 48px;
+        color: #6c757d;
+        margin-bottom: 15px;
+      }
+      .upload-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 8px;
+      }
+      .upload-subtitle {
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 15px;
+      }
+      .upload-btn {
+        display: inline-block;
+        border: 1px solid #212529;
+        padding: 10px 30px;
+        background: #212529;
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: "Cairo", sans-serif;
+      }
+      .upload-btn:hover {
+        background: #343a40;
+        transform: translateY(-1px);
+      }
+      .upload-formats {
+        font-size: 11px;
+        color: #868e96;
+        margin-top: 12px;
+      }
+
+      @media (max-width: 968px) {
+        .main-container {
+          flex-direction: column;
+          margin: 20px;
+        }
+        .header-section {
+          margin: 20px;
+        }
+        .header-controls {
+          flex-direction: column;
+        }
+        .top-tabs {
+          overflow-x: auto;
+          justify-content: flex-start;
+        }
+      }
+
+      /* Image Preview State */
+      .image-uploaded {
+        border-color: #28a745;
+        background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
+      }
+      .image-preview {
+        max-width: 100%;
+        max-height: 150px;
+        border-radius: 6px;
+        margin: 15px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .uploaded-icon {
+        font-size: 48px;
+        color: #28a745;
+      }
+    </style>
+    <script>
+      // Simple file upload interaction (wireframe only)
+      document.addEventListener("DOMContentLoaded", function () {
+        const uploadSection = document.querySelector(".image-upload-section");
+        const fileInput = document.querySelector('input[type="file"]');
+
+        if (fileInput) {
+          fileInput.addEventListener("change", function (e) {
+            if (e.target.files.length > 0) {
+              const fileName = e.target.files[0].name;
+              uploadSection.classList.add("image-uploaded");
+              uploadSection.innerHTML = `
+                <div class="uploaded-icon">✓</div>
+                <div class="upload-title">تم رفع الصورة بنجاح</div>
+                <div class="upload-subtitle">${fileName}</div>
+                <button class="upload-btn" onclick="location.reload()">تغيير الصورة</button>
+              `;
+            }
+          });
+
+          // Drag and drop
+          uploadSection.addEventListener("dragover", function (e) {
+            e.preventDefault();
+            uploadSection.style.borderColor = "#212529";
+            uploadSection.style.background =
+              "linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%)";
+          });
+
+          uploadSection.addEventListener("dragleave", function (e) {
+            uploadSection.style.borderColor = "#dee2e6";
+            uploadSection.style.background =
+              "linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)";
+          });
+
+          uploadSection.addEventListener("drop", function (e) {
+            e.preventDefault();
+            if (e.dataTransfer.files.length > 0) {
+              const fileName = e.dataTransfer.files[0].name;
+              uploadSection.classList.add("image-uploaded");
+              uploadSection.innerHTML = `
+                <div class="uploaded-icon">✓</div>
+                <div class="upload-title">تم رفع الصورة بنجاح</div>
+                <div class="upload-subtitle">${fileName}</div>
+                <button class="upload-btn" onclick="location.reload()">تغيير الصورة</button>
+              `;
+            }
+          });
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Top Navigation Tabs -->
+    <div class="top-tabs">
+      <a href="04-printed-checks-list.html" class="tab-item"
+        >الشيكات المطبوعة</a
+      >
+      <a href="03-batch-printing.html" class="tab-item">طباعة دفعة</a>
+      <a href="02-template-editor.html" class="tab-item active"
+        >محرر النماذج</a
+      >
+      <a href="01-main-check-printing.html" class="tab-item">طباعة شيك</a>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="header-top">
+        <select class="language-selector">
+          <option>اللغة: عربي</option>
+          <option>اللغة: English</option>
+        </select>
+        <div class="system-logo">شعار النظام</div>
+      </div>
+
+      <div class="header-controls">
+        <div class="control-group">
+          <label class="control-label">الدولة</label>
+          <select class="control-dropdown">
+            <option>اختر الدولة</option>
+            <option>السعودية</option>
+            <option>الإمارات</option>
+            <option>مصر</option>
+            <option>الكويت</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">البنك</label>
+          <select class="control-dropdown">
+            <option>اختر البنك</option>
+            <option>البنك الأهلي</option>
+            <option>بنك الرياض</option>
+            <option>بنك الإنماء</option>
+            <option>بنك الراجحي</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">نموذج الشيك</label>
+          <select class="control-dropdown">
+            <option>اختر النموذج</option>
+            <option>نموذج قياسي 1</option>
+            <option>نموذج قياسي 2</option>
+            <option>نموذج مخصص</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-container">
+      <!-- Canvas Section -->
+      <div class="canvas-section">
+        <h2 class="section-title">مساحة العمل - تصميم النموذج</h2>
+
+        <!-- Image Upload Area -->
+        <div class="image-upload-section">
+          <div class="upload-icon">📷</div>
+          <div class="upload-title">إضافة صورة الشيك</div>
+          <div class="upload-subtitle">
+            اسحب الصورة وأفلتها هنا أو انقر للتحميل
+          </div>
+          <label class="upload-btn">
+            اختيار صورة
+            <input
+              type="file"
+              accept="image/*"
+              style="display: none"
+            />
+          </label>
+          <div class="upload-formats">
+            الصيغ المدعومة: JPG, PNG, PDF (الحد الأقصى: 5 ميجا)
+          </div>
+        </div>
+
+        <div class="canvas">
+          <div class="canvas-placeholder">
+            بعد رفع صورة الشيك<br />
+            قم بسحب الحقول من القائمة وإفلاتها هنا
+          </div>
+
+          <div class="field-box field-1">اسم المستفيد</div>
+          <div class="field-box field-2">المبلغ</div>
+          <div class="field-box field-3">التاريخ</div>
+        </div>
+      </div>
+
+      <!-- Sidebar Section -->
+      <div class="sidebar-section">
+        <!-- Available Fields Panel -->
+        <div class="panel">
+          <h3 class="panel-title">الحقول المتاحة</h3>
+
+          <div class="available-fields">
+            <div class="field-category">حقول أساسية</div>
+            <div class="available-field-item">اسم المستفيد</div>
+            <div class="available-field-item">المبلغ رقماً</div>
+            <div class="available-field-item">المبلغ كتابة</div>
+            <div class="available-field-item">التاريخ</div>
+            <div class="available-field-item">اسم البنك</div>
+            <div class="available-field-item">رقم الحساب</div>
+
+            <div class="field-category">حقول إضافية</div>
+            <div class="available-field-item">رقم الشيك</div>
+            <div class="available-field-item">العملة</div>
+            <div class="available-field-item">المدينة</div>
+            <div class="available-field-item">التوقيع</div>
+          </div>
+        </div>
+
+        <!-- Properties Panel -->
+        <div class="panel">
+          <h3 class="panel-title">خصائص الحقل</h3>
+
+          <div class="property-group">
+            <label class="property-label">العنصر المحدد</label>
+            <input
+              type="text"
+              class="property-input"
+              placeholder="الحقل المحدد"
+              value="اسم المستفيد"
+            />
+          </div>
+
+          <div class="property-group">
+            <label class="property-label">الإحداثيات</label>
+            <div class="property-row">
+              <div style="flex: 1">
+                <input type="text" class="property-input-small" placeholder="س" />
+              </div>
+              <div style="flex: 1">
+                <input type="text" class="property-input-small" placeholder="ص" />
+              </div>
+            </div>
+          </div>
+
+          <div class="property-group">
+            <label class="property-label">العرض</label>
+            <input type="text" class="property-input" placeholder="200" />
+          </div>
+
+          <div class="property-group">
+            <label class="property-label">الطول</label>
+            <input type="text" class="property-input" placeholder="30" />
+          </div>
+
+          <button class="btn">حفظ النموذج</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

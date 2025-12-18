@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>الطباعة المجمعة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Cairo", sans-serif;
+        background: #f8f9fa;
+        min-height: 100vh;
+      }
+
+      .top-tabs {
+        background: #fff;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: flex-end;
+        padding: 0;
+        gap: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
+      .tab-item {
+        padding: 16px 30px;
+        border: none;
+        background: #f8f9fa;
+        text-decoration: none;
+        color: #6c757d;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 15px;
+      }
+      .tab-item.active {
+        background: #fff;
+        color: #212529;
+        border-bottom: 3px solid #212529;
+      }
+      .tab-item:hover {
+        background: #fff;
+        color: #212529;
+      }
+
+      .header-section {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 25px;
+        margin: 25px auto;
+        max-width: 1100px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #dee2e6;
+      }
+      .system-logo {
+        font-size: 22px;
+        font-weight: 700;
+        border: 2px solid #212529;
+        padding: 10px 25px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        color: #212529;
+      }
+      .language-selector {
+        border: 1px solid #dee2e6;
+        padding: 10px 18px;
+        background: #fff;
+        font-size: 14px;
+        font-family: "Cairo", sans-serif;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .header-controls {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .control-group {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .control-label {
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        color: #495057;
+      }
+      .control-dropdown {
+        width: 100%;
+        border: 1px solid #dee2e6;
+        padding: 12px 15px;
+        background: #fff;
+        text-align: right;
+        color: #495057;
+        font-family: "Cairo", sans-serif;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .main-container {
+        margin: 25px auto;
+        max-width: 1100px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .settings-section {
+        border-bottom: 1px solid #dee2e6;
+        padding: 25px;
+        background: #f8f9fa;
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #212529;
+      }
+      .settings-row {
+        display: flex;
+        gap: 20px;
+        margin-top: 15px;
+      }
+      .setting-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .setting-label {
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        color: #495057;
+      }
+      .setting-input {
+        width: 100%;
+        border: 1px solid #dee2e6;
+        padding: 12px 15px;
+        background: #fff;
+        text-align: right;
+        font-family: "Cairo", sans-serif;
+        border-radius: 4px;
+      }
+
+      .table-section {
+        padding: 25px;
+        background: #fff;
+      }
+      .table-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #212529;
+      }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .table th,
+      .table td {
+        border: 1px solid #dee2e6;
+        padding: 14px 15px;
+        text-align: center;
+      }
+      .table th {
+        background: #212529;
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .table td {
+        background: #fff;
+        font-size: 14px;
+      }
+      .table tbody tr:hover td {
+        background: #f8f9fa;
+      }
+
+      .actions-section {
+        padding: 25px;
+        text-align: center;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+      }
+      .btn {
+        border: 1px solid #dee2e6;
+        padding: 13px 35px;
+        display: inline-block;
+        margin: 0 8px;
+        font-weight: 600;
+        font-size: 14px;
+        background: #fff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: "Cairo", sans-serif;
+        border-radius: 4px;
+      }
+      .btn:hover {
+        background: #f8f9fa;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .btn-primary {
+        background: #212529;
+        color: #fff;
+        border-color: #212529;
+      }
+      .btn-primary:hover {
+        background: #343a40;
+      }
+
+      @media (max-width: 968px) {
+        .settings-row {
+          flex-direction: column;
+        }
+        .header-controls {
+          flex-direction: column;
+        }
+        .top-tabs {
+          overflow-x: auto;
+          justify-content: flex-start;
+        }
+        .main-container {
+          margin: 20px;
+        }
+        .header-section {
+          margin: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-tabs">
+      <a href="04-printed-checks-list.html" class="tab-item"
+        >الشيكات المطبوعة</a
+      >
+      <a href="03-batch-printing.html" class="tab-item active">طباعة دفعة</a>
+      <a href="02-template-editor.html" class="tab-item">محرر النماذج</a>
+      <a href="01-main-check-printing.html" class="tab-item">طباعة شيك</a>
+    </div>
+
+    <div class="header-section">
+      <div class="header-top">
+        <select class="language-selector">
+          <option>اللغة: عربي</option>
+          <option>اللغة: English</option>
+        </select>
+        <div class="system-logo">شعار النظام</div>
+      </div>
+
+      <div class="header-controls">
+        <div class="control-group">
+          <label class="control-label">الدولة</label>
+          <select class="control-dropdown">
+            <option>اختر الدولة</option>
+            <option>السعودية</option>
+            <option>الإمارات</option>
+            <option>مصر</option>
+            <option>الكويت</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">البنك</label>
+          <select class="control-dropdown">
+            <option>اختر البنك</option>
+            <option>البنك الأهلي</option>
+            <option>بنك الرياض</option>
+            <option>بنك الإنماء</option>
+            <option>بنك الراجحي</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">نموذج الشيك</label>
+          <select class="control-dropdown">
+            <option>اختر النموذج</option>
+            <option>نموذج قياسي 1</option>
+            <option>نموذج قياسي 2</option>
+            <option>نموذج مخصص</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <div class="settings-section">
+        <h2 class="section-title">إعدادات الدفعة</h2>
+        <div class="settings-row">
+          <div class="setting-item">
+            <label class="setting-label">ملف المصدر</label>
+            <input
+              type="text"
+              class="setting-input"
+              placeholder="رفع ملف إكسل"
+            />
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">تاريخ الاستحقاق الموحد</label>
+            <input
+              type="text"
+              class="setting-input"
+              placeholder="يوم/شهر/سنة"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <h3 class="table-title">قائمة الشيكات المستخرجة</h3>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>رقم</th>
+              <th>المستفيد</th>
+              <th>المبلغ</th>
+              <th>التاريخ</th>
+              <th>الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>شركة أ</td>
+              <td>5,000.00</td>
+              <td>2024/01/01</td>
+              <td>جاهز</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>شركة ب</td>
+              <td>2,000.00</td>
+              <td>2024/01/01</td>
+              <td>جاهز</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>شركة ج</td>
+              <td>1,500.00</td>
+              <td>2024/01/01</td>
+              <td>خطأ</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>مؤسسة د</td>
+              <td>3,200.00</td>
+              <td>2024/01/01</td>
+              <td>جاهز</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>شركة هـ</td>
+              <td>7,800.00</td>
+              <td>2024/01/01</td>
+              <td>جاهز</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="actions-section">
+        <button class="btn">حفظ</button>
+        <button class="btn btn-primary">طباعة الكل</button>
+        <button class="btn">تصدير القائمة</button>
+      </div>
+    </div>
+  </body>
+</html>
