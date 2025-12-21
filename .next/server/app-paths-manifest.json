@@ -1,7 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/print-check/page": "app/print-check/page.js",
-  "/batch-printing/page": "app/batch-printing/page.js",
-  "/printed-checks/page": "app/printed-checks/page.js",
-  "/template-editor/page": "app/template-editor/page.js"
-}
