@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
 import { Cairo } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { PWARegister } from "../../pwa/PWARegister";
+import { PWAInstallBanner } from "../../pwa/PWAInstallBanner";
 
 // خط Cairo - لكل المحتوى العربي
 const cairo = Cairo({
@@ -10,11 +11,6 @@ const cairo = Cairo({
   variable: "--font-cairo",
   display: "swap",
 });
-
-export const metadata: Metadata = {
-  title: "نظام طباعة وإدارة الشيكات | Check Printing & Management System",
-  description: "حل احترافي لطباعة وإدارة الشيكات | Enterprise-grade check printing and management solution",
-};
 
 export default function RootLayout({
   children,
@@ -26,8 +22,22 @@ export default function RootLayout({
       <body className={cairo.className}>
         <LanguageProvider>
           {children}
+              <PWARegister />
+              <PWAInstallBanner
+                logo={'/logo.png'}
+                locale={"ar"}
+                appName={"Tenant Name"}
+              />
         </LanguageProvider>
       </body>
     </html>
   );
+}
+
+export async function generateMetadata(){
+  return {
+    title: "نظام طباعة وإدارة الشيكات | Check Printing & Management System",
+    description: "حل احترافي لطباعة وإدارة الشيكات | Enterprise-grade check printing and management solution",
+    manifest: `/api/manifest`
+  };
 }
