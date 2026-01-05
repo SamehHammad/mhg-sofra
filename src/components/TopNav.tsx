@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Copy,
   Database,
@@ -30,6 +31,7 @@ export default function TopNav({ title, subtitle }: TopNavProps) {
   const { language, setLanguage, t, direction } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const toggleLanguage = () => {
@@ -91,8 +93,12 @@ export default function TopNav({ title, subtitle }: TopNavProps) {
     setUserOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <div className="sticky top-0 z-20 w-full bg-white/80 backdrop-blur-xl border-b border-white/40 shadow-[0_6px_24px_-18px_rgba(0,0,0,0.25)]">
+    <div className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-xl border-b border-white/40 shadow-[0_6px_24px_-18px_rgba(0,0,0,0.25)]">
       <Container>
         <div className="flex items-center justify-between gap-3 py-3">
           {/* Brand */}
@@ -246,109 +252,112 @@ export default function TopNav({ title, subtitle }: TopNavProps) {
       </Container>
 
       {/* Mobile drawer */}
-      <div
-        className={
-          `md:hidden fixed inset-0 z-30 transition-opacity duration-300 ` +
-          (mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none')
-        }
-        aria-hidden={!mobileOpen}
-      >
-        <div
-          className="absolute inset-0 bg-black/30"
-          onClick={() => setMobileOpen(false)}
-        ></div>
-
-        <div
-          className={
-            `absolute top-0 bottom-0 w-[86vw] max-w-sm bg-white/90 backdrop-blur-xl border-white/40 shadow-2xl transition-transform duration-300 ease-out ` +
-            (direction === 'rtl'
-              ? 'right-0 border-l '
-              : 'left-0 border-r ') +
-            (mobileOpen
-              ? 'translate-x-0'
-              : direction === 'rtl'
-                ? 'translate-x-full'
-                : '-translate-x-full')
-          }
-        >
-          <div className="p-4 border-b border-neutral-200/70 flex items-center justify-between">
-            <div className="font-black text-[#3949AB] tracking-tight">تشيك برو</div>
-            <button
-              type="button"
-              className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-neutral-500 hover:text-[#3949AB] transition-all duration-300 border border-[#3949AB]/10"
+      {mounted &&
+        createPortal(
+          <div
+            className={
+              `md:hidden fixed inset-0 z-[9999] transition-opacity duration-300 ` +
+              (mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none')
+            }
+            aria-hidden={!mobileOpen}
+          >
+            <div
+              className="absolute inset-0 bg-black/30"
               onClick={() => setMobileOpen(false)}
-              aria-label="Close menu"
+            ></div>
+
+            <div
+              className={
+                `absolute top-0 bottom-0 z-[10000] w-[86vw] max-w-sm bg-white/90 backdrop-blur-xl border-white/40 shadow-2xl transition-transform duration-300 ease-out flex flex-col overflow-y-auto ` +
+                (direction === 'rtl'
+                  ? 'right-0 border-l '
+                  : 'left-0 border-r ') +
+                (mobileOpen
+                  ? 'translate-x-0'
+                  : direction === 'rtl'
+                    ? 'translate-x-full'
+                    : '-translate-x-full')
+              }
             >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* User section (mobile) */}
-          <div className="px-4 py-4 border-b border-neutral-200/70">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#3949AB] to-[#5C6BC0] flex items-center justify-center text-white shadow-lg shadow-[#3949AB]/20">
-                <User className="w-5 h-5" />
+              <div className="p-4 border-b border-neutral-200/70 flex items-center justify-between">
+                <div className="font-black text-[#3949AB] tracking-tight">تشيك برو</div>
+                <button
+                  type="button"
+                  className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-neutral-500 hover:text-[#3949AB] transition-all duration-300 border border-[#3949AB]/10"
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Close menu"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <div className="min-w-0">
-                <div className="text-sm font-black text-neutral-800 truncate">
-                  {language === 'ar' ? 'أحمد محمد' : 'John Doe'}
-                </div>
-                <div className="text-[11px] font-bold text-neutral-400 truncate">
-                  {t.user.role}
-                </div>
-              </div>
-            </div>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                className="h-10 rounded-xl bg-white border border-neutral-200 text-neutral-700 hover:border-[#3949AB]/30 hover:text-[#3949AB] transition-colors text-sm font-bold"
-              >
-                {language === 'ar' ? 'الملف' : 'Profile'}
-              </button>
-              <button
-                type="button"
-                className="h-10 rounded-xl bg-white border border-neutral-200 text-neutral-700 hover:border-red-200 hover:text-red-600 transition-colors text-sm font-bold"
-              >
-                {language === 'ar' ? 'خروج' : 'Logout'}
-              </button>
-            </div>
-          </div>
 
-          <nav className="p-3">
-            <div className="grid gap-2">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href;
-                const Icon = item.icon;
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={
-                      `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition-all duration-300 ` +
-                      (isActive
-                        ? 'bg-[#3949AB] text-white shadow-[0_10px_20px_-12px_rgba(57,73,171,0.45)]'
-                        : 'text-neutral-600 hover:bg-[#3949AB]/5 hover:text-[#3949AB]')
-                    }
+              <div className="px-4 py-4 border-b border-neutral-200/70">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#3949AB] to-[#5C6BC0] flex items-center justify-center text-white shadow-lg shadow-[#3949AB]/20">
+                    <User className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-black text-neutral-800 truncate">
+                      {language === 'ar' ? 'أحمد محمد' : 'John Doe'}
+                    </div>
+                    <div className="text-[11px] font-bold text-neutral-400 truncate">
+                      {t.user.role}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    className="h-10 rounded-xl bg-white border border-neutral-200 text-neutral-700 hover:border-[#3949AB]/30 hover:text-[#3949AB] transition-colors text-sm font-bold"
                   >
-                    <Icon className="w-5 h-5" />
-                    <span className="leading-none pt-0.5">{item.name}</span>
-                    {isActive && (
-                      <div
+                    {language === 'ar' ? 'الملف' : 'Profile'}
+                  </button>
+                  <button
+                    type="button"
+                    className="h-10 rounded-xl bg-white border border-neutral-200 text-neutral-700 hover:border-red-200 hover:text-red-600 transition-colors text-sm font-bold"
+                  >
+                    {language === 'ar' ? 'خروج' : 'Logout'}
+                  </button>
+                </div>
+              </div>
+
+              <nav className="p-3 flex-1 overflow-y-auto">
+                <div className="grid gap-2">
+                  {navigation.map((item) => {
+                    const isActive = pathname === item.href;
+                    const Icon = item.icon;
+
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
                         className={
-                          `w-1.5 h-1.5 rounded-full bg-white/60 ` +
-                          (direction === 'rtl' ? 'mr-auto' : 'ml-auto')
+                          `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition-all duration-300 ` +
+                          (isActive
+                            ? 'bg-[#3949AB] text-white shadow-[0_10px_20px_-12px_rgba(57,73,171,0.45)]'
+                            : 'text-neutral-600 hover:bg-[#3949AB]/5 hover:text-[#3949AB]')
                         }
-                      ></div>
-                    )}
-                  </Link>
-                );
-              })}
+                      >
+                        <Icon className="w-5 h-5" />
+                        <span className="leading-none pt-0.5">{item.name}</span>
+                        {isActive && (
+                          <div
+                            className={
+                              `w-1.5 h-1.5 rounded-full bg-white/60 ` +
+                              (direction === 'rtl' ? 'mr-auto' : 'ml-auto')
+                            }
+                          ></div>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </nav>
             </div>
-          </nav>
-        </div>
-      </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
