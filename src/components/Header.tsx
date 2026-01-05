@@ -16,8 +16,8 @@ export default function Header({ title, subtitle }: HeaderProps) {
   };
 
   return (
-    <header className="bg-transparent pt-4 pb-2 sticky top-0 z-10">
-      <div className="px-8">
+    <header className="bg-transparent pt-4 pb-2">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl px-6 py-4 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] border border-white/40 flex items-center justify-center relative">
           {/* Title - Center Aligned */}
           <div className="text-center">
@@ -46,7 +46,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
 
             <div className="w-px h-8 bg-neutral-200 mx-2 hidden sm:block"></div>
 
-            <button className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-neutral-400 hover:text-[#3949AB] hover:shadow-md transition-all duration-300 hidden sm:flex">
+            <button className="w-10 h-10 rounded-xl bg-white items-center justify-center text-neutral-400 hover:text-[#3949AB] hover:shadow-md transition-all duration-300 hidden sm:flex">
               <Bell className="w-5 h-5" />
             </button>
 
