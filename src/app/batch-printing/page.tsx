@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { mockBatchChecks, currencies } from '@/lib/mock-data';
+import PrintSettingsDialog, { type PrintSettings } from '@/components/PrintSettingsDialog';
 import { 
   Upload, 
   Plus, 
@@ -22,6 +23,50 @@ export default function BatchPrinting() {
   const { t, language, direction } = useLanguage();
   const [checks, setChecks] = useState(mockBatchChecks);
   const [showAddForm, setShowAddForm] = useState(false);
+
+  const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
+
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
+  const [printChequeImages, setPrintChequeImages] = useState<string[]>([]);
+  const [printSettings, setPrintSettings] = useState<PrintSettings>({
+    paperPreset: 'A4',
+    pageOrientation: 'portrait',
+    customWidthMm: 210,
+    customHeightMm: 99,
+    marginMm: 0,
+    printScale: 1,
+    offsetXmm: 0,
+    offsetYmm: 0,
+    copies: 1,
+  });
+
+  const selectedCount = Object.values(selectedIds).filter(Boolean).length;
+  const allSelected = checks.length > 0 && selectedCount === checks.length;
+  const anySelected = selectedCount > 0;
+
+  const staticChequeImages = [
+    '/cheques/egy-ahly.jpeg',
+    '/cheques/egy-cib.jpeg',
+    '/cheques/ksa-br.jpeg',
+    '/cheques/ksa-fr.jpeg',
+    '/cheques/ps-arabic.jpeg',
+  ];
+
+  const openPrintForChecks = (checksToPrint: Array<{ id: string }>) => {
+    if (checksToPrint.length === 0) return;
+    const images = checksToPrint.map((_, i) => staticChequeImages[i % staticChequeImages.length]);
+    setPrintChequeImages(images);
+    setShowPrintDialog(true);
+  };
+
+  const handlePrintAll = () => {
+    openPrintForChecks(checks);
+  };
+
+  const handlePrintSelected = () => {
+    const selectedChecks = checks.filter((c) => selectedIds[c.id]);
+    openPrintForChecks(selectedChecks);
+  };
 
   const totalAmount = checks.reduce((sum, check) => sum + check.amount, 0);
 
@@ -118,10 +163,23 @@ export default function BatchPrinting() {
                 <span className="text-3xl font-black font-mono">${totalAmount.toLocaleString()}</span>
               </div>
 
-              <button className="w-full py-3 bg-white text-[#3949AB] rounded-xl font-bold hover:bg-white/90 transition-colors shadow-lg mt-2 flex items-center justify-center gap-2">
-                <Printer className="w-5 h-5" />
-                {t.batchPrinting.printAll}
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                <button
+                  onClick={handlePrintAll}
+                  className="w-full py-3 bg-white text-[#3949AB] rounded-xl font-bold hover:bg-white/90 transition-colors shadow-lg flex items-center justify-center gap-2"
+                >
+                  <Printer className="w-5 h-5" />
+                  {t.batchPrinting.printAll}
+                </button>
+                <button
+                  onClick={handlePrintSelected}
+                  disabled={!anySelected}
+                  className="w-full py-3 bg-white/10 text-white rounded-xl font-bold hover:bg-white/15 transition-colors shadow-lg border border-white/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <CheckCircle2 className="w-5 h-5" />
+                  {language === 'ar' ? 'طباعة المحدد' : 'Print Selected'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -140,7 +198,19 @@ export default function BatchPrinting() {
               <thead>
                 <tr className="bg-[#f8faff]">
                   <th className="px-6 py-4 text-start w-16">
-                    <input type="checkbox" className="w-4 h-4 rounded border-neutral-300 text-[#3949AB] focus:ring-[#3949AB]" />
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      onChange={(e) => {
+                        const nextChecked = e.target.checked;
+                        const next: Record<string, boolean> = {};
+                        checks.forEach((c) => {
+                          next[c.id] = nextChecked;
+                        });
+                        setSelectedIds(next);
+                      }}
+                      className="w-4 h-4 rounded border-neutral-300 text-[#3949AB] focus:ring-[#3949AB]"
+                    />
                   </th>
                   <th className="px-6 py-4 text-start text-xs font-black text-[#3949AB] uppercase tracking-wider">{t.table.checkNumber}</th>
                   <th className="px-6 py-4 text-start text-xs font-black text-[#3949AB] uppercase tracking-wider">{t.table.beneficiary}</th>
@@ -158,7 +228,14 @@ export default function BatchPrinting() {
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <td className="px-6 py-4">
-                      <input type="checkbox" className="w-4 h-4 rounded border-neutral-300 text-[#3949AB] focus:ring-[#3949AB]" />
+                      <input
+                        type="checkbox"
+                        checked={Boolean(selectedIds[check.id])}
+                        onChange={(e) => {
+                          setSelectedIds((prev) => ({ ...prev, [check.id]: e.target.checked }));
+                        }}
+                        className="w-4 h-4 rounded border-neutral-300 text-[#3949AB] focus:ring-[#3949AB]"
+                      />
                     </td>
                     <td className="px-6 py-4 font-mono font-bold text-neutral-600">{check.checkNumber}</td>
                     <td className="px-6 py-4 font-bold text-neutral-800">
@@ -256,6 +333,18 @@ export default function BatchPrinting() {
             </div>
           </div>
         )}
+
+        <PrintSettingsDialog
+          open={showPrintDialog}
+          onClose={() => {
+            setShowPrintDialog(false);
+            setPrintChequeImages([]);
+          }}
+          settings={printSettings}
+          onChange={setPrintSettings}
+          chequeImages={printChequeImages}
+          selectedChequeImage={printChequeImages[0] ?? null}
+        />
       </div>
     </AppLayout>
   );

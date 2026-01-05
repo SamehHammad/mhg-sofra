@@ -33,10 +33,11 @@ type Props = {
   onClose: () => void;
   settings: PrintSettings;
   onChange: (next: PrintSettings) => void;
+  chequeImages?: string[];
   selectedChequeImage: string | null;
 };
 
-export default function PrintSettingsDialog({ open, onClose, settings, onChange, selectedChequeImage }: Props) {
+export default function PrintSettingsDialog({ open, onClose, settings, onChange, chequeImages, selectedChequeImage }: Props) {
   const { t, language } = useLanguage();
 
   // UI/printing status (used to disable controls and show progress)
@@ -74,6 +75,10 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
   const w = Math.max(1, paperWidthMm);
   const h = Math.max(1, paperHeightMm);
   const margin = Math.max(0, settings.marginMm);
+
+  const normalizedImages = (chequeImages && chequeImages.length > 0 ? chequeImages : selectedChequeImage ? [selectedChequeImage] : []).filter(Boolean);
+  const canPrint = normalizedImages.length > 0;
+  const previewImage = normalizedImages[0] ?? null;
 
   // ---------------------------------------------------------------------------
   // Print CSS injected by react-to-print
@@ -132,7 +137,7 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
   // - Then triggers react-to-print.
   // ---------------------------------------------------------------------------
   const handlePrint = async () => {
-    if (!selectedChequeImage || isPrinting) return;
+    if (!canPrint || isPrinting) return;
 
     setIsPrinting(true);
     setPrintStatus('preparing');
@@ -202,15 +207,15 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
     <div className="fixed inset-0 bg-[#3949AB]/20 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
       <div style={{ position: 'fixed', left: -10000, top: 0, width: 0, height: 0, overflow: 'hidden' }} aria-hidden="true">
         <div ref={printContainerRef} className="print-root">
-          {Array.from({ length: copies }).map((_, i) => (
-            <div key={i} className="print-page">
-              <div className="print-content">
-                {selectedChequeImage && (
-                  <img className="print-cheque" src={selectedChequeImage} alt="Cheque" draggable={false} />
-                )}
+          {normalizedImages.flatMap((imgSrc, imgIndex) =>
+            Array.from({ length: copies }).map((_, copyIndex) => (
+              <div key={`${imgIndex}-${copyIndex}`} className="print-page">
+                <div className="print-content">
+                  <img className="print-cheque" src={imgSrc} alt="Cheque" draggable={false} />
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
@@ -419,9 +424,9 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
                   overflow: 'hidden',
                 }}
               >
-                {selectedChequeImage && (
+                {previewImage && (
                   <img
-                    src={selectedChequeImage}
+                    src={previewImage}
                     alt="Cheque Preview"
                     className="w-full h-full object-contain"
                     style={{
@@ -476,7 +481,7 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
             <button
               onClick={handlePrint}
               className="btn-primary !py-2.5 !px-6 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              disabled={!selectedChequeImage || isPrinting}
+              disabled={!canPrint || isPrinting}
             >
               {isPrinting ? (
                 <>
