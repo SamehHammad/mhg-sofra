@@ -45,7 +45,10 @@ export default function TemplateEditor() {
   const [selectedField, setSelectedField] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showGrid, setShowGrid] = useState(true);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 350 });
 
+  // ===================================== Handlers ==========================================
   // ... (handlers same as before but improved)
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, delta } = event;
@@ -100,6 +103,91 @@ export default function TemplateEditor() {
 
   const selectedFieldData = placedFields.find((f) => f.id === selectedField);
 
+  // ===================================== (SHerif) Handle Save Template ==========================================
+  const handleSaveTemplate = async () => {
+    const templateSchema = buildTemplateSchema();
+
+    // try {
+    //   await fetch('/api/templates/save', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(templateSchema),
+    //   });
+
+    console.log("Template saved:", templateSchema);
+    // } catch (error) {
+    //   console.error('Failed to save template', error);
+    // }
+  };
+
+  // ===================================== (SHerif) Handle Save Template End ==========================================
+
+  // ===================================== (SHerif) Handle Upload Background Image ==========================================
+  // const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = () => {
+  //       setBackgroundImage(reader.result as string);
+  //     };
+  //     img.src = reader.result as string;
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          // take the actual image dimensions
+          setCanvasSize({
+            width: img.width,
+            height: img.height,
+          });
+          setBackgroundImage(reader.result as string);
+        };
+        img.src = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  // ===================================== Handlers End ==========================================
+
+  // ===================================== (SHerif) Build template schema ==========================================
+  const buildTemplateSchema = () => {
+    return {
+      version: "1.0",
+      canvas: {
+        width: 800,
+        height: 350,
+        grid: showGrid,
+      },
+      fields: placedFields.map((field) => ({
+        id: field.id,
+        type: "text",
+        label: field.label,
+        position: {
+          x: Math.round(field.x),
+          y: Math.round(field.y),
+        },
+        style: {
+          fontSize: field.fontSize,
+          fontFamily: field.fontFamily,
+          alignment: field.alignment,
+          rotation: field.rotation,
+        },
+      })),
+      meta: {
+        direction,
+        savedAt: new Date().toISOString(),
+      },
+    };
+  };
+  // ===================================== (SHerif) End Build template schema ==========================================
   return (
     <AppLayout
       title={t.templateEditor.title}
@@ -145,18 +233,38 @@ export default function TemplateEditor() {
             <div
               id="canvas"
               className="relative bg-white shadow-2xl shadow-[#3949AB]/10 transition-all duration-300"
-              style={{ width: "800px", height: "350px" }}
+              style={{
+                width: `${canvasSize.width}px`,
+                height: `${canvasSize.height}px`,
+              }}
               onClick={() => setSelectedField(null)}
             >
-              {/* Check Background Placeholder */}
-              <div className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-neutral-200 m-2 rounded-xl pointer-events-none">
-                <div className="text-center opacity-30">
-                  <Upload className="w-12 h-12 mx-auto mb-2 text-[#3949AB]" />
-                  <p className="text-sm font-bold">
-                    {t.templateEditor.uploadText}
-                  </p>
-                </div>
-              </div>
+              {/* Background Image */}
+              {backgroundImage && (
+                <img
+                  src={backgroundImage}
+                  alt="Check Background"
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                />
+              )}
+
+              {/* Upload Placeholder */}
+              {!backgroundImage && (
+                <label className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-neutral-200 m-2 rounded-xl cursor-pointer hover:border-[#3949AB] transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <div className="text-center opacity-30 hover:opacity-50 transition-opacity">
+                    <Upload className="w-12 h-12 mx-auto mb-2 text-[#3949AB]" />
+                    <p className="text-sm font-bold">
+                      {t.templateEditor.uploadText}
+                    </p>
+                  </div>
+                </label>
+              )}
 
               {placedFields.map((field) => (
                 <DraggableCanvasField
@@ -297,7 +405,10 @@ export default function TemplateEditor() {
                 </div>
 
                 <div className="p-4 bg-white/50 border-t border-white/50">
-                  <button className="w-full btn-primary">
+                  <button
+                    className="w-full btn-primary"
+                    onClick={handleSaveTemplate}
+                  >
                     <Save className="w-5 h-5" />
                     {t.templateEditor.saveTemplate}
                   </button>
@@ -381,7 +492,7 @@ function DraggableCanvasField({
         onSelect();
       }}
       className={`
-        px-2 py-1 cursor-grab select-none whitespace-nowrap transition-colors
+        px-2 py-2 cursor-grab select-none whitespace-nowrap transition-colors border-dashed  rounded-lg border-gray-800
         ${
           isSelected
             ? "ring-2 ring-[#3949AB] bg-[#3949AB]/10 text-[#3949AB] font-bold z-50"
