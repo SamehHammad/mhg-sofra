@@ -20,6 +20,8 @@ import {
   Move,
   Grid,
   Maximize,
+  Eraser,
+  ImageMinus,
 } from "lucide-react";
 import { checkFields } from "@/lib/mock-data";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -244,6 +246,15 @@ export default function TemplateEditor() {
               title="Edit background"
             >
               <Crop className="w-6 h-6" />
+            </button>
+            <button className="w-12 h-12 rounded-xl bg-white text-neutral-400 hover:text-[#3949AB] flex items-center justify-center transition-colors">
+              <Eraser className="w-6 h-6" onClick={() => setPlacedFields([])} />
+            </button>
+            <button className="w-12 h-12 rounded-xl bg-white text-neutral-400 hover:text-[#3949AB] flex items-center justify-center transition-colors">
+              <ImageMinus
+                className="w-6 h-6"
+                onClick={() => setBackgroundImage(null)}
+              />
             </button>
           </div>
 
@@ -565,17 +576,17 @@ function DraggableCanvasField({
         onSelect();
       }}
       className={`
-        px-2 py-2 cursor-grab select-none whitespace-nowrap transition-colors border-dashed  rounded-lg border-gray-800
+        px-2 py-2 cursor-grab select-none whitespace-nowrap p-2 w-24 h-8 transition-colors border-dashed  flex items-center justify-center rounded-lg border-purple-600 border-2
         ${
           isSelected
-            ? "ring-2 ring-[#3949AB] bg-[#3949AB]/10 text-[#3949AB] font-bold z-50"
+            ? "ring-2 ring-[#3949AB] bg-[#3949AB]/10 text-[#3949AB]  font-bold z-50 flex items-center justify-center"
             : "hover:bg-neutral-100 hover:ring-1 hover:ring-neutral-300"
         }
       `}
     >
       {field.label}
       {isSelected && (
-        <div className="absolute -top-3 -right-3 w-6 h-6 bg-[#3949AB] rounded-full flex items-center justify-center text-white shadow-md">
+        <div className="absolute -top-3 -right-3 w-8 h-6 bg-[#3949AB] rounded-full flex items-center justify-center text-white shadow-md">
           <Move className="w-3 h-3" />
         </div>
       )}
