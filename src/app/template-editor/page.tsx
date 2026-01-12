@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+/*-*-*-- Core imports for the template editor page -*-*-*-// */
+import { useCallback, useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import {
   DndContext,
@@ -12,19 +13,17 @@ import {
 import {
   Upload,
   Type,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  RotateCw,
+  Crop,
+  Pencil,
   Trash2,
   Save,
-  Eye,
   Move,
   Grid,
   Maximize,
 } from "lucide-react";
-import { checkFields, fontFamilies, fontSizes } from "@/lib/mock-data";
+import { checkFields } from "@/lib/mock-data";
 import { useLanguage } from "@/contexts/LanguageContext";
+import BackgroundImageEditor from "@/components/BackgroundImageEditor";
 
 interface CheckField {
   id: string;
@@ -41,6 +40,8 @@ interface CheckField {
 
 export default function TemplateEditor() {
   const { t, direction } = useLanguage();
+
+  /*-*-*-- Canvas state: fields + selection + background -*-*-*-// */
   const [placedFields, setPlacedFields] = useState<CheckField[]>([]);
   const [selectedField, setSelectedField] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -48,7 +49,11 @@ export default function TemplateEditor() {
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 350 });
 
-  // ===================================== Handlers ==========================================
+  /*-*-*-- Background image editor state (open/apply flow) -*-*-*-// */
+  const [uploadedImageSrc, setUploadedImageSrc] = useState<string | null>(null);
+  const [isImageEditorOpen, setIsImageEditorOpen] = useState(false);
+
+  /*-*-*-- Drag/drop handlers for placing fields onto the canvas -*-*-*-// */
   // ... (handlers same as before but improved)
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, delta } = event;
@@ -141,29 +146,42 @@ export default function TemplateEditor() {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          // take the actual image dimensions
-          setCanvasSize({
-            width: img.width,
-            height: img.height,
-          });
-          setBackgroundImage(reader.result as string);
-        };
-        img.src = reader.result as string;
+        const src = reader.result as string;
+
+        /*-*-*-- Open editor immediately after upload (best UX) -*-*-*-// */
+        setUploadedImageSrc(src);
+        setIsImageEditorOpen(true);
       };
       reader.readAsDataURL(file);
     }
   };
-  // ===================================== Handlers End ==========================================
 
-  // ===================================== (SHerif) Build template schema ==========================================
+  const openEditorForCurrentBackground = useCallback(() => {
+    if (!backgroundImage) return;
+    setUploadedImageSrc(backgroundImage);
+    setIsImageEditorOpen(true);
+  }, [backgroundImage]);
+
+  /*-*-*-- Remove background image and return to upload placeholder -*-*-*-// */
+  const removeBackgroundImage = useCallback(() => {
+    setBackgroundImage(null);
+    setUploadedImageSrc(null);
+    setCanvasSize({ width: 800, height: 350 });
+    setSelectedField(null);
+  }, []);
+
+  const closeImageEditor = useCallback(() => {
+    setIsImageEditorOpen(false);
+  }, []);
+  /*-*-*-- End handlers -*-*-*-// */
+
+  /*-*-*-- Build template schema payload (used by save) -*-*-*-// */
   const buildTemplateSchema = () => {
     return {
       version: "1.0",
       canvas: {
-        width: 800,
-        height: 350,
+        width: canvasSize.width,
+        height: canvasSize.height,
         grid: showGrid,
       },
       fields: placedFields.map((field) => ({
@@ -193,6 +211,7 @@ export default function TemplateEditor() {
       title={t.templateEditor.title}
       subtitle={t.templateEditor.subtitle}
     >
+      {/*-*-*-- Drag context for library items and canvas fields -*-*-*-// */}
       <DndContext
         onDragStart={({ active }) => setActiveId(active.id as string)}
         onDragEnd={handleDragEnd}
@@ -212,8 +231,19 @@ export default function TemplateEditor() {
               <Grid className="w-6 h-6" />
             </button>
             <div className="w-8 h-px bg-neutral-200"></div>
-            <button className="w-12 h-12 rounded-xl bg-white text-neutral-400 hover:text-[#3949AB] flex items-center justify-center transition-colors">
-              <Maximize className="w-6 h-6" />
+
+            {/*-*-*-- Re-open background editor (only when image exists) -*-*-*-// */}
+            <button
+              className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                backgroundImage
+                  ? "bg-white text-neutral-400 hover:text-[#3949AB]"
+                  : "bg-white/60 text-neutral-300 cursor-not-allowed"
+              }`}
+              onClick={openEditorForCurrentBackground}
+              disabled={!backgroundImage}
+              title="Edit background"
+            >
+              <Crop className="w-6 h-6" />
             </button>
           </div>
 
@@ -239,6 +269,37 @@ export default function TemplateEditor() {
               }}
               onClick={() => setSelectedField(null)}
             >
+              {/*-*-*-- Top quick actions (edit/remove background image) -*-*-*-// */}
+              {backgroundImage && (
+                <div className="absolute -top-10 right-3 z-50 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEditorForCurrentBackground();
+                    }}
+                    className="px-3 py-2 rounded-xl bg-white/90 hover:bg-white shadow-sm border border-neutral-200 text-neutral-700 font-bold text-xs flex items-center gap-2"
+                  >
+                    <Pencil className="w-4 h-4" />
+                    {t.templateEditor.imageEditor.editImageButton}
+                  </button>
+
+                  {/*-*-*-- Remove background image button -*-*-*-// */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeBackgroundImage();
+                    }}
+                    className="w-10 h-10 rounded-xl bg-white/90 hover:bg-red-50 shadow-sm border border-neutral-200 text-red-600 flex items-center justify-center"
+                    title={t.delete}
+                    aria-label={t.delete}
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+
               {/* Background Image */}
               {backgroundImage && (
                 <img
@@ -426,6 +487,18 @@ export default function TemplateEditor() {
             </div>
           )}
         </DragOverlay>
+
+        {/*-*-*-- Background image editor modal (reusable component) -*-*-*-// */}
+        <BackgroundImageEditor
+          isOpen={isImageEditorOpen}
+          imageSrc={uploadedImageSrc}
+          aspect={canvasSize.width / canvasSize.height}
+          onClose={closeImageEditor}
+          onApply={(result) => {
+            setBackgroundImage(result.dataUrl);
+            setCanvasSize({ width: result.width, height: result.height });
+          }}
+        />
       </DndContext>
     </AppLayout>
   );

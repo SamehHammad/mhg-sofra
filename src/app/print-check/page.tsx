@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+/*-*-*-- Core imports for page UI + image editing -*-*-*-// */
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { currencies } from '@/lib/mock-data';
-import { Printer, Save, ZoomIn, ZoomOut, CreditCard, Globe, ChevronDown, Calendar, Lock } from 'lucide-react';
+import { Printer, Save, ZoomIn, ZoomOut, CreditCard, Globe, ChevronDown, Calendar, Lock, Pencil,Undo2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PrintSettingsDialog, { type PrintSettings } from '@/components/PrintSettingsDialog';
+import BackgroundImageEditor from '@/components/BackgroundImageEditor';
 
-// Domain types for supported countries/banks
+/*-*-*-- Domain types for supported countries/banks -*-*-*-// */
 type CountryCode = 'EG' | 'SA' | 'PS';
 type BankCode = 'EG_AHLY' | 'EG_CIB' | 'SA_SABB' | 'SA_BSF' | 'PS_ARAB';
 
@@ -49,13 +51,13 @@ export default function PrintCheck() {
   const { t, direction, language } = useLanguage();
   const isRTL = direction === 'rtl';
 
-  // Selection state
+  /*-*-*-- Selection state (drives which cheque image/template is shown) -*-*-*-// */
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedBank, setSelectedBank] = useState('');
   const [checkDirection, setCheckDirection] = useState<'ltr' | 'rtl'>('rtl');
   const [zoomLevel, setZoomLevel] = useState(1);
 
-  // Print settings dialog state
+  /*-*-*-- Print settings dialog state -*-*-*-// */
   const [showPrintDialog, setShowPrintDialog] = useState(false);
   const [printSettings, setPrintSettings] = useState<PrintSettings>({
     paperPreset: 'A4',
@@ -69,7 +71,7 @@ export default function PrintCheck() {
     copies: 1,
   });
 
-  // When changing country we reset bank selection and switch preview direction
+  /*-*-*-- When changing country: reset bank and update preview direction -*-*-*-// */
   const handleCountryChange = (countryCode: string) => {
     setSelectedCountry(countryCode);
     setSelectedBank('');
@@ -79,7 +81,7 @@ export default function PrintCheck() {
     }
   };
 
-  // Derived values
+  /*-*-*-- Derived values from current selections -*-*-*-// */
   const availableBanks = selectedCountry
     ? banksByCountry[selectedCountry as CountryCode] || []
     : [];
@@ -88,6 +90,33 @@ export default function PrintCheck() {
     ? chequeImageByBank[selectedBank as BankCode]
     : null;
 
+  /*-*-*-- Editable cheque image (crop/rotate/zoom apply) -*-*-*-// */
+  const [editedChequeImage, setEditedChequeImage] = useState<string | null>(null);
+  const [isImageEditorOpen, setIsImageEditorOpen] = useState(false);
+  const [imageEditorSrc, setImageEditorSrc] = useState<string | null>(null);
+
+  const displayedChequeImage = useMemo(
+    () => editedChequeImage ?? selectedChequeImage,
+    [editedChequeImage, selectedChequeImage]
+  );
+
+  useEffect(() => {
+    /*-*-*-- When bank changes: reset edits (edits are bank-specific) -*-*-*-// */
+    setEditedChequeImage(null);
+    setIsImageEditorOpen(false);
+    setImageEditorSrc(null);
+  }, [selectedBank]);
+
+  const openChequeImageEditor = useCallback(() => {
+    if (!displayedChequeImage) return;
+    setImageEditorSrc(displayedChequeImage);
+    setIsImageEditorOpen(true);
+  }, [displayedChequeImage]);
+
+  const resetChequeImageEdits = useCallback(() => {
+    setEditedChequeImage(null);
+  }, []);
+
   return (
     <AppLayout 
       title={t.printCheck.title} 
@@ -95,10 +124,10 @@ export default function PrintCheck() {
     >
       <div className="flex flex-col lg:flex-row gap-8 h-[calc(100vh-180px)]">
         
-        {/* Left Panel - Smart Configuration (Floating Glass) */}
+        {/*-*-*-- Left panel: selection + check details form -*-*-*-// */}
         <div className="w-full lg:w-[400px] flex flex-col gap-6 overflow-y-auto pr-2 pb-10">
           
-        {/* Step 1: Bank Selection */}
+        {/*-*-*-- Step 1: Country/Bank selection -*-*-*-// */}
 <div className="glass-card p-8 relative">
   {/* Step Header with improved visual hierarchy */}
   <div className="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-100">
@@ -318,10 +347,10 @@ export default function PrintCheck() {
           onClose={() => setShowPrintDialog(false)}
           settings={printSettings}
           onChange={setPrintSettings}
-          selectedChequeImage={selectedChequeImage}
+          selectedChequeImage={displayedChequeImage}
         />
 
-        {/* Right Panel - Immersive Preview (Canvas) */}
+        {/*-*-*-- Right panel: check preview + zoom + image edit -*-*-*-// */}
         <div className="flex-1 glass-card p-2 flex flex-col relative overflow-hidden bg-white">
           {/* Toolbar */}
           <div className="absolute top-6 left-6 right-6 flex justify-between items-center z-20">
@@ -334,6 +363,30 @@ export default function PrintCheck() {
             </div>
 
             <div className="flex gap-2">
+              {/*-*-*-- Edit cheque background image (crop/rotate/zoom) -*-*-*-// */}
+              <button
+                type="button"
+                onClick={openChequeImageEditor}
+                disabled={!displayedChequeImage}
+                className="w-10 h-10 rounded-xl bg-white shadow-sm border border-neutral-100 flex items-center justify-center text-neutral-500 hover:text-[#3949AB] hover:bg-[#3949AB]/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                title={t.templateEditor.imageEditor.editImageButton}
+                aria-label={t.templateEditor.imageEditor.editImageButton}
+              >
+                <Pencil className="w-5 h-5" />
+              </button>
+
+              {/*-*-*-- Reset edits to original bank image -*-*-*-// */}
+              <button
+                type="button"
+                onClick={resetChequeImageEdits}
+                disabled={!editedChequeImage}
+                className="w-10 h-10 rounded-xl bg-white shadow-sm border border-neutral-100 flex items-center justify-center text-neutral-500 hover:text-[#3949AB] hover:bg-[#3949AB]/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                title={t.templateEditor.imageEditor.reset}
+                aria-label={t.templateEditor.imageEditor.reset}
+              >
+                <Undo2 className="w-5 h-5" />
+              </button>
+
               <button 
                 onClick={() => setZoomLevel(prev => Math.max(0.5, prev - 0.1))}
                 className="w-10 h-10 rounded-xl bg-white shadow-sm border border-neutral-100 flex items-center justify-center text-neutral-500 hover:text-[#3949AB] hover:bg-[#3949AB]/5 transition-all"
@@ -354,7 +407,7 @@ export default function PrintCheck() {
 
           {/* Canvas Area */}
           <div className="flex-1 bg-[#f0f4ff] rounded-[20px] relative overflow-hidden flex items-center justify-center bg-[radial-gradient(#3949AB_1px,transparent_1px)] [background-size:20px_20px] opacity-100">
-            {selectedChequeImage ? (
+            {displayedChequeImage ? (
               <div 
                 className="bg-white shadow-2xl shadow-[#3949AB]/20 transition-all duration-500 ease-out"
                 dir={checkDirection}
@@ -365,7 +418,7 @@ export default function PrintCheck() {
                 }}
               >
                 <img
-                  src={selectedChequeImage}
+                  src={displayedChequeImage}
                   alt="Cheque"
                   className="w-full h-full object-contain"
                   draggable={false}
@@ -382,6 +435,17 @@ export default function PrintCheck() {
             )}
           </div>
         </div>
+
+        {/*-*-*-- Background Image Editor (Reusable Component) -*-*-*-// */}
+        <BackgroundImageEditor
+          isOpen={isImageEditorOpen}
+          imageSrc={imageEditorSrc}
+          aspect={900 / 420}
+          onClose={() => setIsImageEditorOpen(false)}
+          onApply={(result) => {
+            setEditedChequeImage(result.dataUrl);
+          }}
+        />
       </div>
     </AppLayout>
   );
