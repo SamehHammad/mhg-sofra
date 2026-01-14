@@ -11,18 +11,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model CheckTemplate {
+
+model Country {
   id        String   @id @default(cuid())
-  name      String?
-  country   String
-  bank      String
-  html      String   @db.LongText
-  isActive  Boolean  @default(true)
+  code      String   @unique // EG, SA
+  nameAr    String
+  nameEn    String
+
+  banks     Bank[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([country])
-  @@index([bank])
-  @@index([isActive])
 }
+model Bank {
+  id        String   @id @default(cuid())
+  countryId String
 
+  nameAr    String
+  nameEn    String
+
+  templates ChequeTemplate[]
+
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model ChequeTemplate {
+  id        String   @id @default(cuid())
+  bankId    String
+
+  nameAr    String
+  nameEn    String
+
+  version   String   
+  schema    Json     
+
+  isActive  Boolean  @default(true)
+
+  bank      Bank @relation(fields: [bankId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
