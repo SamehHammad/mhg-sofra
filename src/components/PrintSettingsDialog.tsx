@@ -35,9 +35,23 @@ type Props = {
   onChange: (next: PrintSettings) => void;
   chequeImages?: string[];
   selectedChequeImage: string | null;
+  canvasSizePx?: { width: number; height: number };
+  fields?: Array<{
+    id: string;
+    type: string;
+    label: string;
+    position: { x: number; y: number };
+    style: {
+      fontSize: number;
+      fontFamily: string;
+      alignment: string;
+      rotation: number;
+    };
+  }>;
+  fieldValues?: Record<string, string>;
 };
 
-export default function PrintSettingsDialog({ open, onClose, settings, onChange, chequeImages, selectedChequeImage }: Props) {
+export default function PrintSettingsDialog({ open, onClose, settings, onChange, chequeImages, selectedChequeImage, canvasSizePx, fields, fieldValues }: Props) {
   const { t, language } = useLanguage();
 
   // UI/printing status (used to disable controls and show progress)
@@ -80,6 +94,12 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
   const canPrint = normalizedImages.length > 0;
   const previewImage = normalizedImages[0] ?? null;
 
+  const resolvedCanvasSizePx = canvasSizePx && canvasSizePx.width > 0 && canvasSizePx.height > 0
+    ? canvasSizePx
+    : { width: 900, height: 420 };
+
+  const hasOverlay = Boolean(fields && fields.length > 0 && fieldValues);
+
   // ---------------------------------------------------------------------------
   // Print CSS injected by react-to-print
   // - Uses @page to force the exact paper size/margins.
@@ -91,8 +111,10 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
     .print-root { width: ${w}mm; height: ${h}mm; }
     .print-page { width: ${w}mm; height: ${h}mm; page-break-after: always; box-sizing: border-box; padding: ${margin}mm; }
     .print-page:last-child { page-break-after: auto; }
-    .print-content { width: 100%; height: 100%; overflow: hidden; }
+    .print-content { width: 100%; height: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     .print-cheque { width: 100%; height: 100%; object-fit: contain; transform-origin: center; transform: translate(${settings.offsetXmm}mm, ${settings.offsetYmm}mm) scale(${settings.printScale}); }
+    .print-canvas { position: relative; width: ${Math.max(1, resolvedCanvasSizePx.width)}px; height: ${Math.max(1, resolvedCanvasSizePx.height)}px; transform-origin: center; transform: translate(${settings.offsetXmm}mm, ${settings.offsetYmm}mm) scale(${settings.printScale}); }
+    .print-canvas-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   `;
 
   // ---------------------------------------------------------------------------
@@ -211,7 +233,30 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
             Array.from({ length: copies }).map((_, copyIndex) => (
               <div key={`${imgIndex}-${copyIndex}`} className="print-page">
                 <div className="print-content">
-                  <img className="print-cheque" src={imgSrc} alt="Cheque" draggable={false} />
+                  {hasOverlay ? (
+                    <div className="print-canvas">
+                      <img className="print-canvas-image" src={imgSrc} alt="Cheque" draggable={false} />
+                      {(fields || []).map((field) => (
+                        <div
+                          key={field.id}
+                          style={{
+                            position: 'absolute',
+                            left: `${field.position.x}px`,
+                            top: `${field.position.y}px`,
+                            fontSize: `${field.style.fontSize}px`,
+                            fontFamily: field.style.fontFamily,
+                            transform: `rotate(${field.style.rotation}deg)`,
+                            textAlign: field.style.alignment as any,
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {fieldValues?.[field.id] ?? ''}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <img className="print-cheque" src={imgSrc} alt="Cheque" draggable={false} />
+                  )}
                 </div>
               </div>
             ))

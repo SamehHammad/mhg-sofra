@@ -21,9 +21,41 @@ const sampleCountries = [
             schema: {
               background: "/cheques/egy-ahly.jpeg",
               fields: [
-                { id: "amount", x: 100, y: 50, fontSize: 14 },
-                { id: "beneficiary", x: 100, y: 100, fontSize: 14 },
-                { id: "date", x: 100, y: 150, fontSize: 12 },
+                {
+                  "id": "date",
+                  "type": "text",
+                  "label": "التاريخ",
+                  "position": { "x": 489, "y": 3 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "beneficiary",
+                  "type": "text",
+                  "label": "ادفع لأمر",
+                  "position": { "x": 347, "y": 90 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amount",
+                  "type": "text",
+                  "label": "المبلغ (رقمي)",
+                  "position": { "x": 489, "y": 125 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amountWords",
+                  "type": "text",
+                  "label": "المبلغ (بالحروف)",
+                  "position": { "x": 187, "y": 123 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "signature",
+                  "type": "text",
+                  "label": "التوقيع",
+                  "position": { "x": 460, "y": 179 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                }
               ],
             },
           },
@@ -42,9 +74,41 @@ const sampleCountries = [
             schema: {
               background: "/cheques/egy-cib.jpeg",
               fields: [
-                { id: "amount", x: 120, y: 60, fontSize: 14 },
-                { id: "beneficiary", x: 120, y: 110, fontSize: 14 },
-                { id: "date", x: 120, y: 160, fontSize: 12 },
+                {
+                  "id": "date",
+                  "type": "text",
+                  "label": "التاريخ",
+                  "position": { "x": 489, "y": 3 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "beneficiary",
+                  "type": "text",
+                  "label": "ادفع لأمر",
+                  "position": { "x": 347, "y": 90 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amount",
+                  "type": "text",
+                  "label": "المبلغ (رقمي)",
+                  "position": { "x": 489, "y": 125 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amountWords",
+                  "type": "text",
+                  "label": "المبلغ (بالحروف)",
+                  "position": { "x": 187, "y": 123 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "signature",
+                  "type": "text",
+                  "label": "التوقيع",
+                  "position": { "x": 460, "y": 179 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                }
               ],
             },
           },
@@ -70,9 +134,41 @@ const sampleCountries = [
             schema: {
               background: "/cheques/ksa-br.jpeg",
               fields: [
-                { id: "amount", x: 110, y: 55, fontSize: 14 },
-                { id: "beneficiary", x: 110, y: 105, fontSize: 14 },
-                { id: "date", x: 110, y: 155, fontSize: 12 },
+                {
+                  "id": "date",
+                  "type": "text",
+                  "label": "التاريخ",
+                  "position": { "x": 489, "y": 3 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "beneficiary",
+                  "type": "text",
+                  "label": "ادفع لأمر",
+                  "position": { "x": 347, "y": 90 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amount",
+                  "type": "text",
+                  "label": "المبلغ (رقمي)",
+                  "position": { "x": 489, "y": 125 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amountWords",
+                  "type": "text",
+                  "label": "المبلغ (بالحروف)",
+                  "position": { "x": 187, "y": 123 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "signature",
+                  "type": "text",
+                  "label": "التوقيع",
+                  "position": { "x": 460, "y": 179 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                }
               ],
             },
           },
@@ -91,9 +187,48 @@ const sampleCountries = [
             schema: {
               background: "/cheques/ksa-fr.jpeg",
               fields: [
-                { id: "amount", x: 115, y: 65, fontSize: 14 },
-                { id: "beneficiary", x: 115, y: 115, fontSize: 14 },
-                { id: "date", x: 115, y: 165, fontSize: 12 },
+                {
+                  "id": "date",
+                  "type": "text",
+                  "label": "التاريخ",
+                  "position": {
+                    "x"
+                      :
+                      459,
+                    "y"
+                      :
+                      -10
+                  },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "beneficiary",
+                  "type": "text",
+                  "label": "ادفع لأمر",
+                  "position": { "x": 347, "y": 90 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amount",
+                  "type": "text",
+                  "label": "المبلغ (رقمي)",
+                  "position": { "x": 489, "y": 125 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amountWords",
+                  "type": "text",
+                  "label": "المبلغ (بالحروف)",
+                  "position": { "x": 187, "y": 123 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "signature",
+                  "type": "text",
+                  "label": "التوقيع",
+                  "position": { "x": 460, "y": 179 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                }
               ],
             },
           },
@@ -119,9 +254,41 @@ const sampleCountries = [
             schema: {
               background: "/cheques/ps-arabic.jpeg",
               fields: [
-                { id: "amount", x: 105, y: 58, fontSize: 14 },
-                { id: "beneficiary", x: 105, y: 108, fontSize: 14 },
-                { id: "date", x: 105, y: 158, fontSize: 12 },
+                {
+                  "id": "date",
+                  "type": "text",
+                  "label": "التاريخ",
+                  "position": { "x": 489, "y": 3 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "beneficiary",
+                  "type": "text",
+                  "label": "ادفع لأمر",
+                  "position": { "x": 347, "y": 90 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amount",
+                  "type": "text",
+                  "label": "المبلغ (رقمي)",
+                  "position": { "x": 489, "y": 125 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "amountWords",
+                  "type": "text",
+                  "label": "المبلغ (بالحروف)",
+                  "position": { "x": 187, "y": 123 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                },
+                {
+                  "id": "signature",
+                  "type": "text",
+                  "label": "التوقيع",
+                  "position": { "x": 460, "y": 179 },
+                  "style": { "fontSize": 14, "fontFamily": "Arial", "alignment": "left", "rotation": 0 }
+                }
               ],
             },
           },
