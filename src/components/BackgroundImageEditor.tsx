@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Cropper from "react-cropper";
 import type { ReactCropperElement } from "react-cropper";
 import "react-cropper/node_modules/cropperjs/dist/cropper.css";
-import { Check, RefreshCcw, RotateCw, X } from "lucide-react";
+import { Check, Minus, Plus, RefreshCcw, RotateCw, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BackgroundImageEditorProps {
@@ -23,6 +23,10 @@ export default function BackgroundImageEditor({
   onApply,
 }: BackgroundImageEditorProps) {
   const { t } = useLanguage();
+
+  const clampZoom = useCallback((value: number) => {
+    return Math.min(3, Math.max(0.05, value));
+  }, []);
 
   //*-*-*--commnet-*-*-*-// Cropper instance ref
   const cropperRef = useRef<ReactCropperElement>(null);
@@ -52,7 +56,7 @@ export default function BackgroundImageEditor({
   useEffect(() => {
     const cropper = cropperRef.current?.cropper;
     if (!cropper) return;
-    cropper.zoomTo(zoom);
+    cropper.zoomTo(clampZoom(zoom));
   }, [zoom]);
 
   useEffect(() => {
@@ -157,15 +161,35 @@ export default function BackgroundImageEditor({
                 <div className="text-xs font-bold text-neutral-400 mb-2 uppercase">
                   {t.templateEditor.imageEditor.zoom}
                 </div>
-                <input
-                  type="range"
-                  min={1}
-                  max={3}
-                  step={0.01}
-                  value={zoom}
-                  onChange={(e) => setZoom(parseFloat(e.target.value))}
-                  className="w-full accent-[#3949AB]"
-                />
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setZoom((z) => clampZoom(z - 0.1))}
+                    className="w-10 h-10 rounded-xl bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 flex items-center justify-center"
+                    aria-label="Zoom out"
+                  >
+                    <Minus className="w-4 h-4 text-neutral-700" />
+                  </button>
+
+                  <input
+                    type="range"
+                    min={0.1}
+                    max={3}
+                    step={0.01}
+                    value={zoom}
+                    onChange={(e) => setZoom(clampZoom(parseFloat(e.target.value)))}
+                    className="w-full accent-[#3949AB]"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setZoom((z) => clampZoom(z + 0.1))}
+                    className="w-10 h-10 rounded-xl bg-neutral-50 hover:bg-neutral-100 border border-neutral-200 flex items-center justify-center"
+                    aria-label="Zoom in"
+                  >
+                    <Plus className="w-4 h-4 text-neutral-700" />
+                  </button>
+                </div>
                 <div className="text-right text-xs font-bold text-[#3949AB] mt-1">
                   {zoom.toFixed(2)}x
                 </div>
