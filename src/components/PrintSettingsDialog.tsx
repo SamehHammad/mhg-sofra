@@ -74,13 +74,6 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
   const paperWidthMm = settings.pageOrientation === 'landscape' ? basePaper.heightMm : basePaper.widthMm;
   const paperHeightMm = settings.pageOrientation === 'landscape' ? basePaper.widthMm : basePaper.heightMm;
 
-  const previewWidthPx = 320;
-  const previewHeightPx = Math.max(140, (previewWidthPx * paperHeightMm) / Math.max(1, paperWidthMm));
-  const mmToPx = previewWidthPx / Math.max(1, paperWidthMm);
-  const previewMarginPx = Math.max(0, settings.marginMm) * mmToPx;
-  const previewOffsetXpx = settings.offsetXmm * mmToPx;
-  const previewOffsetYpx = settings.offsetYmm * mmToPx;
-
   // Helper to update settings
   const set = (patch: Partial<PrintSettings>) => onChange({ ...settings, ...patch });
 
@@ -92,7 +85,6 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
 
   const normalizedImages = (chequeImages && chequeImages.length > 0 ? chequeImages : selectedChequeImage ? [selectedChequeImage] : []).filter(Boolean);
   const canPrint = normalizedImages.length > 0;
-  const previewImage = normalizedImages[0] ?? null;
 
   const resolvedCanvasSizePx = canvasSizePx && canvasSizePx.width > 0 && canvasSizePx.height > 0
     ? canvasSizePx
@@ -278,8 +270,8 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
           </button>
         </div>
 
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Settings controls (same as before) */}
+        <div className="p-6 grid grid-cols-1 gap-6">
+          {/* Settings controls */}
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -440,54 +432,6 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
               <div className="font-mono font-black text-[#3949AB]">
                 {Math.round(paperWidthMm)}mm × {Math.round(paperHeightMm)}mm
               </div>
-            </div>
-          </div>
-
-          {/* Preview section */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-sm font-black text-[#3949AB]">
-                {language === 'ar' ? 'معاينة قبل الطباعة' : 'Print Preview'}
-              </div>
-              <div className="text-xs font-bold text-neutral-400 font-mono">
-                {settings.paperPreset}
-                {settings.pageOrientation === 'landscape' ? ' (Landscape)' : ' (Portrait)'}
-              </div>
-            </div>
-
-            <div
-              className="bg-white rounded-2xl border border-neutral-100 shadow-inner mx-auto relative overflow-hidden"
-              style={{ width: previewWidthPx, height: previewHeightPx }}
-            >
-              <div
-                className="absolute bg-white"
-                style={{
-                  top: previewMarginPx,
-                  left: previewMarginPx,
-                  right: previewMarginPx,
-                  bottom: previewMarginPx,
-                  overflow: 'hidden',
-                }}
-              >
-                {previewImage && (
-                  <img
-                    src={previewImage}
-                    alt="Cheque Preview"
-                    className="w-full h-full object-contain"
-                    style={{
-                      transformOrigin: 'top left',
-                      transform: `translate(${previewOffsetXpx}px, ${previewOffsetYpx}px) scale(${settings.printScale})`,
-                    }}
-                    draggable={false}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className="mt-4 text-xs text-neutral-400 font-medium text-center">
-              {language === 'ar'
-                ? 'استخدم Offset و Scale لمطابقة أماكن الطباعة على نموذج البنك'
-                : 'Use Offset and Scale to match the bank cheque layout'}
             </div>
           </div>
         </div>

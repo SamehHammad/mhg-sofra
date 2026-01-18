@@ -3,8 +3,7 @@
 /*-*-*-- Core imports for page UI + image editing -*-*-*-// */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import AppLayout from '@/components/AppLayout';
-import { currencies } from '@/lib/mock-data';
-import { Printer, Save, ZoomIn, ZoomOut, CreditCard, Globe, ChevronDown, Calendar, Lock, Pencil, Undo2, Loader2 } from 'lucide-react';
+import { Printer, Save, ZoomIn, ZoomOut, CreditCard, Globe, ChevronDown,  Pencil, Undo2, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PrintSettingsDialog, { type PrintSettings } from '@/components/PrintSettingsDialog';
 import BackgroundImageEditor from '@/components/BackgroundImageEditor';
@@ -101,6 +100,21 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
 
     /*-*-*-- Dynamic Field State -*-*-*-// */
     const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
+
+    /*-*-*-- Global field text style overrides (applied on top of template styles) -*-*-*-// */
+    const [fieldTextStyle, setFieldTextStyle] = useState<{
+        fontSize: number;
+        color: string;
+        bold: boolean;
+        italic: boolean;
+        underline: boolean;
+    }>({
+        fontSize: 14,
+        color: '#000000',
+        bold: false,
+        italic: false,
+        underline: false,
+    });
 
     /*-*-*-- When template changes: reset field values -*-*-*-// */
     useEffect(() => {
@@ -306,7 +320,7 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
                 {/*-*-*-- Right panel: check preview + zoom + image edit -*-*-*-// */}
                 <div className="flex-1 glass-card p-2 flex flex-col relative overflow-hidden bg-white">
                     {/* Toolbar */}
-                    <div className="absolute top-6 left-6 right-6 flex justify-between items-center z-20">
+                    <div className="absolute top-[30px] left-6 right-6 flex justify-between items-center z-20">
                         <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-sm border border-neutral-100 flex items-center gap-3">
                             <span className="text-xs font-black text-[#3949AB] uppercase tracking-wider">{t.printCheck.checkPreview}</span>
                             <div className="w-px h-4 bg-neutral-200"></div>
@@ -358,6 +372,82 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
                         </div>
                     </div>
 
+                    {/* Field text style options (applies to all rendered fields) */}
+                    <div className="absolute top-[78px] left-6 right-6 z-20">
+                        <div className="bg-white/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-sm border border-neutral-100 flex flex-wrap items-center gap-3">
+                            <div className="text-xs font-black text-neutral-500 uppercase tracking-wider">
+                                {language === 'ar' ? 'خيارات النص' : 'Text Options'}
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <label className="text-xs font-bold text-neutral-500">
+                                    {language === 'ar' ? 'الحجم' : 'Size'}
+                                </label>
+                                <input
+                                    type="number"
+                                    min={8}
+                                    max={72}
+                                    value={fieldTextStyle.fontSize}
+                                    onChange={(e) =>
+                                        setFieldTextStyle((p) => ({
+                                            ...p,
+                                            fontSize: Math.max(8, Math.min(72, Number(e.target.value) || 14)),
+                                        }))
+                                    }
+                                    className="w-20 px-3 py-2 rounded-xl border border-neutral-200 bg-white text-sm font-bold text-neutral-700 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB]"
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <label className="text-xs font-bold text-neutral-500">
+                                    {language === 'ar' ? 'اللون' : 'Color'}
+                                </label>
+                                <input
+                                    type="color"
+                                    value={fieldTextStyle.color}
+                                    onChange={(e) => setFieldTextStyle((p) => ({ ...p, color: e.target.value }))}
+                                    className="w-10 h-10 p-1 rounded-xl border border-neutral-200 bg-white"
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setFieldTextStyle((p) => ({ ...p, bold: !p.bold }))}
+                                    className={`px-3 py-2 rounded-xl border text-sm font-black transition-colors ${
+                                        fieldTextStyle.bold
+                                            ? 'bg-[#3949AB] text-white border-[#3949AB]'
+                                            : 'bg-white text-neutral-700 border-neutral-200 hover:border-[#3949AB]'
+                                    }`}
+                                >
+                                    B
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setFieldTextStyle((p) => ({ ...p, italic: !p.italic }))}
+                                    className={`px-3 py-2 rounded-xl border text-sm font-black transition-colors italic ${
+                                        fieldTextStyle.italic
+                                            ? 'bg-[#3949AB] text-white border-[#3949AB]'
+                                            : 'bg-white text-neutral-700 border-neutral-200 hover:border-[#3949AB]'
+                                    }`}
+                                >
+                                    I
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setFieldTextStyle((p) => ({ ...p, underline: !p.underline }))}
+                                    className={`px-3 py-2 rounded-xl border text-sm font-black transition-colors underline ${
+                                        fieldTextStyle.underline
+                                            ? 'bg-[#3949AB] text-white border-[#3949AB]'
+                                            : 'bg-white text-neutral-700 border-neutral-200 hover:border-[#3949AB]'
+                                    }`}
+                                >
+                                    U
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Canvas Area */}
                     <div className="flex-1 bg-[#f0f4ff] rounded-[20px] relative overflow-hidden flex items-center justify-center bg-[radial-gradient(#3949AB_1px,transparent_1px)] [background-size:20px_20px] opacity-100">
                         {displayedChequeImage ? (
@@ -398,10 +488,13 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
                                                 position: 'absolute',
                                                 left: `${field.position.x}px`,
                                                 top: `${field.position.y}px`,
-                                                fontSize: `${field.style.fontSize}px`,
+                                                fontSize: `${fieldTextStyle.fontSize}px`,
                                                 fontFamily: field.style.fontFamily,
+                                                color: fieldTextStyle.color,
+                                                fontWeight: fieldTextStyle.bold ? 700 : 400,
+                                                fontStyle: fieldTextStyle.italic ? 'italic' : 'normal',
+                                                textDecoration: fieldTextStyle.underline ? 'underline' : 'none',
                                                 transform: `rotate(${field.style.rotation}deg)`,
-                                                textAlign: field.style.alignment as any,
                                                 whiteSpace: 'nowrap',
                                                 pointerEvents: 'none',
                                             }}
