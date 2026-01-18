@@ -1,7 +1,7 @@
 "use client";
 
 /*-*-*-- Core imports for the template editor page -*-*-*-// */
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
 import {
   DndContext,
@@ -43,6 +43,13 @@ interface CheckField {
 export default function TemplateEditor() {
   const { t, direction } = useLanguage();
 
+  /*-*-*-- Template Info State -*-*-*-// */
+  const [templateNameAr, setTemplateNameAr] = useState("");
+  const [templateNameEn, setTemplateNameEn] = useState("");
+  const [selectedBankId, setSelectedBankId] = useState("");
+  const [banks, setBanks] = useState<any[]>([]);
+  const [countries, setCountries] = useState<any[]>([]);
+
   /*-*-*-- Canvas state: fields + selection + background -*-*-*-// */
   const [placedFields, setPlacedFields] = useState<CheckField[]>([]);
   const [selectedField, setSelectedField] = useState<string | null>(null);
@@ -54,6 +61,28 @@ export default function TemplateEditor() {
   /*-*-*-- Background image editor state (open/apply flow) -*-*-*-// */
   const [uploadedImageSrc, setUploadedImageSrc] = useState<string | null>(null);
   const [isImageEditorOpen, setIsImageEditorOpen] = useState(false);
+
+  /*-*-*-- Fetch banks from catalog API -*-*-*-// */
+  useEffect(() => {
+    fetch('/api/catalog')
+      .then(res => res.json())
+      .then(data => {
+        if (data.countries) {
+          setCountries(data.countries);
+          const allBanks = data.countries.flatMap((country: any) => 
+            country.banks.map((bank: any) => ({
+              id: bank.id,
+              name: bank.name,
+              nameEn: bank.nameEn,
+              countryName: country.name,
+              countryNameEn: country.nameEn,
+            }))
+          );
+          setBanks(allBanks);
+        }
+      })
+      .catch(error => console.error('Failed to fetch banks:', error));
+  }, []);
 
   /*-*-*-- Drag/drop handlers for placing fields onto the canvas -*-*-*-// */
   // ... (handlers same as before but improved)
@@ -112,21 +141,66 @@ export default function TemplateEditor() {
 
   // ===================================== (SHerif) Handle Save Template ==========================================
   const handleSaveTemplate = async () => {
+    // Validation
+    if (!templateNameAr || !templateNameEn) {
+      alert(direction === 'rtl' 
+        ? 'الرجاء إدخال اسم النموذج بالعربي والإنجليزي'
+        : 'Please enter template name in both Arabic and English');
+      return;
+    }
+
+    if (!selectedBankId) {
+      alert(direction === 'rtl' 
+        ? 'الرجاء اختيار البنك'
+        : 'Please select a bank');
+      return;
+    }
+
+    if (!backgroundImage) {
+      alert(direction === 'rtl' 
+        ? 'الرجاء رفع صورة خلفية للشيك'
+        : 'Please upload a check background image');
+      return;
+    }
+
+    if (placedFields.length === 0) {
+      alert(direction === 'rtl' 
+        ? 'الرجاء إضافة حقول على الأقل'
+        : 'Please add at least one field');
+      return;
+    }
+
     const templateSchema = buildTemplateSchema();
 
-    // try {
-    //   await fetch('/api/templates/save', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(templateSchema),
-    //   });
+    try {
+      const response = await fetch('/api/templates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(templateSchema),
+      });
 
-    console.log("Template saved:", templateSchema);
-    // } catch (error) {
-    //   console.error('Failed to save template', error);
-    // }
+      if (response.ok) {
+        alert(direction === 'rtl' 
+          ? 'تم حفظ النموذج بنجاح!'
+          : 'Template saved successfully!');
+        
+        // Reset form
+        setTemplateNameAr('');
+        setTemplateNameEn('');
+        setSelectedBankId('');
+        setPlacedFields([]);
+        setBackgroundImage(null);
+      } else {
+        throw new Error('Failed to save template');
+      }
+    } catch (error) {
+      console.error('Failed to save template', error);
+      alert(direction === 'rtl' 
+        ? 'فشل في حفظ النموذج'
+        : 'Failed to save template');
+    }
   };
 
   // ===================================== (SHerif) Handle Save Template End ==========================================
@@ -180,30 +254,36 @@ export default function TemplateEditor() {
   /*-*-*-- Build template schema payload (used by save) -*-*-*-// */
   const buildTemplateSchema = () => {
     return {
+      bankId: selectedBankId,
+      nameAr: templateNameAr,
+      nameEn: templateNameEn,
       version: "1.0",
-      canvas: {
-        width: canvasSize.width,
-        height: canvasSize.height,
-        grid: showGrid,
-      },
-      fields: placedFields.map((field) => ({
-        id: field.id,
-        type: "text",
-        label: field.label,
-        position: {
-          x: Math.round(field.x),
-          y: Math.round(field.y),
+      schema: {
+        canvas: {
+          width: canvasSize.width,
+          height: canvasSize.height,
+          grid: showGrid,
         },
-        style: {
-          fontSize: field.fontSize,
-          fontFamily: field.fontFamily,
-          alignment: field.alignment,
-          rotation: field.rotation,
+        background: backgroundImage,
+        fields: placedFields.map((field) => ({
+          id: field.id,
+          type: "text",
+          label: field.label,
+          position: {
+            x: Math.round(field.x),
+            y: Math.round(field.y),
+          },
+          style: {
+            fontSize: field.fontSize,
+            fontFamily: field.fontFamily,
+            alignment: field.alignment,
+            rotation: field.rotation,
+          },
+        })),
+        meta: {
+          direction,
+          savedAt: new Date().toISOString(),
         },
-      })),
-      meta: {
-        direction,
-        savedAt: new Date().toISOString(),
       },
     };
   };
@@ -213,6 +293,87 @@ export default function TemplateEditor() {
       title={t.templateEditor.title}
       subtitle={t.templateEditor.subtitle}
     >
+      {/*-*-*-- Template Info Section - Placed at the top -*-*-*-// */}
+      <div className="glass-card p-6 mb-6 animate-slide-in">
+        <h2 className="text-xl font-black text-[#3949AB] mb-4 flex items-center gap-2">
+          <div className="w-10 h-10 rounded-xl bg-[#3949AB]/10 flex items-center justify-center">
+            <Type className="w-5 h-5 text-[#3949AB]" />
+          </div>
+          {t.templateEditor.templateInfo}
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Arabic Name */}
+          <div>
+            <label className="block text-sm font-bold text-neutral-600 mb-2">
+              {t.templateEditor.templateNameAr}
+              <span className="text-red-500 ml-1">*</span>
+            </label>
+            <input
+              type="text"
+              value={templateNameAr}
+              onChange={(e) => setTemplateNameAr(e.target.value)}
+              className="input-modern w-full py-3 px-4 text-sm font-bold"
+              placeholder={t.templateEditor.templateNameArPlaceholder}
+              dir="rtl"
+              required
+            />
+          </div>
+
+          {/* English Name */}
+          <div>
+            <label className="block text-sm font-bold text-neutral-600 mb-2">
+              {t.templateEditor.templateNameEn}
+              <span className="text-red-500 ml-1">*</span>
+            </label>
+            <input
+              type="text"
+              value={templateNameEn}
+              onChange={(e) => setTemplateNameEn(e.target.value)}
+              className="input-modern w-full py-3 px-4 text-sm font-bold"
+              placeholder={t.templateEditor.templateNameEnPlaceholder}
+              dir="ltr"
+              required
+            />
+          </div>
+
+          {/* Bank Selection */}
+          <div>
+            <label className="block text-sm font-bold text-neutral-600 mb-2">
+              {t.templateEditor.selectBank}
+              <span className="text-red-500 ml-1">*</span>
+            </label>
+            <select
+              value={selectedBankId}
+              onChange={(e) => setSelectedBankId(e.target.value)}
+              className="input-modern w-full py-3 px-4 text-sm font-bold"
+              dir={direction}
+              required
+            >
+              <option value="">{t.templateEditor.selectBankPlaceholder}</option>
+              {banks.map((bank) => (
+                <option key={bank.id} value={bank.id}>
+                  {direction === 'rtl' 
+                    ? `${bank.name} (${bank.countryName})` 
+                    : `${bank.nameEn} (${bank.countryNameEn})`
+                  }
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Info message */}
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+          <p className="text-xs text-blue-700 font-bold">
+            {direction === 'rtl' 
+              ? '💡 املأ جميع الحقول المطلوبة (*) قبل البدء في تصميم القالب'
+              : '💡 Fill all required fields (*) before starting to design the template'
+            }
+          </p>
+        </div>
+      </div>
+
       {/*-*-*-- Drag context for library items and canvas fields -*-*-*-// */}
       <DndContext
         onDragStart={({ active }) => setActiveId(active.id as string)}
