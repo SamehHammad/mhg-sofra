@@ -156,6 +156,7 @@ export default function TemplateEditorClient({
 
   // ===================================== (SHerif) Handle Save Template ==========================================
   const handleSaveTemplate = async () => {
+    console.log("templateSchema",buildTemplateSchema());
     // Validation
     if (!templateNameAr || !templateNameEn) {
       showToast(
@@ -204,7 +205,7 @@ export default function TemplateEditorClient({
     }
 
     const templateSchema = buildTemplateSchema();
-
+    
     try {
       setIsSaving(true);
       showToast(

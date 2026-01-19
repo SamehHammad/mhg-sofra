@@ -7,7 +7,7 @@ import PrintSettingsDialog, { type PrintSettings } from '@/components/PrintSetti
 import { 
   Upload, 
   Plus, 
-  Download, 
+  Download,
   Printer, 
   FileSpreadsheet,
   AlertCircle,
@@ -15,12 +15,17 @@ import {
   Edit,
   FileText,
   CheckCircle2,
-  X
+  X,
+  Globe,
+  CreditCard,
+  ChevronDown,
+  FileCheck
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function BatchPrinting() {
   const { t, language, direction } = useLanguage();
+  const isRTL = direction === 'rtl';
   const [checks, setChecks] = useState(mockBatchChecks);
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -38,6 +43,19 @@ export default function BatchPrinting() {
     offsetXmm: 0,
     offsetYmm: 0,
     copies: 1,
+  });
+
+  // Batch generation form state
+  const [batchForm, setBatchForm] = useState({
+    country: '',
+    bank: '',
+    template: '',
+    monthsCount: '',
+    checksCount: '',
+    currency: 'SAR',
+    checkAmount: '',
+    startingNumber: '',
+    startDate: '',
   });
 
   const selectedCount = Object.values(selectedIds).filter(Boolean).length;
@@ -77,109 +95,202 @@ export default function BatchPrinting() {
     >
       <div className="space-y-8">
         
-        {/* Top Section - Glass Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* 1. Batch Settings */}
-          <div className="glass-card p-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#3949AB]/5 rounded-full blur-2xl -mr-16 -mt-16"></div>
-            
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-[#3949AB]/10 flex items-center justify-center text-[#3949AB]">
-                <FileText className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-black text-[#3949AB]">{t.batchPrinting.batchSettings}</h3>
+        {/* Batch Generation Form */}
+        <div className="glass-card p-8 relative">
+          {/* Header */}
+          <div className="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-100">
+            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#3949AB]/10 flex items-center justify-center">
+              <FileCheck className="w-6 h-6 text-[#3949AB]" />
             </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs font-bold text-neutral-400 mb-2 block uppercase tracking-wider">{t.batchPrinting.batchName}</label>
-                <input 
-                  type="text" 
-                  className="input-modern" 
-                  placeholder={language === 'ar' ? 'مثال: مدفوعات الموردين' : 'e.g., Vendor Payments'}
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">
+                {language === 'ar' ? 'إعداد الدفعة' : 'Batch Setup'}
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">
+                {language === 'ar' ? 'املأ البيانات لإنشاء دفعة من الشيكات' : 'Fill in the details to generate a batch of checks'}
+              </p>
+            </div>
+          </div>
+
+          {/* Form Grid */}
+          <div className="space-y-6">
+            {/* Row 1: Country, Bank, Template */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Country */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  {language === 'ar' ? 'البلد' : 'Country'}
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all appearance-none cursor-pointer hover:border-gray-400 ${isRTL ? 'pr-12 pl-10' : 'pl-12 pr-10'}`}
+                    value={batchForm.country}
+                    onChange={(e) => setBatchForm({...batchForm, country: e.target.value})}
+                  >
+                    <option value="">{language === 'ar' ? 'اختر البلد' : 'Select Country'}</option>
+                    <option value="sa">{language === 'ar' ? 'السعودية' : 'Saudi Arabia'}</option>
+                    <option value="eg">{language === 'ar' ? 'مصر' : 'Egypt'}</option>
+                    <option value="ae">{language === 'ar' ? 'الإمارات' : 'UAE'}</option>
+                  </select>
+                  <Globe className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
+                  <ChevronDown className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'left-4' : 'right-4'}`} />
+                </div>
+              </div>
+
+              {/* Bank */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  {language === 'ar' ? 'البنك' : 'Bank'}
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all appearance-none cursor-pointer hover:border-gray-400 ${isRTL ? 'pr-12 pl-10' : 'pl-12 pr-10'}`}
+                    value={batchForm.bank}
+                    onChange={(e) => setBatchForm({...batchForm, bank: e.target.value})}
+                    disabled={!batchForm.country}
+                  >
+                    <option value="">{language === 'ar' ? 'اختر البنك' : 'Select Bank'}</option>
+                    <option value="ahly">{language === 'ar' ? 'البنك الأهلي' : 'Al Ahly Bank'}</option>
+                    <option value="rajhi">{language === 'ar' ? 'بنك الراجحي' : 'Al Rajhi Bank'}</option>
+                  </select>
+                  <CreditCard className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
+                  <ChevronDown className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'left-4' : 'right-4'}`} />
+                </div>
+              </div>
+
+              {/* Template */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  {language === 'ar' ? 'النموذج' : 'Template'}
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all appearance-none cursor-pointer hover:border-gray-400 ${isRTL ? 'pr-12 pl-10' : 'pl-12 pr-10'}`}
+                    value={batchForm.template}
+                    onChange={(e) => setBatchForm({...batchForm, template: e.target.value})}
+                    disabled={!batchForm.bank}
+                  >
+                    <option value="">{language === 'ar' ? 'اختر النموذج' : 'Select Template'}</option>
+                    <option value="standard1">{language === 'ar' ? 'نموذج قياسي 1' : 'Standard Template 1'}</option>
+                    <option value="standard2">{language === 'ar' ? 'نموذج قياسي 2' : 'Standard Template 2'}</option>
+                  </select>
+                  <FileText className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
+                  <ChevronDown className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'left-4' : 'right-4'}`} />
+                </div>
+              </div>
+            </div>
+
+            {/* Row 2: Months Count, Checks Count, Currency */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Months Count */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  {language === 'ar' ? 'عدد الشهور' : 'Number of Months'}
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all"
+                  placeholder={language === 'ar' ? 'مثال: 12' : 'e.g., 12'}
+                  value={batchForm.monthsCount}
+                  onChange={(e) => setBatchForm({...batchForm, monthsCount: e.target.value})}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-neutral-400 mb-2 block uppercase tracking-wider">{t.batchPrinting.startingCheckNumber}</label>
-                  <input 
-                    type="text" 
-                    className="input-modern font-mono font-bold text-[#3949AB]" 
-                    defaultValue="2001"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-neutral-400 mb-2 block uppercase tracking-wider">{t.batchPrinting.defaultDate}</label>
-                  <input 
-                    type="date" 
-                    className="input-modern"
-                    defaultValue="2025-12-17"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 2. Import Data (Drag & Drop) */}
-          <div className="glass-card p-6 flex flex-col justify-center text-center relative group hover:border-[#3949AB]/30 transition-all cursor-pointer">
-            <div className="absolute inset-0 bg-[#3949AB]/[0.02] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            
-            <div className="w-16 h-16 mx-auto bg-white rounded-2xl shadow-lg shadow-[#3949AB]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-              <Upload className="w-8 h-8 text-[#3949AB]" />
-            </div>
-            
-            <h3 className="text-lg font-black text-neutral-800 mb-1">{t.batchPrinting.uploadCSV}</h3>
-            <p className="text-sm text-neutral-400 mb-4">{t.batchPrinting.dragDrop}</p>
-            
-            <div className="flex items-center justify-center gap-3">
-              <button 
-                onClick={(e) => { e.stopPropagation(); setShowAddForm(true); }}
-                className="px-4 py-2 rounded-xl bg-white border border-neutral-200 text-neutral-600 hover:text-[#3949AB] hover:border-[#3949AB] text-sm font-bold transition-all z-10"
-              >
-                {t.batchPrinting.addManually}
-              </button>
-              <button className="px-4 py-2 rounded-xl bg-white border border-neutral-200 text-neutral-600 hover:text-[#3949AB] hover:border-[#3949AB] text-sm font-bold transition-all z-10">
-                {t.batchPrinting.downloadTemplate}
-              </button>
-            </div>
-          </div>
-
-          {/* 3. Batch Summary */}
-          <div className="glass-card p-6 bg-gradient-to-br from-[#3949AB] to-[#5C6BC0] text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-            
-            <h3 className="text-lg font-bold text-white/80 mb-6 relative z-10">{t.batchPrinting.batchSummary}</h3>
-            
-            <div className="space-y-6 relative z-10">
-              <div className="flex justify-between items-end">
-                <span className="text-sm font-medium text-white/60">{t.batchPrinting.totalChecks}</span>
-                <span className="text-3xl font-black">{checks.length}</span>
+              {/* Checks Count */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  {language === 'ar' ? 'عدد الشيكات' : 'Number of Checks'}
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all"
+                  placeholder={language === 'ar' ? 'مثال: 10' : 'e.g., 10'}
+                  value={batchForm.checksCount}
+                  onChange={(e) => setBatchForm({...batchForm, checksCount: e.target.value})}
+                />
               </div>
 
-              <div className="flex justify-between items-end">
-                <span className="text-sm font-medium text-white/60">{t.batchPrinting.totalAmount}</span>
-                <span className="text-3xl font-black font-mono">${totalAmount.toLocaleString()}</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
-                <button
-                  onClick={handlePrintAll}
-                  className="w-full py-3 bg-white text-[#3949AB] rounded-xl font-bold hover:bg-white/90 transition-colors shadow-lg flex items-center justify-center gap-2"
+              {/* Currency */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  {language === 'ar' ? 'العملة' : 'Currency'}
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <select
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all"
+                  value={batchForm.currency}
+                  onChange={(e) => setBatchForm({...batchForm, currency: e.target.value})}
                 >
-                  <Printer className="w-5 h-5" />
-                  {t.batchPrinting.printAll}
-                </button>
-                <button
-                  onClick={handlePrintSelected}
-                  disabled={!anySelected}
-                  className="w-full py-3 bg-white/10 text-white rounded-xl font-bold hover:bg-white/15 transition-colors shadow-lg border border-white/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <CheckCircle2 className="w-5 h-5" />
-                  {language === 'ar' ? 'طباعة المحدد' : 'Print Selected'}
-                </button>
+                  {currencies.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.code} - {language === 'ar' ? c.name : c.nameEn}
+                    </option>
+                  ))}
+                </select>
               </div>
+            </div>
+
+            {/* Row 3: Check Amount, Starting Number, Start Date */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Check Amount */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  {language === 'ar' ? 'قيمة الشيك' : 'Check Amount'}
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all font-mono"
+                  placeholder={language === 'ar' ? 'مثال: 5000.00' : 'e.g., 5000.00'}
+                  value={batchForm.checkAmount}
+                  onChange={(e) => setBatchForm({...batchForm, checkAmount: e.target.value})}
+                />
+              </div>
+
+              {/* Starting Number */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  {language === 'ar' ? 'رقم البداية' : 'Starting Number'}
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all font-mono font-bold text-[#3949AB]"
+                  placeholder={language === 'ar' ? 'مثال: 2001' : 'e.g., 2001'}
+                  value={batchForm.startingNumber}
+                  onChange={(e) => setBatchForm({...batchForm, startingNumber: e.target.value})}
+                />
+              </div>
+
+              {/* Start Date */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  {language === 'ar' ? 'بداية التاريخ' : 'Start Date'}
+                  <span className="text-red-500 ml-1">*</span>
+                </label>
+                <input
+                  type="date"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all"
+                  value={batchForm.startDate}
+                  onChange={(e) => setBatchForm({...batchForm, startDate: e.target.value})}
+                />
+              </div>
+            </div>
+
+            {/* Generate Button */}
+            <div className="flex justify-center pt-4">
+              <button className="btn-primary !py-3 !px-8 shadow-lg shadow-[#3949AB]/30">
+                <Plus className="w-5 h-5" />
+                {language === 'ar' ? 'توليد الشيكات' : 'Generate Checks'}
+              </button>
             </div>
           </div>
         </div>
