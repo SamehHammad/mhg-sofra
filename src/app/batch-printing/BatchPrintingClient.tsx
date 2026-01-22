@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppLayout from '@/components/AppLayout';
 import { mockBatchChecks, currencies } from '@/lib/mock-data';
 import PrintSettingsDialog, { type PrintSettings } from '@/components/PrintSettingsDialog';
@@ -23,17 +23,17 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CatalogResponse } from '@/lib/actions/catalog';
+import ChequesTaple from './ChequesTaple';
 
 export default function BatchPrintingClient({ initialCatalog }: { initialCatalog: CatalogResponse }) {
   console.log("this is initialcatalog",initialCatalog);
   const { t, language, direction } = useLanguage();
   const isRTL = direction === 'rtl';
-  const [checks, setChecks] = useState(mockBatchChecks);
+  const [checks, setChecks] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
 
-  const [showPrintDialog, setShowPrintDialog] = useState(false);
+  const [showPrintDialog, setShowPrintDialog] = useState(true);
   const [printChequeImages, setPrintChequeImages] = useState<string[]>([]);
   const [printSettings, setPrintSettings] = useState<PrintSettings>({
     paperPreset: 'A4',
@@ -51,7 +51,8 @@ export default function BatchPrintingClient({ initialCatalog }: { initialCatalog
   const [batchForm, setBatchForm] = useState({
     country: '',
     bank: '',
-    template: '',
+    templateId: '',
+    template: {},
     monthsCount: '',
     checksCount: '',
     currency: 'SAR',
@@ -60,35 +61,51 @@ export default function BatchPrintingClient({ initialCatalog }: { initialCatalog
     startDate: '',
   });
 
-  const selectedCount = Object.values(selectedIds).filter(Boolean).length;
-  const allSelected = checks.length > 0 && selectedCount === checks.length;
-  const anySelected = selectedCount > 0;
+  console.log("this is batchForm",batchForm);
 
-  const staticChequeImages = [
-    '/cheques/egy-ahly.jpeg',
-    '/cheques/egy-cib.jpeg',
-    '/cheques/ksa-br.jpeg',
-    '/cheques/ksa-fr.jpeg',
-    '/cheques/ps-arabic.jpeg',
-  ];
 
-  const openPrintForChecks = (checksToPrint: Array<{ id: string }>) => {
-    if (checksToPrint.length === 0) return;
-    const images = checksToPrint.map((_, i) => staticChequeImages[i % staticChequeImages.length]);
-    setPrintChequeImages(images);
-    setShowPrintDialog(true);
+  //=========================================== Handlers ===========================================
+
+  const handleBankChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    const bank = initialCatalog.countries.filter((c) => c.id === batchForm.country)[0].banks.find((b) => b.id === value);
+    console.log("this is bank",bank);
+    if(bank) {
+      setBatchForm({...batchForm, bank: bank.id});
+    }
+  };
+  const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    const template = initialCatalog?.countries?.find((c : any) => c.id === batchForm.country)?.banks?.find((b : any) => b.id === batchForm?.bank)?.templates.find((t : any) => t.id === value);
+    console.log("this our is template",template);
+    if(template) {
+      setBatchForm({...batchForm, template: template ,templateId: value});
+    }
   };
 
-  const handlePrintAll = () => {
-    openPrintForChecks(checks);
-  };
+  const handleGenerateBatch = () => {
+    const result = [];
+    console.log("this is batchForm",batchForm);
+    const timeBetweenChecks = (Number(batchForm?.monthsCount) as any) / (Number(batchForm?.checksCount) as any);
+    const startDate = new Date(batchForm?.startDate);
+    const startNumber = Number(batchForm?.startingNumber);
+    const chequeCount = Number(batchForm?.checksCount);
+    console.log("this is timeBetweenChecks",timeBetweenChecks, startNumber ,chequeCount);
+    for(let i =0; i < chequeCount; i++){
+      result.push({
+        id: i,
+        checkNumber: startNumber + i,
+        date: new Date(startDate.setMonth(startDate.getMonth() + timeBetweenChecks)).toISOString().split('T')[0],
+        timeBetweenChecks: timeBetweenChecks,
+        amount: batchForm?.checkAmount,
+        currency: batchForm?.currency,
+      });
+    }
+    setChecks(result as any);
+    console.log("this is result",result);
 
-  const handlePrintSelected = () => {
-    const selectedChecks = checks.filter((c) => selectedIds[c.id]);
-    openPrintForChecks(selectedChecks);
   };
-
-  const totalAmount = checks.reduce((sum, check) => sum + check.amount, 0);
+  //=========================================== Handlers End ===========================================
 
   return (
     <AppLayout 
@@ -131,9 +148,9 @@ export default function BatchPrintingClient({ initialCatalog }: { initialCatalog
                     onChange={(e) => setBatchForm({...batchForm, country: e.target.value})}
                   >
                     <option value="">{language === 'ar' ? 'اختر البلد' : 'Select Country'}</option>
-                    <option value="sa">{language === 'ar' ? 'السعودية' : 'Saudi Arabia'}</option>
-                    <option value="eg">{language === 'ar' ? 'مصر' : 'Egypt'}</option>
-                    <option value="ae">{language === 'ar' ? 'الإمارات' : 'UAE'}</option>
+                    {initialCatalog.countries.map((country)=>(
+                      <option key={country.id} value={country.id}>{language === 'ar' ?country.name : country.nameEn}</option>
+                    ))}
                   </select>
                   <Globe className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
                   <ChevronDown className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'left-4' : 'right-4'}`} />
@@ -150,12 +167,13 @@ export default function BatchPrintingClient({ initialCatalog }: { initialCatalog
                   <select
                     className={`w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all appearance-none cursor-pointer hover:border-gray-400 ${isRTL ? 'pr-12 pl-10' : 'pl-12 pr-10'}`}
                     value={batchForm.bank}
-                    onChange={(e) => setBatchForm({...batchForm, bank: e.target.value})}
+                    onChange={(e) => handleBankChange(e)}
                     disabled={!batchForm.country}
                   >
                     <option value="">{language === 'ar' ? 'اختر البنك' : 'Select Bank'}</option>
-                    <option value="ahly">{language === 'ar' ? 'البنك الأهلي' : 'Al Ahly Bank'}</option>
-                    <option value="rajhi">{language === 'ar' ? 'بنك الراجحي' : 'Al Rajhi Bank'}</option>
+                    {initialCatalog.countries.filter((c) => c.id === batchForm.country)[0]?.banks?.map((bank)=>(
+                      <option key={bank.id} value={bank.id}>{language === 'ar' ? bank.name : bank.nameEn}</option>
+                    ))}
                   </select>
                   <CreditCard className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
                   <ChevronDown className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'left-4' : 'right-4'}`} />
@@ -171,13 +189,14 @@ export default function BatchPrintingClient({ initialCatalog }: { initialCatalog
                 <div className="relative">
                   <select
                     className={`w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all appearance-none cursor-pointer hover:border-gray-400 ${isRTL ? 'pr-12 pl-10' : 'pl-12 pr-10'}`}
-                    value={batchForm.template}
-                    onChange={(e) => setBatchForm({...batchForm, template: e.target.value})}
+                    value={batchForm.templateId|| ''}
+                    onChange={(e) => handleTemplateChange(e)}
                     disabled={!batchForm.bank}
                   >
-                    <option value="">{language === 'ar' ? 'اختر النموذج' : 'Select Template'}</option>
-                    <option value="standard1">{language === 'ar' ? 'نموذج قياسي 1' : 'Standard Template 1'}</option>
-                    <option value="standard2">{language === 'ar' ? 'نموذج قياسي 2' : 'Standard Template 2'}</option>
+                    <option  disabled value="">{language === 'ar' ? 'اختر النموذج' : 'Select Template'}</option>
+                    {initialCatalog?.countries?.find((c : any) => c.id === batchForm.country)?.banks?.find((b : any) => b.id === batchForm?.bank)?.templates.map((t : any) => (
+                      <option key={t.id} value={t.id}>{language === 'ar' ? t.name : t.nameEn}</option>
+                    ))}
                   </select>
                   <FileText className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
                   <ChevronDown className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'left-4' : 'right-4'}`} />
@@ -289,7 +308,7 @@ export default function BatchPrintingClient({ initialCatalog }: { initialCatalog
 
             {/* Generate Button */}
             <div className="flex justify-center pt-4">
-              <button className="btn-primary !py-3 !px-8 shadow-lg shadow-[#3949AB]/30">
+              <button onClick={handleGenerateBatch} className="btn-primary !py-3 !px-8 shadow-lg shadow-[#3949AB]/30">
                 <Plus className="w-5 h-5" />
                 {language === 'ar' ? 'توليد الشيكات' : 'Generate Checks'}
               </button>
@@ -298,88 +317,7 @@ export default function BatchPrintingClient({ initialCatalog }: { initialCatalog
         </div>
 
         {/* Checks Table */}
-        <div className="glass-card overflow-hidden">
-          <div className="px-6 py-5 border-b border-neutral-100 flex items-center justify-between">
-            <h3 className="text-lg font-black text-[#3949AB]">{t.batchPrinting.checksInBatch}</h3>
-            <span className="bg-[#3949AB]/10 text-[#3949AB] px-3 py-1 rounded-full text-xs font-bold">
-              {checks.length} {t.batchPrinting.items}
-            </span>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[#f8faff]">
-                  <th className="px-6 py-4 text-start w-16">
-                    <input
-                      type="checkbox"
-                      checked={allSelected}
-                      onChange={(e) => {
-                        const nextChecked = e.target.checked;
-                        const next: Record<string, boolean> = {};
-                        checks.forEach((c) => {
-                          next[c.id] = nextChecked;
-                        });
-                        setSelectedIds(next);
-                      }}
-                      className="w-4 h-4 rounded border-neutral-300 text-[#3949AB] focus:ring-[#3949AB]"
-                    />
-                  </th>
-                  <th className="px-6 py-4 text-start text-xs font-black text-[#3949AB] uppercase tracking-wider">{t.table.checkNumber}</th>
-                  <th className="px-6 py-4 text-start text-xs font-black text-[#3949AB] uppercase tracking-wider">{t.table.beneficiary}</th>
-                  <th className="px-6 py-4 text-start text-xs font-black text-[#3949AB] uppercase tracking-wider">{t.table.amount}</th>
-                  <th className="px-6 py-4 text-start text-xs font-black text-[#3949AB] uppercase tracking-wider">{t.table.date}</th>
-                  <th className="px-6 py-4 text-start text-xs font-black text-[#3949AB] uppercase tracking-wider">{t.table.status}</th>
-                  <th className="px-6 py-4 text-end text-xs font-black text-[#3949AB] uppercase tracking-wider">{t.table.actions}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-100">
-                {checks.map((check, index) => (
-                  <tr 
-                    key={check.id} 
-                    className="hover:bg-[#f8faff] transition-colors group"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <td className="px-6 py-4">
-                      <input
-                        type="checkbox"
-                        checked={Boolean(selectedIds[check.id])}
-                        onChange={(e) => {
-                          setSelectedIds((prev) => ({ ...prev, [check.id]: e.target.checked }));
-                        }}
-                        className="w-4 h-4 rounded border-neutral-300 text-[#3949AB] focus:ring-[#3949AB]"
-                      />
-                    </td>
-                    <td className="px-6 py-4 font-mono font-bold text-neutral-600">{check.checkNumber}</td>
-                    <td className="px-6 py-4 font-bold text-neutral-800">
-                      {language === 'ar' ? check.beneficiary : check.beneficiaryEn}
-                    </td>
-                    <td className="px-6 py-4 font-mono font-bold text-[#3949AB]">
-                      ${check.amount.toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-neutral-500">{check.date}</td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-yellow-50 text-yellow-600 border border-yellow-100">
-                        <AlertCircle className="w-3 h-3" />
-                        {t.printedChecks.statuses.pending}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-end">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-2 rounded-lg hover:bg-[#3949AB]/5 text-neutral-400 hover:text-[#3949AB] transition-colors">
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 rounded-lg hover:bg-red-50 text-neutral-400 hover:text-red-500 transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {checks?.length > 0 && <ChequesTaple checks={checks} template={batchForm?.template as any} />}
 
         {/* Add Check Modal (Overlay) */}
         {showAddForm && (
