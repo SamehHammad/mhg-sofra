@@ -105,7 +105,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       count: templates.length,
-      templates: templates.map((template) => ({
+      templates: templates.map((template :any) => ({
         id: template.id,
         nameAr: template.nameAr,
         nameEn: template.nameEn,
