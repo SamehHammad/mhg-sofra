@@ -671,8 +671,8 @@ export default function TemplateEditorClient({
 
         <DragOverlay>
           {activeId && (
-            <div className="bg-[#3949AB] text-white px-4 py-2 rounded-xl shadow-xl font-bold flex items-center gap-2 cursor-grabbing scale-105">
-              <Move className="w-4 h-4" />
+            <div className="border bg-white border-dashed border-[#3949AB] text-neutral-800 px-4 py-2 rounded-md shadow-xl text-sm w-32  flex justify-center items-center gap-2 cursor-grabbing text-center ">
+              {/* <Move className="w-2 h-2" /> */}
               {checkFields.find((f) => f.id === activeId)?.label}
             </div>
           )}
@@ -756,10 +756,10 @@ function DraggableCanvasField({
       }}
       className={
         `
-        px-2 py-2 cursor-grab select-none whitespace-nowrap p-2 w-24 h-8 transition-colors border-dashed  flex items-center justify-center rounded-lg border-purple-600 border-2
+        px-2 py-2 cursor-grab select-none whitespace-nowrap  w-24 h-8 transition-colors border-dashed  flex items-center justify-center rounded-lg border-purple-600 border-2
         ${
           isSelected
-            ? "ring-2 ring-[#3949AB] bg-[#3949AB]/10 text-[#3949AB]  font-bold z-50 flex items-center justify-center"
+            ? "ring-2  bg-[#3949AB]/10 border-[#3949AB]  z-50 flex items-center justify-center"
             : "hover:bg-neutral-100 hover:ring-1 hover:ring-neutral-300"
         }
       `
@@ -767,7 +767,7 @@ function DraggableCanvasField({
     >
       {field.label}
       {isSelected && (
-        <div className="absolute -top-3 -right-3 w-8 h-6 bg-[#3949AB] rounded-full flex items-center justify-center text-white shadow-md">
+        <div className="absolute -top-3 -right-3 w-8 h-6  rounded-sm flex items-center justify-center text-white shadow-md">
           <Move className="w-3 h-3" />
         </div>
       )}

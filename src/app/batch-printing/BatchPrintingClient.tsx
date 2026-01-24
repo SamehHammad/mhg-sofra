@@ -33,7 +33,7 @@ export default function BatchPrintingClient({ initialCatalog }: { initialCatalog
   const [showAddForm, setShowAddForm] = useState(false);
 
 
-  const [showPrintDialog, setShowPrintDialog] = useState(true);
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
   const [printChequeImages, setPrintChequeImages] = useState<string[]>([]);
   const [printSettings, setPrintSettings] = useState<PrintSettings>({
     paperPreset: 'A4',
