@@ -35,9 +35,23 @@ type Props = {
   onChange: (next: PrintSettings) => void;
   chequeImages?: string[];
   selectedChequeImage: string | null;
+  canvasSizePx?: { width: number; height: number };
+  fields?: Array<{
+    id: string;
+    type: string;
+    label: string;
+    position: { x: number; y: number };
+    style: {
+      fontSize: number;
+      fontFamily: string;
+      alignment: string;
+      rotation: number;
+    };
+  }>;
+  fieldValues?: Record<string, string>;
 };
 
-export default function PrintSettingsDialog({ open, onClose, settings, onChange, chequeImages, selectedChequeImage }: Props) {
+export default function PrintSettingsDialog({ open, onClose, settings, onChange, chequeImages, selectedChequeImage, canvasSizePx, fields, fieldValues }: Props) {
   const { t, language } = useLanguage();
 
   // UI/printing status (used to disable controls and show progress)
@@ -60,13 +74,6 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
   const paperWidthMm = settings.pageOrientation === 'landscape' ? basePaper.heightMm : basePaper.widthMm;
   const paperHeightMm = settings.pageOrientation === 'landscape' ? basePaper.widthMm : basePaper.heightMm;
 
-  const previewWidthPx = 320;
-  const previewHeightPx = Math.max(140, (previewWidthPx * paperHeightMm) / Math.max(1, paperWidthMm));
-  const mmToPx = previewWidthPx / Math.max(1, paperWidthMm);
-  const previewMarginPx = Math.max(0, settings.marginMm) * mmToPx;
-  const previewOffsetXpx = settings.offsetXmm * mmToPx;
-  const previewOffsetYpx = settings.offsetYmm * mmToPx;
-
   // Helper to update settings
   const set = (patch: Partial<PrintSettings>) => onChange({ ...settings, ...patch });
 
@@ -78,7 +85,12 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
 
   const normalizedImages = (chequeImages && chequeImages.length > 0 ? chequeImages : selectedChequeImage ? [selectedChequeImage] : []).filter(Boolean);
   const canPrint = normalizedImages.length > 0;
-  const previewImage = normalizedImages[0] ?? null;
+
+  const resolvedCanvasSizePx = canvasSizePx && canvasSizePx.width > 0 && canvasSizePx.height > 0
+    ? canvasSizePx
+    : { width: 900, height: 420 };
+
+  const hasOverlay = Boolean(fields && fields.length > 0 && fieldValues);
 
   // ---------------------------------------------------------------------------
   // Print CSS injected by react-to-print
@@ -91,8 +103,10 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
     .print-root { width: ${w}mm; height: ${h}mm; }
     .print-page { width: ${w}mm; height: ${h}mm; page-break-after: always; box-sizing: border-box; padding: ${margin}mm; }
     .print-page:last-child { page-break-after: auto; }
-    .print-content { width: 100%; height: 100%; overflow: hidden; }
+    .print-content { width: 100%; height: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     .print-cheque { width: 100%; height: 100%; object-fit: contain; transform-origin: center; transform: translate(${settings.offsetXmm}mm, ${settings.offsetYmm}mm) scale(${settings.printScale}); }
+    .print-canvas { position: relative; width: ${Math.max(1, resolvedCanvasSizePx.width)}px; height: ${Math.max(1, resolvedCanvasSizePx.height)}px; transform-origin: center; transform: translate(${settings.offsetXmm}mm, ${settings.offsetYmm}mm) scale(${settings.printScale}); }
+    .print-canvas-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   `;
 
   // ---------------------------------------------------------------------------
@@ -211,7 +225,30 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
             Array.from({ length: copies }).map((_, copyIndex) => (
               <div key={`${imgIndex}-${copyIndex}`} className="print-page">
                 <div className="print-content">
-                  <img className="print-cheque" src={imgSrc} alt="Cheque" draggable={false} />
+                  {hasOverlay ? (
+                    <div className="print-canvas">
+                      <img className="print-canvas-image" src={imgSrc} alt="Cheque" draggable={false} />
+                      {(fields || []).map((field) => (
+                        <div
+                          key={field.id}
+                          style={{
+                            position: 'absolute',
+                            left: `${field.position.x}px`,
+                            top: `${field.position.y}px`,
+                            fontSize: `${field.style.fontSize}px`,
+                            fontFamily: field.style.fontFamily,
+                            transform: `rotate(${field.style.rotation}deg)`,
+                            textAlign: field.style.alignment as any,
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {fieldValues?.[field.id] ?? ''}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <img className="print-cheque" src={imgSrc} alt="Cheque" draggable={false} />
+                  )}
                 </div>
               </div>
             ))
@@ -233,8 +270,8 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
           </button>
         </div>
 
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Settings controls (same as before) */}
+        <div className="p-6 grid grid-cols-1 gap-6">
+          {/* Settings controls */}
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -395,54 +432,6 @@ export default function PrintSettingsDialog({ open, onClose, settings, onChange,
               <div className="font-mono font-black text-[#3949AB]">
                 {Math.round(paperWidthMm)}mm × {Math.round(paperHeightMm)}mm
               </div>
-            </div>
-          </div>
-
-          {/* Preview section */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-sm font-black text-[#3949AB]">
-                {language === 'ar' ? 'معاينة قبل الطباعة' : 'Print Preview'}
-              </div>
-              <div className="text-xs font-bold text-neutral-400 font-mono">
-                {settings.paperPreset}
-                {settings.pageOrientation === 'landscape' ? ' (Landscape)' : ' (Portrait)'}
-              </div>
-            </div>
-
-            <div
-              className="bg-white rounded-2xl border border-neutral-100 shadow-inner mx-auto relative overflow-hidden"
-              style={{ width: previewWidthPx, height: previewHeightPx }}
-            >
-              <div
-                className="absolute bg-white"
-                style={{
-                  top: previewMarginPx,
-                  left: previewMarginPx,
-                  right: previewMarginPx,
-                  bottom: previewMarginPx,
-                  overflow: 'hidden',
-                }}
-              >
-                {previewImage && (
-                  <img
-                    src={previewImage}
-                    alt="Cheque Preview"
-                    className="w-full h-full object-contain"
-                    style={{
-                      transformOrigin: 'top left',
-                      transform: `translate(${previewOffsetXpx}px, ${previewOffsetYpx}px) scale(${settings.printScale})`,
-                    }}
-                    draggable={false}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className="mt-4 text-xs text-neutral-400 font-medium text-center">
-              {language === 'ar'
-                ? 'استخدم Offset و Scale لمطابقة أماكن الطباعة على نموذج البنك'
-                : 'Use Offset and Scale to match the bank cheque layout'}
             </div>
           </div>
         </div>
