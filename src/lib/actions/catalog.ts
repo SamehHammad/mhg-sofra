@@ -88,15 +88,15 @@ export const getCatalog = cache(async (): Promise<CatalogResponse> => {
         });
 
         // convert data from database to the required format
-        const dbCountries = countries.map((country) => ({
+        const dbCountries = countries.map((country:any) => ({
             id: country.code,
             name: country.nameAr,
             nameEn: country.nameEn,
-            banks: country.banks.map((bank) => ({
+            banks: country.banks.map((bank:any) => ({
                 id: bank.id,
                 name: bank.nameAr,
                 nameEn: bank.nameEn,
-                templates: bank.templates.map((template) => ({
+                templates: bank.templates.map((template:any) => ({
                     id: template.id,
                     name: template.nameAr,
                     nameEn: template.nameEn,
