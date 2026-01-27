@@ -16,6 +16,7 @@ interface PrintCheckClientProps {
 export default function PrintCheckClient({ initialCountries }: PrintCheckClientProps) {
     const { t, direction, language } = useLanguage();
     const isRTL = direction === 'rtl';
+console.log(initialCountries);
 
     /*-*-*-- Data state -*-*-*-// */
     const [countries] = useState<Country[]>(initialCountries);
@@ -24,6 +25,7 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
     /*-*-*-- Selection state (drives which cheque image/template is shown) -*-*-*-// */
     const [selectedCountry, setSelectedCountry] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
+    const [selectedTemplateId, setSelectedTemplateId] = useState('');
     const [checkDirection, setCheckDirection] = useState<'ltr' | 'rtl'>('rtl');
     const [zoomLevel, setZoomLevel] = useState(1);
 
@@ -45,6 +47,7 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
     const handleCountryChange = (countryId: string) => {
         setSelectedCountry(countryId);
         setSelectedBank('');
+        setSelectedTemplateId('');
 
         // Simple heuristic for direction based on known RTL country codes
         // In a real app, this should come from the database/API
@@ -66,10 +69,17 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
         availableBanks.find(b => b.id === selectedBank),
         [availableBanks, selectedBank]);
 
-    // Use the first active template for the selected bank
-    const selectedTemplate = useMemo(() =>
-        selectedBankData?.templates?.[0] || null,
+    const availableTemplates = useMemo(() =>
+        selectedBankData?.templates || [],
         [selectedBankData]);
+
+    const selectedTemplate = useMemo(() => {
+        if (!selectedBankData) return null;
+        if (selectedTemplateId) {
+            return availableTemplates.find(t => t.id === selectedTemplateId) || availableTemplates[0] || null;
+        }
+        return availableTemplates[0] || null;
+    }, [availableTemplates, selectedBankData, selectedTemplateId]);
 
     const selectedChequeImage = selectedTemplate?.schema.background || null;
 
@@ -140,11 +150,32 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
     );
 
     useEffect(() => {
+        if (!selectedBankData) {
+            setSelectedTemplateId('');
+            return;
+        }
+        if (availableTemplates.length === 0) {
+            setSelectedTemplateId('');
+            return;
+        }
+        setSelectedTemplateId((current) => {
+            if (current && availableTemplates.some(t => t.id === current)) return current;
+            return availableTemplates[0].id;
+        });
+    }, [availableTemplates, selectedBankData]);
+
+    useEffect(() => {
         /*-*-*-- When bank changes: reset edits (edits are bank-specific) -*-*-*-// */
         setEditedChequeImage(null);
         setIsImageEditorOpen(false);
         setImageEditorSrc(null);
     }, [selectedBank]);
+
+    useEffect(() => {
+        setEditedChequeImage(null);
+        setIsImageEditorOpen(false);
+        setImageEditorSrc(null);
+    }, [selectedTemplateId]);
 
     const openChequeImageEditor = useCallback(() => {
         if (!displayedChequeImage) return;
@@ -224,7 +255,10 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
                                     <select
                                         className={`w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all appearance-none cursor-pointer disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-200 ${isRTL ? 'pr-12 pl-10' : 'pl-12 pr-10'}`}
                                         value={selectedBank}
-                                        onChange={(e) => setSelectedBank(e.target.value)}
+                                        onChange={(e) => {
+                                            setSelectedBank(e.target.value);
+                                            setSelectedTemplateId('');
+                                        }}
                                         disabled={!selectedCountry || isLoading}
                                     >
                                         <option value="" disabled>
@@ -244,6 +278,44 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
                                 {!selectedCountry && (
                                     <p className="text-sm text-gray-500 mt-1">
                                         {language === 'ar' ? 'من فضلك اختر الدولة أولاً' : 'Please select a country first'}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Template Selection */}
+                            <div className="space-y-2">
+                                <label className="block text-sm font-semibold text-gray-700">
+                                    {language === 'ar' ? 'النموذج' : 'Template'}
+                                    <span className="text-red-500 ml-1">*</span>
+                                </label>
+                                <div className="relative">
+                                    <select
+                                        className={`w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-[#3949AB]/20 focus:border-[#3949AB] transition-all appearance-none cursor-pointer disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed disabled:border-gray-200 ${isRTL ? 'pr-12 pl-10' : 'pl-12 pr-10'}`}
+                                        value={selectedTemplateId}
+                                        onChange={(e) => setSelectedTemplateId(e.target.value)}
+                                        disabled={!selectedBank || isLoading || availableTemplates.length === 0}
+                                    >
+                                        <option value="" disabled>
+                                            {!selectedBank
+                                                ? (language === 'ar' ? 'اختر البنك أولاً' : 'Select bank first')
+                                                : (availableTemplates.length === 0
+                                                    ? (language === 'ar' ? 'لا توجد نماذج متاحة' : 'No templates available')
+                                                    : (language === 'ar' ? 'اختر النموذج' : 'Select template'))}
+                                        </option>
+                                        {availableTemplates.map((template) => (
+                                            <option key={template.id} value={template.id} className="py-2">
+                                                {language === 'ar'
+                                                    ? `${template.name}${template.version ? ` - ${template.version}` : ''}`
+                                                    : `${template.nameEn}${template.version ? ` - ${template.version}` : ''}`}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <CreditCard className={`absolute top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'right-4' : 'left-4'}`} />
+                                    <ChevronDown className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none ${direction === 'rtl' ? 'left-4' : 'right-4'}`} />
+                                </div>
+                                {selectedBank && availableTemplates.length > 1 && (
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        {language === 'ar' ? 'هذا البنك يحتوي على أكثر من نموذج' : 'This bank has multiple templates'}
                                     </p>
                                 )}
                             </div>
@@ -284,7 +356,13 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
                                 ))
                             ) : (
                                 <div className="text-center py-8 text-gray-500">
-                                    {language === 'ar' ? 'الرجاء اختيار نموذج الشيك أولاً' : 'Please select a cheque template first'}
+                                    {!selectedCountry
+                                        ? (language === 'ar' ? 'الرجاء اختيار الدولة أولاً' : 'Please select a country first')
+                                        : (!selectedBank
+                                            ? (language === 'ar' ? 'الرجاء اختيار البنك أولاً' : 'Please select a bank first')
+                                            : (availableTemplates.length === 0
+                                                ? (language === 'ar' ? 'لا توجد نماذج متاحة لهذا البنك' : 'No templates available for this bank')
+                                                : (language === 'ar' ? 'الرجاء اختيار نموذج الشيك أولاً' : 'Please select a cheque template first')))}
                                 </div>
                             )}
                         </div>
@@ -295,7 +373,7 @@ export default function PrintCheckClient({ initialCountries }: PrintCheckClientP
                         <button
                             className="flex-1 btn-primary shadow-lg shadow-[#3949AB]/30 disabled:opacity-50 disabled:cursor-not-allowed"
                             onClick={() => setShowPrintDialog(true)}
-                            disabled={!selectedChequeImage}
+                            disabled={!selectedTemplate || !selectedChequeImage}
                         >
                             <Printer className="w-5 h-5" />
                             {t.printCheck.printButton}
