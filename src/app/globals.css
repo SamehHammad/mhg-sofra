@@ -67,6 +67,7 @@
   }
 }
 
+
 /* تأثيرات حركية ناعمة */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
@@ -75,6 +76,17 @@
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* تخصيص شريط التمرير */
@@ -104,5 +116,21 @@
 [dir="rtl"] .table th,
 [dir="rtl"] .table td {
   text-align: right;
+}
+
+/* Print styles */
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+  }
+  
+  .glass-card {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
 }
 

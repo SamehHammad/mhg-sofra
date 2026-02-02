@@ -4,12 +4,12 @@ export async function GET(req: NextRequest) {
   // استخراج الـ locale أو tenant من الريكويست
   const url = new URL(req.url);
 
-// جلب الإعدادات الديناميكية
+  // جلب الإعدادات الديناميكية
 
-const manifest = {
-  name: "Check Printing",
-    short_name: "Check Printing",
-    description: "Check Printing" ,
+  const manifest = {
+    name: "MHG Sofra",
+    short_name: "MHG Sofra",
+    description: "MHG Sofra",
     id: "/",
     start_url: "/",
     scope: "/",
@@ -18,7 +18,7 @@ const manifest = {
     theme_color: "#2c3ee1",
     icons: [
       {
-        src:"/logo.png",
+        src: "/logo.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "any",

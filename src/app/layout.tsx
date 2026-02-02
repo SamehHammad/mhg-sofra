@@ -36,8 +36,8 @@ export default function RootLayout({
 
 export async function generateMetadata() {
   return {
-    title: "نظام طباعة وإدارة الشيكات | Check Printing & Management System",
-    description: "حل احترافي لطباعة وإدارة الشيكات | Enterprise-grade check printing and management solution",
+    title: "MHG Sofra",
+    description: "MHG Sofra",
     manifest: `/api/manifest`
   };
 }

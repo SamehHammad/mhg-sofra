@@ -20,7 +20,7 @@ export const translations = {
     close: 'إغلاق',
     clear: 'مسح',
     apply: 'تطبيق',
-    
+
     // Navigation
     nav: {
       dashboard: 'لوحة التحكم',
@@ -29,7 +29,7 @@ export const translations = {
       batchPrinting: 'الطباعة الجماعية',
       printedChecks: 'الشيكات المطبوعة',
     },
-    
+
     // Dashboard
     dashboard: {
       title: 'لوحة التحكم',
@@ -49,7 +49,7 @@ export const translations = {
         viewReports: 'عرض التقارير',
       },
     },
-    
+
     // Print Check
     printCheck: {
       title: 'طباعة شيك',
@@ -79,7 +79,7 @@ export const translations = {
       layoutLTR: 'إنجليزي (LTR)',
       emptyState: 'اختر دولة، بنك، وقالب لمعاينة الشيك',
     },
-    
+
     // Template Editor
     templateEditor: {
       title: 'محرر القوالب',
@@ -135,7 +135,7 @@ export const translations = {
         checkNumber: 'رقم الشيك',
       },
     },
-    
+
     // Batch Printing
     batchPrinting: {
       title: 'الطباعة الجماعية',
@@ -170,7 +170,7 @@ export const translations = {
       noBatches: 'لا توجد شيكات في الدفعة',
       uploadOrAdd: 'قم بتحميل ملف أو أضف شيكات يدوياً',
     },
-    
+
     // Printed Checks
     printedChecks: {
       title: 'الشيكات المطبوعة',
@@ -210,7 +210,7 @@ export const translations = {
         voided: 'ملغي',
       },
     },
-    
+
     // Table Headers
     table: {
       checkNumber: 'رقم الشيك',
@@ -224,7 +224,7 @@ export const translations = {
       actions: 'الإجراءات',
       memo: 'ملاحظة',
     },
-    
+
     // User
     user: {
       profile: 'الملف الشخصي',
@@ -233,7 +233,7 @@ export const translations = {
       logout: 'تسجيل الخروج',
       role: 'المسؤول',
     },
-    
+
     // Misc
     version: 'الإصدار',
     copyright: '© 2025 تشيك برو',
@@ -243,7 +243,7 @@ export const translations = {
     authorizedSignature: 'التوقيع المعتمد',
     businessName: 'اسم الشركة',
   },
-  
+
   en: {
     // Common
     loading: 'Loading...',
@@ -261,7 +261,7 @@ export const translations = {
     close: 'Close',
     clear: 'Clear',
     apply: 'Apply',
-    
+
     // Navigation
     nav: {
       dashboard: 'Dashboard',
@@ -270,11 +270,11 @@ export const translations = {
       batchPrinting: 'Batch Printing',
       printedChecks: 'Printed Checks',
     },
-    
+
     // Dashboard
     dashboard: {
       title: 'Dashboard',
-      subtitle: 'Welcome back! Here\'s an overview of your check printing activity.',
+      subtitle: 'Welcome back! Here\'s an overview of your MHG Sofra activity.',
       stats: {
         totalChecks: 'Total Checks Printed',
         thisMonth: 'Checks This Month',
@@ -290,7 +290,7 @@ export const translations = {
         viewReports: 'View Reports',
       },
     },
-    
+
     // Print Check
     printCheck: {
       title: 'Print Check',
@@ -320,7 +320,7 @@ export const translations = {
       layoutLTR: 'LTR (English)',
       emptyState: 'Select a country, bank, and template to preview your check',
     },
-    
+
     // Template Editor
     templateEditor: {
       title: 'Template Editor',
@@ -376,10 +376,10 @@ export const translations = {
         checkNumber: 'Check Number',
       },
     },
-    
+
     // Batch Printing
     batchPrinting: {
-      title: 'Batch Check Printing',
+      title: 'Batch MHG Sofra',
       subtitle: 'Process multiple checks efficiently with batch operations',
       batchSettings: 'Batch Settings',
       batchName: 'Batch Name',
@@ -411,7 +411,7 @@ export const translations = {
       noBatches: 'No checks in batch',
       uploadOrAdd: 'Upload a file or add checks manually',
     },
-    
+
     // Printed Checks
     printedChecks: {
       title: 'Printed Checks',
@@ -451,7 +451,7 @@ export const translations = {
         voided: 'Voided',
       },
     },
-    
+
     // Table Headers
     table: {
       checkNumber: 'Check #',
@@ -465,7 +465,7 @@ export const translations = {
       actions: 'Actions',
       memo: 'Memo',
     },
-    
+
     // User
     user: {
       profile: 'Profile',
@@ -474,7 +474,7 @@ export const translations = {
       logout: 'Logout',
       role: 'Administrator',
     },
-    
+
     // Misc
     version: 'Version',
     copyright: '© 2025 CheckPro',
