@@ -88,7 +88,7 @@ export default function AdminOrdersPage() {
                                     </div>
                                     <div className="text-right">
                                         <div className="text-2xl font-bold text-indigo-600 mb-1">
-                                            {order.totalAmount.toFixed(2)} ر.س
+                                            {order.totalAmount.toFixed(2)} جنيه
                                         </div>
                                         <div className="text-xs text-gray-500">{order.orderNumber}</div>
                                     </div>
@@ -106,7 +106,7 @@ export default function AdminOrdersPage() {
                                                     {item.menuItem.name} {item.quantity > 1 && `× ${item.quantity}`}
                                                 </span>
                                                 <span className="font-bold text-gray-800">
-                                                    {(item.price * item.quantity).toFixed(2)} ر.س
+                                                    {(item.price * item.quantity).toFixed(2)} جنيه
                                                 </span>
                                             </div>
                                         ))}

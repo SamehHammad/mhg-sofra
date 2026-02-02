@@ -27,8 +27,8 @@ export default function MenuItemCard({
                 <div className="flex-shrink-0 mt-1">
                     <div
                         className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${isSelected
-                                ? 'bg-indigo-600 border-indigo-600'
-                                : 'border-gray-300 bg-white'
+                            ? 'bg-indigo-600 border-indigo-600'
+                            : 'border-gray-300 bg-white'
                             }`}
                     >
                         {isSelected && <span className="text-white text-sm">✓</span>}
@@ -42,7 +42,7 @@ export default function MenuItemCard({
                     )}
                     <div className="flex items-center justify-between">
                         <span className="text-lg font-bold text-indigo-600">
-                            {menuItem.price} ر.س
+                            {menuItem.price} جنيه
                         </span>
 
                         {isSelected && onQuantityChange && (

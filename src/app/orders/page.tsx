@@ -90,7 +90,7 @@ export default function OrdersPage() {
                                                     {getMealTypeLabel(mealType)}
                                                 </h3>
                                                 <div className="text-sm text-gray-600">
-                                                    {data.restaurant} • توصيل: {data.deliveryFee} ر.س
+                                                    {data.restaurant} {data.restaurantPhone && `• ${data.restaurantPhone}`} • توصيل: {data.deliveryFee} جنيه
                                                 </div>
                                             </div>
 
@@ -102,7 +102,7 @@ export default function OrdersPage() {
                                                                 {order.user.username}
                                                             </div>
                                                             <div className="text-sm font-bold text-indigo-600">
-                                                                {order.totalAmount.toFixed(2)} ر.س
+                                                                {order.totalAmount.toFixed(2)} جنيه
                                                             </div>
                                                         </div>
                                                         <div className="space-y-1">
@@ -114,7 +114,7 @@ export default function OrdersPage() {
                                                                     <span>
                                                                         {item.menuItem.name} {item.quantity > 1 && `× ${item.quantity}`}
                                                                     </span>
-                                                                    <span>{(item.price * item.quantity).toFixed(2)} ر.س</span>
+                                                                    <span>{(item.price * item.quantity).toFixed(2)} جنيه</span>
                                                                 </div>
                                                             ))}
                                                         </div>

@@ -32,7 +32,7 @@ export async function GET(request: Request) {
         });
 
         // Group by date and meal type
-        const grouped = orders.reduce((acc: any, order) => {
+        const grouped = orders.reduce((acc: any, order: any) => {
             const dateKey = order.orderDate.toISOString().split('T')[0];
             const mealTypeKey = order.mealType;
 
@@ -44,6 +44,7 @@ export async function GET(request: Request) {
                 acc[dateKey][mealTypeKey] = {
                     mealType: mealTypeKey,
                     restaurant: order.restaurant.name,
+                    restaurantPhone: order.restaurant.phone,
                     restaurantId: order.restaurantId,
                     deliveryFee: order.restaurant.deliveryPrice,
                     orders: [],

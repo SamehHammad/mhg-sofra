@@ -69,7 +69,7 @@ export function calculateBilling(
 }
 
 export function formatCurrency(amount: number): string {
-    return `${amount.toFixed(2)} ر.س`;
+    return `${amount.toFixed(2)} جنيه`;
 }
 
 export function formatDate(date: Date): string {

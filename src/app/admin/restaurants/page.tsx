@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import AdminNav from '@/components/AdminNav';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
+import { useNotification } from '@/context/NotificationContext';
 
 export default function AdminRestaurantsPage() {
     const [restaurants, setRestaurants] = useState<any[]>([]);
@@ -18,6 +19,7 @@ export default function AdminRestaurantsPage() {
         deliveryPrice: '0',
     });
     const router = useRouter();
+    const { showNotification, showConfirm } = useNotification();
 
     useEffect(() => {
         checkAuth();
@@ -62,7 +64,7 @@ export default function AdminRestaurantsPage() {
             const url = editingId ? `/api/restaurants/${editingId}` : '/api/restaurants';
             const method = editingId ? 'PUT' : 'POST';
 
-            const response = await fetch(url, {
+            const res = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -71,17 +73,18 @@ export default function AdminRestaurantsPage() {
                 }),
             });
 
-            if (response.ok) {
+            if (res.ok) {
+                showNotification('تم الحفظ', editingId ? 'تم تعديل المطعم بنجاح' : 'تم إضافة المطعم بنجاح', 'success');
                 setShowForm(false);
                 setEditingId(null);
                 setFormData({ name: '', phone: '', deliveryPrice: '0' });
                 fetchRestaurants();
             } else {
-                const data = await response.json();
-                alert(data.error || 'حدث خطأ');
+                const data = await res.json();
+                showNotification('خطأ', data.error || 'حدث خطأ أثناء الحفظ', 'error');
             }
         } catch (err) {
-            alert('حدث خطأ أثناء الاتصال بالخادم');
+            showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
         }
     };
 
@@ -95,23 +98,24 @@ export default function AdminRestaurantsPage() {
         setShowForm(true);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('هل أنت متأكد من حذف هذا المطعم؟')) return;
+    const handleDelete = (id: string) => {
+        showConfirm('حذف المطعم', 'هل أنت متأكد من رغبتك في حذف هذا المطعم؟ لا يمكن التراجع عن هذا الإجراء.', async () => {
+            try {
+                const response = await fetch(`/api/restaurants/${id}`, {
+                    method: 'DELETE',
+                });
 
-        try {
-            const response = await fetch(`/api/restaurants/${id}`, {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                fetchRestaurants();
-            } else {
-                const data = await response.json();
-                alert(data.error || 'حدث خطأ');
+                if (response.ok) {
+                    showNotification('تم الحذف', 'تم حذف المطعم بنجاح', 'success');
+                    fetchRestaurants();
+                } else {
+                    const data = await response.json();
+                    showNotification('خطأ', data.error || 'حدث خطأ أثناء الحذف', 'error');
+                }
+            } catch (err) {
+                showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
             }
-        } catch (err) {
-            alert('حدث خطأ أثناء الاتصال بالخادم');
-        }
+        });
     };
 
     return (
@@ -168,7 +172,7 @@ export default function AdminRestaurantsPage() {
 
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    سعر التوصيل (ر.س) *
+                                    سعر التوصيل (جنيه) *
                                 </label>
                                 <input
                                     type="number"
@@ -200,7 +204,7 @@ export default function AdminRestaurantsPage() {
                                     <p className="text-gray-600 mb-2">📞 {restaurant.phone}</p>
                                 )}
                                 <p className="text-indigo-600 font-bold mb-4">
-                                    توصيل: {restaurant.deliveryPrice} ر.س
+                                    توصيل: {restaurant.deliveryPrice} جنيه
                                 </p>
                                 <p className="text-sm text-gray-600 mb-4">
                                     {restaurant.menuItems?.length || 0} وجبة

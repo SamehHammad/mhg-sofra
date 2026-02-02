@@ -168,7 +168,7 @@ export default function BillingPage() {
                                 {billing.restaurant}
                             </div>
                             <div className="text-sm text-gray-600">
-                                سعر التوصيل: {billing.deliveryFee.toFixed(2)} ر.س
+                                سعر التوصيل: {billing.deliveryFee.toFixed(2)} جنيه
                             </div>
                         </div>
 
@@ -178,7 +178,7 @@ export default function BillingPage() {
                                     <div className="flex items-center justify-between mb-3">
                                         <h3 className="text-xl font-bold text-gray-800">{user.username}</h3>
                                         <div className="text-2xl font-bold text-indigo-600">
-                                            {user.total.toFixed(2)} ر.س
+                                            {user.total.toFixed(2)} جنيه
                                         </div>
                                     </div>
 
@@ -189,7 +189,7 @@ export default function BillingPage() {
                                                     {item.name} {item.quantity > 1 && `× ${item.quantity}`}
                                                 </span>
                                                 <span className="font-bold text-gray-800">
-                                                    {(item.price * item.quantity).toFixed(2)} ر.س
+                                                    {(item.price * item.quantity).toFixed(2)} جنيه
                                                 </span>
                                             </div>
                                         ))}

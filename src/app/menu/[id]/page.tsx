@@ -185,7 +185,7 @@ export default function MenuPage() {
                                 {selectedItems.size} وجبة محددة
                             </p>
                             <p className="text-2xl font-bold text-indigo-600">
-                                {total.toFixed(2)} ر.س
+                                {total.toFixed(2)} جنيه
                             </p>
                         </div>
                         <button

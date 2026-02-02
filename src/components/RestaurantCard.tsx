@@ -34,7 +34,7 @@ export default function RestaurantCard({ restaurant, mealType }: RestaurantCardP
                     <span className="font-semibold">{menuItemCount}</span> وجبة متاحة
                 </div>
                 <div className="text-sm font-bold text-indigo-600">
-                    توصيل: {restaurant.deliveryPrice} ر.س
+                    توصيل: {restaurant.deliveryPrice} جنيه
                 </div>
             </div>
         </Link>
