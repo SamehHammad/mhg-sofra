@@ -22,19 +22,19 @@ export default function RootLayout({
       <body className={cairo.className} suppressHydrationWarning>
         <LanguageProvider>
           {children}
-              <PWARegister />
-              <PWAInstallBanner
-                logo={'/logo.png'}
-                locale={"ar"}
-                appName={"Tenant Name"}
-              />
+          <PWARegister />
+          <PWAInstallBanner
+            logo={'/logo.png'}
+            locale={"ar"}
+            appName={"MHG Sofra"}
+          />
         </LanguageProvider>
       </body>
     </html>
   );
 }
 
-export async function generateMetadata(){
+export async function generateMetadata() {
   return {
     title: "نظام طباعة وإدارة الشيكات | Check Printing & Management System",
     description: "حل احترافي لطباعة وإدارة الشيكات | Enterprise-grade check printing and management solution",
