@@ -1,98 +1,144 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting seed...');
+    console.log('🌱 Starting database seed...');
 
-  // Create Countries
-  const egypt = await prisma.country.upsert({
-    where: { code: 'EG' },
-    update: {},
-    create: {
-      code: 'EG',
-      nameAr: 'مصر',
-      nameEn: 'Egypt',
-    },
-  });
+    // Create admin user
+    const adminPasswordHash = await bcrypt.hash('sam7@123', 10);
 
-  const saudiArabia = await prisma.country.upsert({
-    where: { code: 'SA' },
-    update: {},
-    create: {
-      code: 'SA',
-      nameAr: 'السعودية',
-      nameEn: 'Saudi Arabia',
-    },
-  });
+    const admin = await prisma.admin.upsert({
+        where: { username: 'admin' },
+        update: {},
+        create: {
+            username: 'admin',
+            passwordHash: adminPasswordHash,
+        },
+    });
 
-  const palestine = await prisma.country.upsert({
-    where: { code: 'PS' },
-    update: {},
-    create: {
-      code: 'PS',
-      nameAr: 'فلسطين',
-      nameEn: 'Palestine',
-    },
-  });
+    console.log('✅ Admin user created:', admin.username);
 
-  console.log('✅ Countries created');
+    // Create sample restaurants
+    const restaurant1 = await prisma.restaurant.create({
+        data: {
+            name: 'مطعم الأصالة',
+            phone: '0501234567',
+            deliveryPrice: 15,
+            menuItems: {
+                create: [
+                    {
+                        name: 'فول مدمس',
+                        price: 12,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مدمس بالطحينة والليمون',
+                    },
+                    {
+                        name: 'شكشوكة',
+                        price: 18,
+                        mealType: 'BREAKFAST',
+                        description: 'بيض بالطماطم والفلفل',
+                    },
+                    {
+                        name: 'كبسة دجاج',
+                        price: 35,
+                        mealType: 'LUNCH',
+                        description: 'كبسة دجاج مع الأرز البسمتي',
+                    },
+                    {
+                        name: 'مندي لحم',
+                        price: 45,
+                        mealType: 'LUNCH',
+                        description: 'مندي لحم مع الأرز',
+                    },
+                ],
+            },
+        },
+    });
 
-  // Create Banks for Egypt
-  const nbe = await prisma.bank.create({
-    data: {
-      countryId: egypt.id,
-      nameAr: 'البنك الأهلي المصري',
-      nameEn: 'National Bank of Egypt',
-    },
-  });
+    const restaurant2 = await prisma.restaurant.create({
+        data: {
+            name: 'مطعم النخيل',
+            phone: '0507654321',
+            deliveryPrice: 20,
+            menuItems: {
+                create: [
+                    {
+                        name: 'مشاوي مشكلة',
+                        price: 55,
+                        mealType: 'DINNER',
+                        description: 'مشاوي لحم ودجاج',
+                    },
+                    {
+                        name: 'سمك مشوي',
+                        price: 48,
+                        mealType: 'DINNER',
+                        description: 'سمك طازج مشوي',
+                    },
+                ],
+            },
+        },
+    });
 
-  const cib = await prisma.bank.create({
-    data: {
-      countryId: egypt.id,
-      nameAr: 'البنك التجاري الدولي',
-      nameEn: 'Commercial International Bank',
-    },
-  });
+    const restaurant3 = await prisma.restaurant.create({
+        data: {
+            name: 'حلويات السعادة',
+            phone: '0509876543',
+            deliveryPrice: 10,
+            menuItems: {
+                create: [
+                    {
+                        name: 'كنافة نابلسية',
+                        price: 25,
+                        mealType: 'DESSERT',
+                        description: 'كنافة بالجبنة والقطر',
+                    },
+                    {
+                        name: 'بسبوسة',
+                        price: 20,
+                        mealType: 'DESSERT',
+                        description: 'بسبوسة بالقشطة',
+                    },
+                    {
+                        name: 'أم علي',
+                        price: 22,
+                        mealType: 'DESSERT',
+                        description: 'حلى أم علي بالمكسرات',
+                    },
+                ],
+            },
+        },
+    });
 
-  // Create Banks for Saudi Arabia
-  const riyadBank = await prisma.bank.create({
-    data: {
-      countryId: saudiArabia.id,
-      nameAr: 'بنك الرياض',
-      nameEn: 'Riyad Bank',
-    },
-  });
+    console.log('✅ Sample restaurants created');
+    console.log('  -', restaurant1.name);
+    console.log('  -', restaurant2.name);
+    console.log('  -', restaurant3.name);
 
-  const fransiBank = await prisma.bank.create({
-    data: {
-      countryId: saudiArabia.id,
-      nameAr: 'البنك السعودي الفرنسي',
-      nameEn: 'Banque Saudi Fransi',
-    },
-  });
+    // Create sample users
+    const user1 = await prisma.user.create({
+        data: {
+            username: 'أحمد',
+        },
+    });
 
-  // Create Banks for Palestine
-  const arabBank = await prisma.bank.create({
-    data: {
-      countryId: palestine.id,
-      nameAr: 'البنك العربي',
-      nameEn: 'Arab Bank',
-    },
-  });
+    const user2 = await prisma.user.create({
+        data: {
+            username: 'محمد',
+        },
+    });
 
-  console.log('✅ Banks created');
+    console.log('✅ Sample users created');
 
-  console.log('🎉 Seed completed successfully!');
-  console.log(`Created ${3} countries and ${5} banks`);
+    console.log('🎉 Database seeded successfully!');
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error('❌ Error during seed:', e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+    .catch((e) => {
+        console.error('❌ Error seeding database:', e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });
