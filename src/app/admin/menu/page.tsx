@@ -336,7 +336,7 @@ export default function AdminMenuPage() {
                             setScannedItems([]);
                             setImportResult(null);
                         }}
-                        className="btn px-6 py-3 rounded-xl font-bold bg-white text-indigo-600 border-2 border-indigo-600 hover:bg-indigo-50 transition-all duration-300 flex items-center gap-2"
+                        className="btn px-6 py-3 rounded-xl font-bold bg-white text-mhg-blue border-2 border-mhg-blue hover:bg-mhg-blue/10 transition-all duration-300 flex items-center gap-2"
                     >
                         <span>📸</span>
                         {showScanner ? 'إغلاق الماسح الضوئي' : 'مسح المنيو من صورة'}
@@ -604,7 +604,7 @@ export default function AdminMenuPage() {
 
                         {/* Review Scanned Items */}
                         {scannedItems.length > 0 && (
-                            <div className="glass-card p-6 border-2 border-indigo-100">
+                            <div className="glass-card p-6 border-2 border-mhg-gold/20">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-xl font-bold text-gray-800">
                                         مراجعة الوجبات المستخرجة ({scannedItems.length})
@@ -619,7 +619,7 @@ export default function AdminMenuPage() {
                                         <div key={item.id} className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between group">
                                             <div>
                                                 <div className="font-bold text-gray-800">{item.name}</div>
-                                                <div className="text-indigo-600 font-bold">{item.price} جنيه</div>
+                                                <div className="text-mhg-blue font-bold">{item.price} جنيه</div>
                                             </div>
                                             <button
                                                 onClick={() => removeScannedItem(item.id)}
@@ -671,12 +671,12 @@ export default function AdminMenuPage() {
                                         {item.description && (
                                             <p className="text-sm text-gray-600 mb-2">{item.description}</p>
                                         )}
-                                        <p className="text-lg font-bold text-indigo-600">{item.price} جنيه</p>
+                                        <p className="text-lg font-bold text-mhg-blue">{item.price} جنيه</p>
                                     </div>
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => handleEdit(item)}
-                                            className="px-4 py-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all duration-300"
+                                            className="px-4 py-2 rounded-xl font-bold bg-mhg-blue hover:bg-mhg-blue-deep text-white transition-all duration-300"
                                         >
                                             تعديل
                                         </button>

@@ -145,7 +145,7 @@ export default function AdminOrdersPage() {
                                         <p className="text-sm text-gray-600">{order.restaurant.name}</p>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-2xl font-bold text-indigo-600 mb-1">
+                                        <div className="text-2xl font-bold text-mhg-blue mb-1">
                                             {order.totalAmount.toFixed(2)} جنيه
                                         </div>
                                         <div className="text-xs text-gray-500">{order.orderNumber}</div>

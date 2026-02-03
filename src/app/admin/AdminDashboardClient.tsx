@@ -46,19 +46,19 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <div className="glass-card p-6">
                                 <div className="text-4xl mb-2">🏪</div>
-                                <div className="text-3xl font-bold text-indigo-600 mb-1">{stats.restaurantsCount}</div>
+                                <div className="text-3xl font-bold text-mhg-blue mb-1">{stats.restaurantsCount}</div>
                                 <div className="text-gray-600">مطعم مسجل</div>
                             </div>
 
                             <div className="glass-card p-6">
                                 <div className="text-4xl mb-2">📦</div>
-                                <div className="text-3xl font-bold text-indigo-600 mb-1">{stats.ordersCount}</div>
+                                <div className="text-3xl font-bold text-mhg-blue mb-1">{stats.ordersCount}</div>
                                 <div className="text-gray-600">إجمالي الطلبات</div>
                             </div>
 
                             <div className="glass-card p-6">
                                 <div className="text-4xl mb-2">🔥</div>
-                                <div className="text-3xl font-bold text-indigo-600 mb-1">{stats.todayOrders}</div>
+                                <div className="text-3xl font-bold text-mhg-gold-deep mb-1">{stats.todayOrders}</div>
                                 <div className="text-gray-600">طلبات اليوم</div>
                             </div>
                         </div>
@@ -68,7 +68,7 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <a
                                     href="/admin/restaurants"
-                                    className="p-4 bg-white hover:bg-indigo-50 rounded-xl border-2 border-gray-100 hover:border-indigo-600 transition-all duration-300 flex items-center gap-3"
+                                    className="p-4 bg-white hover:bg-mhg-gold/10 rounded-xl border-2 border-gray-100 hover:border-mhg-gold transition-all duration-300 flex items-center gap-3"
                                 >
                                     <span className="text-3xl">🏪</span>
                                     <div>
@@ -79,7 +79,7 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
 
                                 <a
                                     href="/admin/menu"
-                                    className="p-4 bg-white hover:bg-indigo-50 rounded-xl border-2 border-gray-100 hover:border-indigo-600 transition-all duration-300 flex items-center gap-3"
+                                    className="p-4 bg-white hover:bg-mhg-blue/10 rounded-xl border-2 border-gray-100 hover:border-mhg-blue transition-all duration-300 flex items-center gap-3"
                                 >
                                     <span className="text-3xl">📋</span>
                                     <div>
@@ -90,7 +90,7 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
 
                                 <a
                                     href="/admin/orders"
-                                    className="p-4 bg-white hover:bg-indigo-50 rounded-xl border-2 border-gray-100 hover:border-indigo-600 transition-all duration-300 flex items-center gap-3"
+                                    className="p-4 bg-white hover:bg-mhg-brown/10 rounded-xl border-2 border-gray-100 hover:border-mhg-brown transition-all duration-300 flex items-center gap-3"
                                 >
                                     <span className="text-3xl">📦</span>
                                     <div>
@@ -101,7 +101,7 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
 
                                 <a
                                     href="/orders"
-                                    className="p-4 bg-white hover:bg-indigo-50 rounded-xl border-2 border-gray-100 hover:border-indigo-600 transition-all duration-300 flex items-center gap-3"
+                                    className="p-4 bg-white hover:bg-mhg-gold/10 rounded-xl border-2 border-gray-100 hover:border-mhg-gold transition-all duration-300 flex items-center gap-3"
                                 >
                                     <span className="text-3xl">👀</span>
                                     <div>

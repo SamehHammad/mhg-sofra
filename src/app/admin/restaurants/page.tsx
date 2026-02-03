@@ -189,7 +189,7 @@ export default function AdminRestaurantsPage() {
                                 {restaurant.phone && (
                                     <p className="text-gray-600 mb-2">📞 {restaurant.phone}</p>
                                 )}
-                                <p className="text-indigo-600 font-bold mb-4">
+                                <p className="text-mhg-gold-deep font-bold mb-4">
                                     توصيل: {restaurant.deliveryPrice} جنيه
                                 </p>
                                 <p className="text-sm text-gray-600 mb-4">
@@ -198,7 +198,7 @@ export default function AdminRestaurantsPage() {
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => handleEdit(restaurant)}
-                                        className="flex-1 px-4 py-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all duration-300"
+                                        className="flex-1 px-4 py-2 rounded-xl font-bold bg-mhg-blue hover:bg-mhg-blue-deep text-white transition-all duration-300"
                                     >
                                         تعديل
                                     </button>
