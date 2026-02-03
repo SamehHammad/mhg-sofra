@@ -4,11 +4,18 @@ import { useState, useEffect } from 'react';
 
 interface UsernameModalProps {
     onSubmit: (username: string) => void;
+    onClose?: () => void;
+    initialUsername?: string;
+    canClose?: boolean;
 }
 
-export default function UsernameModal({ onSubmit }: UsernameModalProps) {
-    const [username, setUsername] = useState('');
+export default function UsernameModal({ onSubmit, onClose, initialUsername = '', canClose = false }: UsernameModalProps) {
+    const [username, setUsername] = useState(initialUsername || '');
     const [isOpen, setIsOpen] = useState(true);
+
+    useEffect(() => {
+        if (initialUsername) setUsername(initialUsername);
+    }, [initialUsername]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,9 +49,23 @@ export default function UsernameModal({ onSubmit }: UsernameModalProps) {
                         />
                     </div>
 
-                    <button type="submit" className="btn-primary w-full">
-                        متابعة
-                    </button>
+                    <div className="flex gap-2">
+                        <button type="submit" className="btn-primary flex-1">
+                            متابعة
+                        </button>
+                        {canClose && onClose && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    onClose();
+                                }}
+                                className="px-4 py-2 rounded-xl font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                            >
+                                إلغاء
+                            </button>
+                        )}
+                    </div>
                 </form>
             </div>
         </div>

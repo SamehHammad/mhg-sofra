@@ -6,12 +6,18 @@ import AdminNav from '@/components/AdminNav';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import { MEAL_TYPES } from '@/lib/constants';
+import { useNotification } from '@/context/NotificationContext';
 
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [password, setPassword] = useState('');
+    const [deleting, setDeleting] = useState(false);
+
     const router = useRouter();
+    const { showNotification, showConfirm } = useNotification();
 
     useEffect(() => {
         checkAuth();
@@ -49,6 +55,33 @@ export default function AdminOrdersPage() {
         }
     };
 
+    const handleDeleteAll = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setDeleting(true);
+        try {
+            const response = await fetch('/api/admin/orders/delete-all', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showNotification('تم الحذف', 'تم حذف جميع الطلبات بنجاح', 'success');
+                setOrders([]);
+                setShowPasswordModal(false);
+                setPassword('');
+            } else {
+                showNotification('خطأ', data.error || 'فشل الحذف', 'error');
+            }
+        } catch (err) {
+            showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
+        } finally {
+            setDeleting(false);
+        }
+    };
+
     const getMealTypeLabel = (type: string) => {
         return MEAL_TYPES.find((mt) => mt.type === type)?.labelAr || type;
     };
@@ -56,7 +89,17 @@ export default function AdminOrdersPage() {
     return (
         <div className="min-h-screen p-4">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">إدارة الطلبات</h1>
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-3xl font-bold text-gray-800">إدارة الطلبات</h1>
+                    {orders.length > 0 && (
+                        <button
+                            onClick={() => setShowPasswordModal(true)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-bold transition-all shadow-lg hover:shadow-red-200"
+                        >
+                            🗑️ حذف جميع الطلبات
+                        </button>
+                    )}
+                </div>
 
                 <AdminNav />
 
@@ -114,6 +157,52 @@ export default function AdminOrdersPage() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                )}
+
+                {/* Password Confirmation Modal */}
+                {showPasswordModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-[fade-in_0.2s_ease-out]">
+                        <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl animate-[scale-in_0.3s_ease-out]">
+                            <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">تأكيد الحذف النهائي</h3>
+                            <p className="text-gray-600 mb-6 text-center">
+                                هل أنت متأكد من رغبتك في حذف جميع الطلبات؟ لا يمكن التراجع عن هذا الإجراء.
+                                <br />
+                                <span className="text-red-600 font-bold">الرجاء إدخال بيانات التسجيل (كلمة المرور) للتأكيد.</span>
+                            </p>
+
+                            <form onSubmit={handleDeleteAll}>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="أدخل كلمة المرور"
+                                    className="input-modern mb-6"
+                                    required
+                                    autoFocus
+                                />
+
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowPasswordModal(false);
+                                            setPassword('');
+                                        }}
+                                        className="flex-1 px-4 py-3 rounded-xl font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                                    >
+                                        إلغاء
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={deleting}
+                                        className="flex-1 px-4 py-3 rounded-xl font-bold bg-red-600 hover:bg-red-700 text-white transition-colors shadow-lg shadow-red-200 disabled:opacity-50"
+                                    >
+                                        {deleting ? 'جاري الحذف...' : 'تأكيد الحذف'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 )}
             </div>

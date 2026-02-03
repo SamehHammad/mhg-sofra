@@ -54,7 +54,7 @@ export default function AdminLoginPage() {
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="input-modern"
+                            className="input-modern border border-gray-300"
                             required
                         />
                     </div>
@@ -67,8 +67,9 @@ export default function AdminLoginPage() {
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="input-modern"
-                            placeholder="sam7@123"
+                            className="input-modern border border-gray-300"
+                            // placeholder="sam7@123"
+                            placeholder="Enter your password"
                             required
                         />
                     </div>

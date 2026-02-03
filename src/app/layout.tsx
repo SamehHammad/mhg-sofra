@@ -1,6 +1,7 @@
 import { Cairo } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 import { PWARegister } from "../../pwa/PWARegister";
 import { PWAInstallBanner } from "../../pwa/PWAInstallBanner";
 
@@ -21,7 +22,9 @@ export default function RootLayout({
     <html lang="ar" dir="rtl" className={cairo.variable} suppressHydrationWarning>
       <body className={cairo.className} suppressHydrationWarning>
         <LanguageProvider>
-          {children}
+          <NotificationProvider>
+            {children}
+          </NotificationProvider>
           <PWARegister />
           <PWAInstallBanner
             logo={'/logo.png'}
