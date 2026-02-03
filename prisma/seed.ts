@@ -111,10 +111,391 @@ async function main() {
         },
     });
 
+    // المطعم الجديد: مطعم الشبراوي
+    const restaurant4 = await prisma.restaurant.create({
+        data: {
+            name: 'مطعم الشبراوي',
+            phone: '01019030033',
+            deliveryPrice: 8, // سعر التوصيل الثابت 20 كما طلبت
+            menuItems: {
+                create: [
+                    // ===== المقبلات والإضافات =====
+                    {
+                        name: 'علبة مخلل مشكل',
+                        price: 9.99,
+                        mealType: 'APPETIZER',
+                        description: 'مخلل مشكل بأصناف متنوعة',
+                    },
+                    {
+                        name: 'خبز بلدى محلى',
+                        price: 2.49,
+                        mealType: 'APPETIZER',
+                        description: 'رغيف خبز بلدى محلى',
+                    },
+                    {
+                        name: 'طماطم بالدقه حار',
+                        price: 17.99,
+                        mealType: 'APPETIZER',
+                        description: 'خلطة طماطم بدقة الثوم الشهيرة',
+                    },
+                    {
+                        name: '3 أرغفة خبز سورى صغير',
+                        price: 7.99,
+                        mealType: 'APPETIZER',
+                        description: 'خبز شامي صغير للساندويتشات والغمس',
+                    },
+                    {
+                        name: 'طبق شيبسى محلى',
+                        price: 22.99,
+                        mealType: 'APPETIZER',
+                        description: 'شيبسي محلى بتوابل الشبراوي المميزة',
+                    },
+
+                    // ===== سندويتشات الفول =====
+                    {
+                        name: 'ساندويتش فول الشبراوي',
+                        price: 12.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول بخلطة الشبراوي المميزة مع الليمون والتوابل الرائعة',
+                    },
+                    {
+                        name: 'ساندويتش فول بالصلصة',
+                        price: 14.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مع صوص الصلصة المميز من الشبراوي',
+                    },
+                    {
+                        name: 'ساندويتش فول مع زيت حار',
+                        price: 15.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مصري مع زيت حار محلّاوي أصلي',
+                    },
+                    {
+                        name: 'ساندويتش فول مع فلافل ميكس',
+                        price: 16.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول، فلافل، خضروات وتوابل',
+                    },
+                    {
+                        name: 'ساندويتش فول إسكندراني',
+                        price: 16.99,
+                        mealType: 'BREAKFAST',
+                        description: 'خلطة الفول الإسكندراني مع الخضروات الطازجة',
+                    },
+                    {
+                        name: 'ساندويتش فول مع صوص طماطم',
+                        price: 16.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مع صوص الطماطم على طريقة المحلاوية',
+                    },
+                    {
+                        name: 'ساندويتش فول مع بابا غنوج',
+                        price: 16.99,
+                        mealType: 'BREAKFAST',
+                        description: 'خلطة الفول الشبراوي مع بابا غنوج المميز',
+                    },
+                    {
+                        name: 'ساندويتش فول دمياطي مع باذنجان',
+                        price: 17.99,
+                        mealType: 'BREAKFAST',
+                        description: 'خلطة الفول الدمياطي مع باذنجان مقلي',
+                    },
+                    {
+                        name: 'ساندويتش فول صوص ليمون معصفر',
+                        price: 17.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مع ليمون مخلل بالعصفر وتوابل الشبراوي',
+                    },
+                    {
+                        name: 'ساندويتش فول زيت زيتون',
+                        price: 18.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مع زيت الزيتون وخلطة الشبراوي الرائعة',
+                    },
+                    {
+                        name: 'ساندويتش فول بالبيض مسلوق',
+                        price: 22.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مع بيض مسلوق وتوابل الشبراوي المميزة',
+                    },
+                    {
+                        name: 'ساندويتش فول بالبيض أومليت',
+                        price: 24.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مع بيض أومليت',
+                    },
+                    {
+                        name: 'ساندويتش فول بالسجق',
+                        price: 26.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مصري مع سجق شرقي',
+                    },
+
+                    // ===== حواوشي =====
+                    {
+                        name: 'حواوشي بلدى ساده',
+                        price: 69.99,
+                        mealType: 'LUNCH',
+                        description: 'لحم بلدي مفروم مع توابل وخضروات مع بطاطس فرايز',
+                    },
+                    {
+                        name: 'حواوشي بلدى مع جبن رومي',
+                        price: 84.99,
+                        mealType: 'LUNCH',
+                        description: 'لحم بلدي مفروم مع جبن رومي',
+                    },
+                    {
+                        name: 'حواوشي بلدى بسطرمة',
+                        price: 84.99,
+                        mealType: 'LUNCH',
+                        description: 'لحم بلدي مفروم مع بسطرمة',
+                    },
+                    {
+                        name: 'حواوشي بلدى مع موزاريلا',
+                        price: 89.99,
+                        mealType: 'LUNCH',
+                        description: 'لحم مفروم مع موزاريلا',
+                    },
+                    {
+                        name: 'حواوشي ميكس جبن',
+                        price: 89.99,
+                        mealType: 'LUNCH',
+                        description: 'حواوشي بلدي مع ميكس جبن',
+                    },
+
+                    // ===== صواريخ كفتة =====
+                    {
+                        name: 'صاروخ كفتة مشوية عيش سوري',
+                        price: 69.99,
+                        mealType: 'LUNCH',
+                        description: 'كفتة بلدية مشوية في عيش سوري',
+                    },
+                    {
+                        name: 'صاروخ كفتة مشوية مع جبنة رومي',
+                        price: 79.99,
+                        mealType: 'LUNCH',
+                        description: 'كفتة مشوية مع جبنة رومي في عيش سوري',
+                    },
+                    {
+                        name: 'صاروخ كفتة مشوية مع ميكس جبن',
+                        price: 84.99,
+                        mealType: 'LUNCH',
+                        description: 'كفتة مشوية مع ميكس جبن في عيش سوري',
+                    },
+
+                    // ===== سندويتشات الفلافل =====
+                    {
+                        name: 'ساندويتش طعمية الشبراوي',
+                        price: 12.99,
+                        mealType: 'BREAKFAST',
+                        description: 'طعمية مع طماطم وخيار طازج وتوابل الشبراوي المميزة',
+                    },
+                    {
+                        name: 'ساندويتش طعمية محشية حار',
+                        price: 16.99,
+                        mealType: 'BREAKFAST',
+                        description: 'طعمية بحشو الشبراوي الحار مع طماطم وخيار',
+                    },
+                    {
+                        name: 'ساندويتش طعمية مع بابا غنوج',
+                        price: 16.99,
+                        mealType: 'BREAKFAST',
+                        description: 'طعمية مع بابا غنوج',
+                    },
+                    {
+                        name: 'ساندويتش طعمية مع باذنجان',
+                        price: 17.99,
+                        mealType: 'BREAKFAST',
+                        description: 'طعمية مع باذنجان مقلي وخلطة الشبراوي',
+                    },
+                    {
+                        name: 'ساندويتش فلافل كيري',
+                        price: 19.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فلافل مع حشو الكيري اللذيذ',
+                    },
+                    {
+                        name: 'ساندويتش فلافل حشو شيدر',
+                        price: 19.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فلافل مع صوص الشيدر',
+                    },
+
+                    // ===== سندويتشات البطاطس =====
+                    {
+                        name: 'ساندويتش بطاطس بيوريه',
+                        price: 15.99,
+                        mealType: 'LUNCH',
+                        description: 'بطاطس مهروسة مع التوابل المميزة',
+                    },
+                    {
+                        name: 'ساندويتش بطاطس شيبسي بالتوابل',
+                        price: 19.99,
+                        mealType: 'LUNCH',
+                        description: 'شيبسي بالتوابل من الشبراوي',
+                    },
+                    {
+                        name: 'ساندويتش بطاطس محمرة',
+                        price: 22.99,
+                        mealType: 'LUNCH',
+                        description: 'بطاطس محمرة مع الخضروات الطازجة وتوابل الشبراوي',
+                    },
+                    {
+                        name: 'ساندويتش بطاطس مع باذنجان مقلي',
+                        price: 22.99,
+                        mealType: 'LUNCH',
+                        description: 'بطاطس مع باذنجان مقلي وخضروات طازجة',
+                    },
+
+                    // ===== سندويتشات البيض =====
+                    {
+                        name: 'ساندويتش بيض مسلوق',
+                        price: 21.99,
+                        mealType: 'BREAKFAST',
+                        description: 'بيض مسلوق مع توابل الشبراوي الساحرة',
+                    },
+                    {
+                        name: 'ساندويتش بيض مقلي',
+                        price: 24.99,
+                        mealType: 'BREAKFAST',
+                        description: 'بيض مقلي على الطريقة البورسعيدية',
+                    },
+                    {
+                        name: 'ساندويتش بيض بيتزا',
+                        price: 25.99,
+                        mealType: 'BREAKFAST',
+                        description: 'بيض أومليت مع خلطة البهار المميزة',
+                    },
+                    {
+                        name: 'ساندويتش شكشوكة',
+                        price: 25.99,
+                        mealType: 'BREAKFAST',
+                        description: 'بيض مع طماطم، بصل مفروم، وفلفل رومي',
+                    },
+                    {
+                        name: 'ساندويتش بيض مقلي مع جبنة ميكس',
+                        price: 34.99,
+                        mealType: 'BREAKFAST',
+                        description: 'بيض مقلي مع جبنة ميكس سائلة على الطريقة السويسرية',
+                    },
+                    {
+                        name: 'ساندويتش بيض بالبسطرمة',
+                        price: 37.99,
+                        mealType: 'BREAKFAST',
+                        description: 'بيض مع بسطرمة من الشبراوي',
+                    },
+
+                    // ===== صواريخ عيش سوري =====
+                    {
+                        name: 'صاروخ الفنكوش',
+                        price: 59.99,
+                        mealType: 'LUNCH',
+                        description: 'بيض بسطرمة مع ميكس جبن، زيتون وبطاطس محمرة',
+                    },
+                    {
+                        name: 'صاروخ طعمية رول عيش سوري',
+                        price: 39.99,
+                        mealType: 'LUNCH',
+                        description: 'رول طعمية مع الخضروات الطازجة وتوابل مميزة',
+                    },
+                    {
+                        name: 'صاروخ ديناميت رول عيش سوري',
+                        price: 46.99,
+                        mealType: 'LUNCH',
+                        description: 'فلافل، باذنجان، بطاطس، فول وبيض مع خضروات',
+                    },
+
+                    // ===== سندويتشات متنوعة =====
+                    {
+                        name: 'ساندويتش باذنجان مقلي',
+                        price: 18.99,
+                        mealType: 'LUNCH',
+                        description: 'حلقات باذنجان مقلي مع خضروات وطحينة',
+                    },
+                    {
+                        name: 'ساندويتش مسقعة مصري أصيل',
+                        price: 18.99,
+                        mealType: 'LUNCH',
+                        description: 'مسقعة بخلطة الشبراوي السرية (حار أو عادي)',
+                    },
+                    {
+                        name: 'ساندويتش جبنة فلاحي قديمة بالطماطم',
+                        price: 17.99,
+                        mealType: 'BREAKFAST',
+                        description: 'جبنة بيضاء قديمة مع طماطم، خيار، زيت ذرة ونعناع',
+                    },
+                    {
+                        name: 'ساندويتش بابا غنوج مع توابل الشبراوي',
+                        price: 19.99,
+                        mealType: 'LUNCH',
+                        description: 'باذنجان مقلي مهروس مع صوص طحينة وتوابل الشبراوي',
+                    },
+                    {
+                        name: 'ساندويتش سجق شرقي',
+                        price: 29.99,
+                        mealType: 'LUNCH',
+                        description: 'سجق شرقي في عيش بلدي',
+                    },
+
+                    // ===== أطباق وعلب =====
+                    {
+                        name: 'علبة فول سادة',
+                        price: 36.99,
+                        mealType: 'BREAKFAST',
+                        description: 'علبة فول سادة بدون إضافات',
+                    },
+                    {
+                        name: 'علبة فول محوج',
+                        price: 36.99,
+                        mealType: 'BREAKFAST',
+                        description: 'علبة فول محوج مع زيت وليمون وتوابل',
+                    },
+                    {
+                        name: 'علبة فول بالسمنة',
+                        price: 39.99,
+                        mealType: 'BREAKFAST',
+                        description: 'طبق مصري تقليدي من الفول والثوم والبهارات والسمن',
+                    },
+                    {
+                        name: 'علبة فول بالبيض مسلوق كبير',
+                        price: 41.99,
+                        mealType: 'BREAKFAST',
+                        description: 'فول مع قطع بيض مسلوق',
+                    },
+                    {
+                        name: 'علبة شكشوكة',
+                        price: 23.99,
+                        mealType: 'BREAKFAST',
+                        description: 'بيض مع صوص طماطم بنكهة الفلفل والبصل والبهارات',
+                    },
+                    {
+                        name: 'علبة بابا غنوج',
+                        price: 23.99,
+                        mealType: 'APPETIZER',
+                        description: 'بابا غنوج بالتتبيلة الشرقية',
+                    },
+                    {
+                        name: 'علبة طحينة شبراوي',
+                        price: 19.99,
+                        mealType: 'APPETIZER',
+                        description: 'طحينة مع توابل الشبراوي الرائعة',
+                    },
+                    {
+                        name: 'بيضة مسلوقة',
+                        price: 11.99,
+                        mealType: 'BREAKFAST',
+                        description: 'بيضة مسلوقة',
+                    },
+                ],
+            },
+        },
+    });
+
     console.log('✅ Sample restaurants created');
     console.log('  -', restaurant1.name);
     console.log('  -', restaurant2.name);
     console.log('  -', restaurant3.name);
+    console.log('  -', restaurant4.name);
 
     // Create sample users
     const user1 = await prisma.user.create({

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { extractMenuFromImage } from '@/lib/ocr';
 
+export const runtime = 'nodejs';
+
 // POST: Upload menu image and extract items via OCR
 export async function POST(request: Request) {
     try {

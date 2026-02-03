@@ -21,6 +21,7 @@ export default function MenuPage() {
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
     const [selectedItems, setSelectedItems] = useState<Map<string, number>>(new Map());
+    const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
@@ -65,6 +66,17 @@ export default function MenuPage() {
         newSelected.set(itemId, quantity);
         setSelectedItems(newSelected);
     };
+
+    const normalizeText = (value: string) => value.toLowerCase().trim();
+
+    const filteredMenuItems = menuItems.filter((item) => {
+        const q = normalizeText(searchQuery);
+        if (!q) return true;
+
+        const name = normalizeText(item.name);
+        const description = normalizeText(item.description || '');
+        return name.includes(q) || description.includes(q);
+    });
 
     const calculateTotal = () => {
         let total = 0;
@@ -148,6 +160,17 @@ export default function MenuPage() {
                             <p className="text-gray-600">اختر الوجبات التي تريدها</p>
                         </div>
                     )}
+
+                    {!loading && !error && menuItems.length > 0 && (
+                        <div className="mt-6">
+                            <input
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="ابحث عن وجبة..."
+                                className="w-full glass-card px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-right"
+                            />
+                        </div>
+                    )}
                 </div>
             </header>
 
@@ -168,16 +191,26 @@ export default function MenuPage() {
 
                 {!loading && !error && menuItems.length > 0 && (
                     <div className="space-y-4">
-                        {menuItems.map((item) => (
-                            <MenuItemCard
-                                key={item.id}
-                                menuItem={item}
-                                isSelected={selectedItems.has(item.id)}
-                                onToggle={handleToggleItem}
-                                quantity={selectedItems.get(item.id) || 1}
-                                onQuantityChange={handleQuantityChange}
-                            />
-                        ))}
+                        {filteredMenuItems.length === 0 ? (
+                            <div className="text-center py-12">
+                                <div className="text-6xl mb-4">🔎</div>
+                                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                                    لا توجد نتائج
+                                </h3>
+                                <p className="text-gray-600">جرّب البحث بكلمة مختلفة</p>
+                            </div>
+                        ) : (
+                            filteredMenuItems.map((item) => (
+                                <MenuItemCard
+                                    key={item.id}
+                                    menuItem={item}
+                                    isSelected={selectedItems.has(item.id)}
+                                    onToggle={handleToggleItem}
+                                    quantity={selectedItems.get(item.id) || 1}
+                                    onQuantityChange={handleQuantityChange}
+                                />
+                            ))
+                        )}
                     </div>
                 )}
             </main>

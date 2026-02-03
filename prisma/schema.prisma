@@ -111,6 +111,7 @@ model Admin {
 
 // Enums
 enum MealType {
+  APPETIZER
   BREAKFAST
   LUNCH
   DINNER

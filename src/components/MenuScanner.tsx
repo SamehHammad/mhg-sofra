@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { createWorker } from 'tesseract.js';
 
 interface MenuScannerProps {
     restaurantId: string;
@@ -97,26 +98,35 @@ export default function MenuScanner({
             };
             reader.readAsDataURL(file);
 
-            // Upload to API
-            const formData = new FormData();
-            formData.append('image', file);
-
-            const response = await fetch('/api/menu/ocr', {
-                method: 'POST',
-                body: formData,
+            // OCR on client using tesseract.js
+            const worker = await createWorker('ara+eng', 1, {
+                langPath: 'https://tessdata.projectnaptha.com/4.0.0',
             });
 
-            const data = await response.json();
+            try {
+                const ret = await worker.recognize(file);
+                const text = (ret?.data?.text || '').trim();
 
-            if (response.ok && data.success) {
-                onItemsExtracted(data.items);
-            } else {
-                setError(data.error || 'فشل في استخراج البيانات من الصورة');
-                setPreview(null);
+                if (!text) {
+                    setError('لم يتم العثور على نص في الصورة. تأكد من وضوح الصورة.');
+                    setPreview(null);
+                    return;
+                }
+
+                const items = parseMenuText(text);
+                if (items.length === 0) {
+                    setError('لم يتم العثور على وجبات في الصورة. تأكد من احتواء الصورة على أسماء الوجبات والأسعار.');
+                    setPreview(null);
+                    return;
+                }
+
+                onItemsExtracted(items);
+            } finally {
+                await worker.terminate();
             }
         } catch (err) {
             setError('حدث خطأ أثناء معالجة الصورة');
-            console.error('Upload error:', err);
+            console.error('OCR error:', err);
             setPreview(null);
         } finally {
             setUploading(false);
@@ -128,6 +138,62 @@ export default function MenuScanner({
         if (file) {
             processFile(file);
         }
+    };
+
+    const parseMenuText = (text: string): { name: string; price: number }[] => {
+        const items: { name: string; price: number }[] = [];
+        const lines = text
+            .split(/\r?\n/)
+            .map((l) => l.trim())
+            .filter(Boolean);
+
+        const patterns: RegExp[] = [
+            /^(.+?)\s*[.\-:|]+\s*(\d+(?:[\.,]\d{1,2})?)\s*(?:ج\.?م|جنيه|EGP|LE)?$/i,
+            /^(.+?)\s+(\d+(?:[\.,]\d{1,2})?)\s*(?:ج\.?م|جنيه|EGP|LE)?$/i,
+            /^(\d+(?:[\.,]\d{1,2})?)\s*(?:ج\.?م|جنيه|EGP|LE)?\s+(.+?)$/i,
+        ];
+
+        for (const line of lines) {
+            if (line.length < 3) continue;
+            if (/^\d+$/.test(line)) continue;
+
+            for (const pattern of patterns) {
+                const match = line.match(pattern);
+                if (!match) continue;
+
+                let name: string;
+                let priceStr: string;
+
+                if (/^\d/.test(match[1])) {
+                    priceStr = match[1];
+                    name = match[2];
+                } else {
+                    name = match[1];
+                    priceStr = match[2];
+                }
+
+                const price = parseFloat(String(priceStr).replace(',', '.'));
+                name = String(name)
+                    .trim()
+                    .replace(/[.\-:|]+$/, '')
+                    .replace(/^\d+\s*[)\].-]?\s*/, '')
+                    .replace(/[\[\]{}()]/g, '')
+                    .replace(/\s{2,}/g, ' ')
+                    .trim();
+
+                if (name.length >= 2 && Number.isFinite(price) && price > 0 && price < 100000) {
+                    items.push({ name, price });
+                }
+
+                break;
+            }
+        }
+
+        const unique = items.filter(
+            (item, index, self) => index === self.findIndex((t) => t.name === item.name && t.price === item.price)
+        );
+
+        return unique;
     };
 
     return (
