@@ -89,15 +89,15 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
     const isAr = locale === "ar";
     const content = {
         title: isAr ? `ثبت تطبيق ${appName}` : `Install ${appName} App`,
-        subtitle: isAr ? "لتجربة طلب وجبات أسرع وأسهل" : "For a faster and easier meal ordering experience",
+        subtitle: isAr ? "لتجربة تسوق أسرع وأسهل" : "For a faster and easier shopping experience",
         button: isAr ? "تثبيت الآن" : "Install Now",
-        };
+    };
 
     return (
         <div
-            className="fixed bottom-4 left-4 right-4 z-[100]"
+            className="fixed bottom-4 left-4 right-4 z-[100] md:hidden"
         >
-            <div
+             <div
                 className="relative overflow-hidden rounded-2xl p-1 md:p-4 flex items-center gap-1 md:gap-2 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border"
                 style={{
                     background: 'rgb(var(--mhg-surface) / 0.97)',
