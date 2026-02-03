@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import RestaurantCard from '@/components/RestaurantCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -8,7 +8,7 @@ import ErrorMessage from '@/components/ErrorMessage';
 import { Restaurant } from '@/lib/types';
 import { MEAL_TYPES } from '@/lib/constants';
 
-export default function RestaurantsPage() {
+function RestaurantsContent() {
     const searchParams = useSearchParams();
     const mealType = searchParams.get('mealType');
     const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -98,5 +98,13 @@ export default function RestaurantsPage() {
                 )}
             </main>
         </div>
+    );
+}
+
+export default function RestaurantsPage() {
+    return (
+        <Suspense fallback={<LoadingSpinner />}>
+            <RestaurantsContent />
+        </Suspense>
     );
 }

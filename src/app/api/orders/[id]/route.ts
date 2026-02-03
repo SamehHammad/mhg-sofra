@@ -4,9 +4,10 @@ import { prisma } from '@/lib/prisma';
 // PUT: Update order (edit items)
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const { items } = await request.json();
 
         // Recalculate total amount
@@ -38,7 +39,7 @@ export async function PUT(
         // Actually, prisma update with nested deleteMany and create is clean.
 
         const updatedOrder = await prisma.order.update({
-            where: { id: params.id },
+            where: { id },
             data: {
                 totalAmount,
                 items: {
@@ -70,15 +71,16 @@ export async function PUT(
 // DELETE: Delete order
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         // In a real app we should check ownership here, 
         // but for now we trust the frontend or check if username matches session
         // functionality is requested for "owner".
 
         await prisma.order.delete({
-            where: { id: params.id },
+            where: { id },
         });
 
         return NextResponse.json({ success: true });
