@@ -15,13 +15,17 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
     const [isVisible, setIsVisible] = useState(false);
     const [isDismissed, setIsDismissed] = useState(false);
     const [isInstalled, setIsInstalled] = useState(false);
+    const [showInstallHelp, setShowInstallHelp] = useState(false);
 
     useEffect(() => {
-        // Check if user already dismissed the banner in this session
-        const dismissed = localStorage.getItem("pwa-banner-dismissed");
-        if (dismissed) {
-            setIsDismissed(true);
-            return;
+        const dismissedUntil = localStorage.getItem("pwa-banner-dismissed-until");
+        if (dismissedUntil) {
+            const until = Number(dismissedUntil);
+            if (!Number.isNaN(until) && Date.now() < until) {
+                setIsDismissed(true);
+                return;
+            }
+            localStorage.removeItem("pwa-banner-dismissed-until");
         }
 
         // Detect if app is installed
@@ -58,7 +62,10 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
     }, [isDismissed, isInstalled]);
 
     const handleInstall = async () => {
-        if (!deferredPrompt) return;
+        if (!deferredPrompt) {
+            setShowInstallHelp(true);
+            return;
+        }
 
         // Show the install prompt
         deferredPrompt.prompt();
@@ -75,13 +82,13 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
         // We used the prompt, and can't use it again
         setDeferredPrompt(null);
         setIsVisible(false);
+        setShowInstallHelp(false);
     };
 
     const handleDismiss = () => {
         setIsVisible(false);
         setIsDismissed(true);
-        // Don't show again for 24 hours (or just use flag)
-        localStorage.setItem("pwa-banner-dismissed", "true");
+        localStorage.setItem("pwa-banner-dismissed-until", String(Date.now() + 24 * 60 * 60 * 1000));
     };
 
     if (!isVisible || isDismissed || isInstalled) return null;
@@ -122,11 +129,19 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
                     <p className="text-xs md:text-sm font-bold" style={{ color: 'rgb(var(--mhg-brown-soft) / 0.95)' }}>
                         {content.subtitle}
                     </p>
+                    {showInstallHelp && (
+                        <p className="mt-1 text-[10px] md:text-xs font-semibold" style={{ color: 'rgb(var(--mhg-blue-deep) / 0.85)' }}>
+                            {isAr
+                                ? 'لو لم تظهر نافذة التثبيت: افتح قائمة المتصفح واختر “إضافة إلى الشاشة الرئيسية”.'
+                                : 'If install doesn’t appear: open your browser menu and choose “Add to Home Screen”.'}
+                        </p>
+                    )}
                 </div>
                 {/* Action buttons */}
                 <div className="flex items-center gap-2">
                     <button
                         onClick={handleInstall}
+                        disabled={!deferredPrompt && showInstallHelp}
                         className="text-[7px] md:text-[11px] font-bold px-2 md:px-4 py-2 rounded-lg transition-all active:scale-95 flex items-center gap-2 shadow-sm"
                         style={{
                             background: 'linear-gradient(90deg, rgb(var(--mhg-blue)), rgb(var(--mhg-gold)))',
