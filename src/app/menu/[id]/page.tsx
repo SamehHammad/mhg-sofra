@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import { MenuItem, Restaurant } from '@/lib/types';
 import { SESSION_KEYS } from '@/lib/constants';
+import { useNotification } from '@/context/NotificationContext';
 
 export default function MenuPage() {
     const params = useParams();
@@ -14,6 +15,8 @@ export default function MenuPage() {
     const router = useRouter();
     const restaurantId = params.id as string;
     const mealType = searchParams.get('mealType');
+
+    const { showNotification } = useNotification();
 
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -77,13 +80,15 @@ export default function MenuPage() {
     const handleSubmitOrder = async () => {
         const username = localStorage.getItem(SESSION_KEYS.USERNAME);
         if (!username) {
-            alert('الرجاء تسجيل الدخول أولاً');
+            showNotification('تنبيه', 'الرجاء تسجيل الدخول أولاً', 'info', () => {
+                router.push('/');
+            });
             router.push('/');
             return;
         }
 
         if (selectedItems.size === 0) {
-            alert('الرجاء اختيار وجبة واحدة على الأقل');
+            showNotification('تنبيه', 'الرجاء اختيار وجبة واحدة على الأقل', 'info');
             return;
         }
 
@@ -109,13 +114,14 @@ export default function MenuPage() {
             const data = await response.json();
 
             if (response.ok) {
-                alert('تم إرسال طلبك بنجاح! ✅');
-                router.push('/orders');
+                showNotification('تم الإرسال', 'تم إرسال طلبك بنجاح', 'success', () => {
+                    router.push('/orders');
+                });
             } else {
-                alert(data.error || 'حدث خطأ أثناء إرسال الطلب');
+                showNotification('خطأ', data.error || 'حدث خطأ أثناء إرسال الطلب', 'error');
             }
         } catch (err) {
-            alert('حدث خطأ أثناء الاتصال بالخادم');
+            showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
         } finally {
             setSubmitting(false);
         }

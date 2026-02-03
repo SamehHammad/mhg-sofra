@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import NotificationDialog, { DialogType } from '@/components/NotificationDialog';
 
 interface NotificationContextType {
-    showNotification: (title: string, message: string, type?: DialogType) => void;
+    showNotification: (title: string, message: string, type?: DialogType, onClose?: () => void) => void;
     showConfirm: (title: string, message: string, onConfirm: () => void) => void;
     closeNotification: () => void;
 }
@@ -18,14 +18,16 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         title: '',
         message: '',
         onConfirm: undefined as (() => void) | undefined,
+        onClose: undefined as (() => void) | undefined,
     });
 
-    const showNotification = (title: string, message: string, type: DialogType = 'info') => {
+    const showNotification = (title: string, message: string, type: DialogType = 'info', onClose?: () => void) => {
         setConfig({
             type,
             title,
             message,
             onConfirm: undefined,
+            onClose,
         });
         setIsOpen(true);
     };
@@ -36,12 +38,21 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
             title,
             message,
             onConfirm,
+            onClose: undefined,
         });
         setIsOpen(true);
     };
 
     const closeNotification = () => {
+        const callback = config.onClose;
         setIsOpen(false);
+        if (callback) {
+            callback();
+            setConfig((prev) => ({
+                ...prev,
+                onClose: undefined,
+            }));
+        }
     };
 
     return (

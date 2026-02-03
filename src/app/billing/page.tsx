@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import { MEAL_TYPES } from '@/lib/constants';
@@ -14,6 +14,11 @@ export default function BillingPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [restaurants, setRestaurants] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetchRestaurants(mealType);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const fetchBilling = async () => {
         if (!date || !mealType || !restaurantId) {

@@ -1,22 +1,31 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
-import { ADMIN_PASSWORD_HASH } from '@/lib/constants';
+import { verifyPassword } from '@/lib/auth';
 
 // POST: Delete all orders (protected by password)
 export async function POST(request: Request) {
     try {
         const { password } = await request.json();
+        const normalizedPassword = typeof password === 'string' ? password.trim() : '';
 
-        if (!password) {
+        if (!normalizedPassword) {
             return NextResponse.json(
                 { error: 'كلمة المرور مطلوبة' },
                 { status: 400 }
             );
         }
 
+        const admin = await prisma.admin.findUnique({ where: { username: 'admin' } });
+
+        if (!admin) {
+            return NextResponse.json(
+                { error: 'غير مصرح' },
+                { status: 401 }
+            );
+        }
+
         // Verify password
-        const isValid = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+        const isValid = await verifyPassword(normalizedPassword, admin.passwordHash);
 
         if (!isValid) {
             return NextResponse.json(

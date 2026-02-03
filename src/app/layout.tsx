@@ -1,9 +1,8 @@
 import { Cairo } from "next/font/google";
 import "./globals.css";
-import { LanguageProvider } from "@/contexts/LanguageContext";
-import { NotificationProvider } from "@/context/NotificationContext";
-import { PWARegister } from "../../pwa/PWARegister";
-import { PWAInstallBanner } from "../../pwa/PWAInstallBanner";
+import Providers from "./Providers";
+import { cookies } from "next/headers";
+import { SESSION_KEYS } from "@/lib/constants";
 
 // خط Cairo - لكل المحتوى العربي
 const cairo = Cairo({
@@ -13,25 +12,18 @@ const cairo = Cairo({
   display: "swap",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const initialUsername = cookieStore.get(SESSION_KEYS.USERNAME)?.value ?? null;
+
   return (
     <html lang="ar" dir="rtl" className={cairo.variable} suppressHydrationWarning>
       <body className={cairo.className} suppressHydrationWarning>
-        <LanguageProvider>
-          <NotificationProvider>
-            {children}
-          </NotificationProvider>
-          <PWARegister />
-          <PWAInstallBanner
-            logo={'/logo.png'}
-            locale={"ar"}
-            appName={"MHG Sofra"}
-          />
-        </LanguageProvider>
+        <Providers initialUsername={initialUsername}>{children}</Providers>
       </body>
     </html>
   );

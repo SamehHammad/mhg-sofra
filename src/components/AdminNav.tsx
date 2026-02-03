@@ -16,7 +16,7 @@ export default function AdminNav() {
     return (
         <nav className="glass-card p-4 mb-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="flex items-center gap-4 flex-wrap">
+                <div className="grid grid-cols-2 lg:grid-cols-4 w-full text-center">
                     {navItems.map((item) => (
                         <Link
                             key={item.href}
@@ -31,13 +31,6 @@ export default function AdminNav() {
                         </Link>
                     ))}
                 </div>
-
-                <Link
-                    href="/"
-                    className="px-4 py-2 rounded-xl font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-300"
-                >
-                    العودة للموقع
-                </Link>
             </div>
         </nav>
     );

@@ -17,14 +17,18 @@ export async function GET(request: Request) {
             );
         }
 
+        const start = new Date(`${date}T00:00:00`);
+        const end = new Date(start);
+        end.setDate(end.getDate() + 1);
+
         // Fetch orders
         const orders = await prisma.order.findMany({
             where: {
                 restaurantId,
                 mealType: mealType as any,
                 orderDate: {
-                    gte: new Date(date + 'T00:00:00'),
-                    lt: new Date(date + 'T23:59:59'),
+                    gte: start,
+                    lt: end,
                 },
             },
             include: {

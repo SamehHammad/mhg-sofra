@@ -75,13 +75,35 @@ export async function DELETE(
 ) {
     try {
         const { id } = await params;
-        // In a real app we should check ownership here, 
-        // but for now we trust the frontend or check if username matches session
-        // functionality is requested for "owner".
+        const username = request.headers.get('x-username');
 
-        await prisma.order.delete({
+        if (!username || username.trim().length === 0) {
+            return NextResponse.json(
+                { error: 'اسم المستخدم مطلوب' },
+                { status: 400 }
+            );
+        }
+
+        const order = await prisma.order.findUnique({
             where: { id },
+            include: { user: true },
         });
+
+        if (!order) {
+            return NextResponse.json(
+                { error: 'الطلب غير موجود' },
+                { status: 404 }
+            );
+        }
+
+        if (order.user.username.trim() !== username.trim()) {
+            return NextResponse.json(
+                { error: 'غير مسموح لك بحذف هذا الطلب' },
+                { status: 403 }
+            );
+        }
+
+        await prisma.order.delete({ where: { id } });
 
         return NextResponse.json({ success: true });
     } catch (error) {

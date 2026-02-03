@@ -15,6 +15,7 @@ export default function AdminOrdersPage() {
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [password, setPassword] = useState('');
     const [deleting, setDeleting] = useState(false);
+    const [deleteTargetOrderId, setDeleteTargetOrderId] = useState<string | null>(null);
 
     const router = useRouter();
     const { showNotification, showConfirm } = useNotification();
@@ -32,6 +33,36 @@ export default function AdminOrdersPage() {
             }
         } catch (err) {
             router.push('/admin/login');
+        }
+    };
+
+    const handleDeleteOne = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!deleteTargetOrderId) return;
+
+        setDeleting(true);
+        try {
+            const response = await fetch(`/api/admin/orders/${deleteTargetOrderId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showNotification('تم الحذف', 'تم حذف الطلب بنجاح', 'success');
+                setOrders((prev) => prev.filter((o) => o.id !== deleteTargetOrderId));
+                setShowPasswordModal(false);
+                setPassword('');
+                setDeleteTargetOrderId(null);
+            } else {
+                showNotification('خطأ', data.error || 'فشل الحذف', 'error');
+            }
+        } catch (err) {
+            showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -134,6 +165,16 @@ export default function AdminOrdersPage() {
                                             {order.totalAmount.toFixed(2)} جنيه
                                         </div>
                                         <div className="text-xs text-gray-500">{order.orderNumber}</div>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setDeleteTargetOrderId(order.id);
+                                                setShowPasswordModal(true);
+                                            }}
+                                            className="mt-2 inline-flex items-center justify-center rounded-xl bg-red-600 px-3 py-2 text-sm font-bold text-white shadow-lg shadow-red-200 hover:bg-red-700 transition-colors"
+                                        >
+                                            🗑️ حذف الطلب
+                                        </button>
                                     </div>
                                 </div>
 
@@ -166,12 +207,12 @@ export default function AdminOrdersPage() {
                         <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl animate-[scale-in_0.3s_ease-out]">
                             <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">تأكيد الحذف النهائي</h3>
                             <p className="text-gray-600 mb-6 text-center">
-                                هل أنت متأكد من رغبتك في حذف جميع الطلبات؟ لا يمكن التراجع عن هذا الإجراء.
+                                هل أنت متأكد من رغبتك في {deleteTargetOrderId ? 'حذف هذا الطلب' : 'حذف جميع الطلبات'}؟ لا يمكن التراجع عن هذا الإجراء.
                                 <br />
                                 <span className="text-red-600 font-bold">الرجاء إدخال بيانات التسجيل (كلمة المرور) للتأكيد.</span>
                             </p>
 
-                            <form onSubmit={handleDeleteAll}>
+                            <form onSubmit={deleteTargetOrderId ? handleDeleteOne : handleDeleteAll}>
                                 <input
                                     type="password"
                                     value={password}
@@ -188,6 +229,7 @@ export default function AdminOrdersPage() {
                                         onClick={() => {
                                             setShowPasswordModal(false);
                                             setPassword('');
+                                            setDeleteTargetOrderId(null);
                                         }}
                                         className="flex-1 px-4 py-3 rounded-xl font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
                                     >
