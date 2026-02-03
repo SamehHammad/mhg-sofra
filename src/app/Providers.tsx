@@ -20,7 +20,7 @@ export default function Providers({
         {children}
       </NotificationProvider>
       <PWARegister />
-      <PWAInstallBanner logo={'/logo.png'} locale={"ar"} appName={"MHG Sofra"} />
+      <PWAInstallBanner logo={'/logo2.png'} locale={"ar"} appName={"MHG Sofra"} />
     </LanguageProvider>
   );
 }
