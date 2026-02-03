@@ -3,10 +3,10 @@ import BillingClient from './BillingClient';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'الحساب والفواتير',
+    title: 'حساب الطلبات',
     description: 'احسب الفواتير وقسّم سعر التوصيل بين المشاركين بسهولة.',
     openGraph: {
-        title: 'الحساب والفواتير | MHG Sofra',
+        title: 'حساب الطلبات | MHG Sofra',
         description: 'احسب الفواتير وقسّم سعر التوصيل بين المشاركين بسهولة.',
         locale: 'ar_SA',
     },

@@ -18,9 +18,9 @@ export default function RestaurantCard({ restaurant, mealType }: RestaurantCardP
         >
             <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{restaurant.name}</h3>
+                    <h3 className="text-xl font-bold text-mhg-gold mb-2">{restaurant.name}</h3>
                     {restaurant.phone && (
-                        <p className="text-gray-600 text-sm flex items-center gap-2">
+                        <p className="text-mhg-gold text-sm flex items-center gap-2">
                             <span>📞</span>
                             {restaurant.phone}
                         </p>
@@ -30,7 +30,7 @@ export default function RestaurantCard({ restaurant, mealType }: RestaurantCardP
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-mhg-gold">
                     <span className="font-semibold">{menuItemCount}</span> وجبة متاحة
                 </div>
                 <div className="text-sm font-bold text-mhg-gold-deep">

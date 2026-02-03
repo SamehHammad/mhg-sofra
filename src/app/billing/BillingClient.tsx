@@ -86,18 +86,18 @@ export default function BillingClient({
                     <a href="/" className="text-mhg-blue hover:text-mhg-blue-deep mb-4 inline-block">
                         ← العودة للرئيسية
                     </a>
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">الحساب والفواتير</h1>
-                    <p className="text-gray-600">حساب الفواتير وتقسيم سعر التوصيل</p>
+                    <h1 className="text-3xl font-bold text-mhg-gold mb-2">حساب الطلبات</h1>
+                    <p className="text-mhg-gold">حساب الفواتير وتقسيم سعر التوصيل</p>
                 </div>
             </header>
 
             <main className="max-w-7xl mx-auto px-4 pb-12">
                 <div className="glass-card p-6 mb-8 print:hidden">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">اختر التفاصيل</h2>
+                    <h2 className="text-xl font-bold text-mhg-gold mb-4">اختر التفاصيل</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">التاريخ</label>
+                            <label className="block text-sm font-bold text-mhg-blue-deep mb-2">التاريخ</label>
                             <input
                                 type="date"
                                 value={date}
@@ -107,7 +107,7 @@ export default function BillingClient({
                         </div>
 
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">نوع الوجبة</label>
+                            <label className="block text-sm font-bold text-mhg-blue-deep mb-2">نوع الوجبة</label>
                             <select
                                 value={mealType}
                                 onChange={(e) => handleMealTypeChange(e.target.value)}
@@ -122,7 +122,7 @@ export default function BillingClient({
                         </div>
 
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">المطعم</label>
+                            <label className="block text-sm font-bold text-mhg-blue-deep mb-2">المطعم</label>
                             <select
                                 value={restaurantId}
                                 onChange={(e) => setRestaurantId(e.target.value)}
@@ -152,8 +152,8 @@ export default function BillingClient({
                     <div className="glass-card p-8">
                         <div className="flex items-center justify-between mb-6 print:mb-4">
                             <div>
-                                <h2 className="text-2xl font-bold text-gray-800">فاتورة الطلب</h2>
-                                <p className="text-gray-600">
+                                <h2 className="text-2xl font-bold text-mhg-gold">فاتورة الطلب</h2>
+                                <p className="text-mhg-gold">
                                     {new Date(billing.date).toLocaleDateString('ar-SA')} •{' '}
                                     {MEAL_TYPES.find((mt) => mt.type === billing.mealType)?.labelAr}
                                 </p>
@@ -164,8 +164,8 @@ export default function BillingClient({
                         </div>
 
                         <div className="mb-6">
-                            <div className="text-lg font-bold text-gray-800 mb-2">{billing.restaurant}</div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-lg font-bold text-mhg-gold mb-2">{billing.restaurant}</div>
+                            <div className="text-sm text-mhg-gold">
                                 سعر التوصيل: {billing.deliveryFee.toFixed(2)} جنيه
                             </div>
                         </div>
@@ -177,7 +177,7 @@ export default function BillingClient({
                                     className="border-r-4 border-mhg-gold pr-4 bg-white/50 rounded-lg p-4"
                                 >
                                     <div className="flex items-center justify-between mb-3">
-                                        <h3 className="text-xl font-bold text-gray-800">{user.username}</h3>
+                                        <h3 className="text-xl font-bold text-mhg-gold">{user.username}</h3>
                                         <div className="text-2xl font-bold text-mhg-blue">
                                             {user.total.toFixed(2)} جنيه
                                         </div>
@@ -189,10 +189,10 @@ export default function BillingClient({
                                                 key={itemIndex}
                                                 className="flex items-center justify-between text-sm"
                                             >
-                                                <span className="text-gray-700">
+                                                <span className="text-mhg-blue-deep">
                                                     {item.name} {item.quantity > 1 && `× ${item.quantity}`}
                                                 </span>
-                                                <span className="font-bold text-gray-800">
+                                                <span className="font-bold text-mhg-gold">
                                                     {(item.price * item.quantity).toFixed(2)} جنيه
                                                 </span>
                                             </div>
@@ -201,11 +201,11 @@ export default function BillingClient({
 
                                     <div className="border-t border-gray-200 pt-2 space-y-1">
                                         <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-600">المجموع الفرعي</span>
+                                            <span className="text-mhg-gold">المجموع الفرعي</span>
                                             <span className="font-bold">{user.subtotal.toFixed(2)} ر.س</span>
                                         </div>
                                         <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-600">نصيب التوصيل</span>
+                                            <span className="text-mhg-gold">نصيب التوصيل</span>
                                             <span className="font-bold">
                                                 {user.deliveryShare.toFixed(2)} ر.س
                                             </span>
@@ -217,7 +217,7 @@ export default function BillingClient({
 
                         <div className="border-t-2 border-gray-300 pt-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-2xl font-bold text-gray-800">المجموع الكلي</span>
+                                <span className="text-2xl font-bold text-mhg-gold">المجموع الكلي</span>
                                 <span className="text-3xl font-bold text-mhg-blue">
                                     {billing.grandTotal.toFixed(2)} ر.س
                                 </span>

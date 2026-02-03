@@ -66,7 +66,7 @@ export default async function MenuPage({
                             ← العودة للمطاعم
                         </a>
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-800 mb-2">المطعم غير موجود</h1>
+                            <h1 className="text-3xl font-bold text-mhg-gold mb-2">المطعم غير موجود</h1>
                         </div>
                     </div>
                 </header>

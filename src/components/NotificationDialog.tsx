@@ -39,9 +39,9 @@ export default function NotificationDialog({
     const getIcon = () => {
         switch (type) {
             case 'success':
-                return <div className="text-green-500 text-5xl mb-4">✅</div>;
+                return <div className="text-mhg-blue text-5xl mb-4">✅</div>;
             case 'error':
-                return <div className="text-red-500 text-5xl mb-4">❌</div>;
+                return <div className="text-mhg-gold text-5xl mb-4">❌</div>;
             case 'confirm':
                 return <div className="text-mhg-blue text-5xl mb-4">❓</div>;
             default:
@@ -52,9 +52,9 @@ export default function NotificationDialog({
     const getColors = () => {
         switch (type) {
             case 'success':
-                return { button: 'bg-green-600 hover:bg-green-700', border: 'border-green-200' };
+                return { button: 'bg-mhg-blue hover:bg-mhg-blue-deep', border: 'border-mhg-blue/25' };
             case 'error':
-                return { button: 'bg-red-600 hover:bg-red-700', border: 'border-red-200' };
+                return { button: 'bg-mhg-brown hover:bg-mhg-brown-soft', border: 'border-mhg-gold/25' };
             case 'confirm':
                 return { button: 'bg-mhg-blue hover:bg-mhg-blue-deep', border: 'border-mhg-blue/25' };
             default:
@@ -75,8 +75,8 @@ export default function NotificationDialog({
             >
                 <div className="text-center">
                     {getIcon()}
-                    <h3 className="text-2xl font-bold text-gray-800 mb-2">{title}</h3>
-                    <p className="text-gray-600 mb-8 leading-relaxed">{message}</p>
+                    <h3 className="text-2xl font-bold text-mhg-gold mb-2">{title}</h3>
+                    <p className="text-mhg-gold mb-8 leading-relaxed">{message}</p>
 
                     <div className="flex gap-3 justify-center">
                         {type === 'confirm' ? (
@@ -86,7 +86,7 @@ export default function NotificationDialog({
                                         onClose();
                                         onCancel?.();
                                     }}
-                                    className="px-6 py-3 rounded-xl font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors flex-1"
+                                    className="px-6 py-3 rounded-xl font-bold bg-gray-100 text-mhg-blue-deep hover:bg-gray-200 transition-colors flex-1"
                                 >
                                     إلغاء
                                 </button>

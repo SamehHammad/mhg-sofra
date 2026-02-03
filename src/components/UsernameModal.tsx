@@ -32,8 +32,8 @@ export default function UsernameModal({ onSubmit, onClose, initialUsername = '',
             <div className="glass-card max-w-md w-full p-8 animate-[scale-in_0.3s_ease-out]">
                 <div className="text-center mb-6">
                     <div className="text-6xl mb-4">👋</div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">مرحباً بك!</h2>
-                    <p className="text-gray-600">الرجاء إدخال اسمك للمتابعة</p>
+                    <h2 className="text-2xl font-bold text-mhg-gold mb-2">مرحباً بك!</h2>
+                    <p className="text-mhg-gold">الرجاء إدخال اسمك للمتابعة</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -60,7 +60,7 @@ export default function UsernameModal({ onSubmit, onClose, initialUsername = '',
                                     setIsOpen(false);
                                     onClose();
                                 }}
-                                className="px-4 py-2 rounded-xl font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                                className="px-4 py-2 rounded-xl font-bold bg-gray-100 text-mhg-blue-deep hover:bg-gray-200 transition-colors"
                             >
                                 إلغاء
                             </button>

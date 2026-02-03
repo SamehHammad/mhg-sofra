@@ -27,7 +27,7 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
         <div className="min-h-screen p-4">
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800">لوحة التحكم</h1>
+                    <h1 className="text-3xl font-bold text-mhg-gold">لوحة التحكم</h1>
                     <button
                         onClick={handleLogout}
                         className="px-4 py-2 rounded-xl font-bold bg-red-600 hover:bg-red-700 text-white transition-all duration-300"
@@ -47,24 +47,24 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
                             <div className="glass-card p-6">
                                 <div className="text-4xl mb-2">🏪</div>
                                 <div className="text-3xl font-bold text-mhg-blue mb-1">{stats.restaurantsCount}</div>
-                                <div className="text-gray-600">مطعم مسجل</div>
+                                <div className="text-mhg-gold">مطعم مسجل</div>
                             </div>
 
                             <div className="glass-card p-6">
                                 <div className="text-4xl mb-2">📦</div>
                                 <div className="text-3xl font-bold text-mhg-blue mb-1">{stats.ordersCount}</div>
-                                <div className="text-gray-600">إجمالي الطلبات</div>
+                                <div className="text-mhg-gold">إجمالي الطلبات</div>
                             </div>
 
                             <div className="glass-card p-6">
                                 <div className="text-4xl mb-2">🔥</div>
                                 <div className="text-3xl font-bold text-mhg-gold-deep mb-1">{stats.todayOrders}</div>
-                                <div className="text-gray-600">طلبات اليوم</div>
+                                <div className="text-mhg-gold">طلبات اليوم</div>
                             </div>
                         </div>
 
                         <div className="glass-card p-6">
-                            <h2 className="text-xl font-bold text-gray-800 mb-4">إجراءات سريعة</h2>
+                            <h2 className="text-xl font-bold text-mhg-gold mb-4">إجراءات سريعة</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <a
                                     href="/admin/restaurants"
@@ -72,8 +72,8 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
                                 >
                                     <span className="text-3xl">🏪</span>
                                     <div>
-                                        <div className="font-bold text-gray-800">إدارة المطاعم</div>
-                                        <div className="text-sm text-gray-600">إضافة وتعديل المطاعم</div>
+                                        <div className="font-bold text-mhg-gold">إدارة المطاعم</div>
+                                        <div className="text-sm text-mhg-gold">إضافة وتعديل المطاعم</div>
                                     </div>
                                 </a>
 
@@ -83,8 +83,8 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
                                 >
                                     <span className="text-3xl">📋</span>
                                     <div>
-                                        <div className="font-bold text-gray-800">إدارة القوائم</div>
-                                        <div className="text-sm text-gray-600">إضافة وتعديل الوجبات</div>
+                                        <div className="font-bold text-mhg-gold">إدارة القوائم</div>
+                                        <div className="text-sm text-mhg-gold">إضافة وتعديل الوجبات</div>
                                     </div>
                                 </a>
 
@@ -94,8 +94,8 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
                                 >
                                     <span className="text-3xl">📦</span>
                                     <div>
-                                        <div className="font-bold text-gray-800">عرض الطلبات</div>
-                                        <div className="text-sm text-gray-600">متابعة جميع الطلبات</div>
+                                        <div className="font-bold text-mhg-gold">عرض الطلبات</div>
+                                        <div className="text-sm text-mhg-gold">متابعة جميع الطلبات</div>
                                     </div>
                                 </a>
 
@@ -105,8 +105,8 @@ export default function AdminDashboardClient({ initialStats }: { initialStats: a
                                 >
                                     <span className="text-3xl">👀</span>
                                     <div>
-                                        <div className="font-bold text-gray-800">عرض المستخدم</div>
-                                        <div className="text-sm text-gray-600">مشاهدة واجهة المستخدم</div>
+                                        <div className="font-bold text-mhg-gold">عرض المستخدم</div>
+                                        <div className="text-sm text-mhg-gold">مشاهدة واجهة المستخدم</div>
                                     </div>
                                 </a>
                             </div>

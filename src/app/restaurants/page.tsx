@@ -73,10 +73,10 @@ export default async function RestaurantsPage({
                     <div className="flex items-center gap-4">
                         {mealTypeInfo && <div className="text-5xl">{mealTypeInfo.icon}</div>}
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-800">
+                            <h1 className="text-3xl font-bold text-mhg-gold">
                                 {mealTypeInfo?.labelAr || 'المطاعم'}
                             </h1>
-                            <p className="text-gray-600">اختر المطعم المفضل لديك</p>
+                            <p className="text-mhg-gold">اختر المطعم المفضل لديك</p>
                         </div>
                     </div>
                 </div>
@@ -87,8 +87,8 @@ export default async function RestaurantsPage({
                 {restaurants.length === 0 && (
                     <div className="text-center py-12">
                         <div className="text-6xl mb-4">🏪</div>
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">لا توجد مطاعم متاحة</h3>
-                        <p className="text-gray-600">
+                        <h3 className="text-xl font-bold text-mhg-gold mb-2">لا توجد مطاعم متاحة</h3>
+                        <p className="text-mhg-gold">
                             لا توجد مطاعم متاحة لهذا النوع من الوجبات حالياً
                         </p>
                     </div>

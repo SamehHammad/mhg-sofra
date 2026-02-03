@@ -117,52 +117,56 @@ export default function MenuClient({
                         ← العودة للمطاعم
                     </a>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">{restaurant.name}</h1>
-                        <p className="text-gray-600">اختر الوجبات التي تريدها</p>
+                        <h1 className="text-3xl font-bold text-mhg-gold mb-2">{restaurant.name}</h1>
+                        <p className="text-mhg-gold">اختر الوجبات التي تريدها</p>
                     </div>
-
-                    {menuItems.length > 0 && (
-                        <div className="mt-6">
-                            <input
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="ابحث عن وجبة..."
-                                className="w-full glass-card px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-mhg-gold/40 text-right"
-                            />
-                        </div>
-                    )}
                 </div>
             </header>
 
             <main className="max-w-7xl mx-auto px-4">
+                {menuItems.length > 0 && (
+                    <div className="sticky top-20 md:top-24 z-30 mb-4 -mx-4 px-4 py-2 bg-mhg-brown/35 backdrop-blur-md">
+                        <div className="max-w-7xl mx-auto">
+                            <input
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="ابحث عن وجبة..."
+                                className="w-full glass-card px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-mhg-blue/40 text-right"
+                            />
+                        </div>
+                    </div>
+                )}
+
                 {menuItems.length === 0 && (
                     <div className="text-center py-12">
                         <div className="text-6xl mb-4">📋</div>
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">لا توجد وجبات متاحة</h3>
+                        <h3 className="text-xl font-bold text-mhg-gold mb-2">لا توجد وجبات متاحة</h3>
                     </div>
                 )}
 
                 {menuItems.length > 0 && (
-                    <div className="space-y-4">
+                    <>
                         {filteredMenuItems.length === 0 ? (
                             <div className="text-center py-12">
                                 <div className="text-6xl mb-4">🔎</div>
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">لا توجد نتائج</h3>
-                                <p className="text-gray-600">جرّب البحث بكلمة مختلفة</p>
+                                <h3 className="text-xl font-bold text-mhg-gold mb-2">لا توجد نتائج</h3>
+                                <p className="text-mhg-gold">جرّب البحث بكلمة مختلفة</p>
                             </div>
                         ) : (
-                            filteredMenuItems.map((item) => (
-                                <MenuItemCard
-                                    key={item.id}
-                                    menuItem={item}
-                                    isSelected={selectedItems.has(item.id)}
-                                    onToggle={handleToggleItem}
-                                    quantity={selectedItems.get(item.id) || 1}
-                                    onQuantityChange={handleQuantityChange}
-                                />
-                            ))
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+                                {filteredMenuItems.map((item) => (
+                                    <MenuItemCard
+                                        key={item.id}
+                                        menuItem={item}
+                                        isSelected={selectedItems.has(item.id)}
+                                        onToggle={handleToggleItem}
+                                        quantity={selectedItems.get(item.id) || 1}
+                                        onQuantityChange={handleQuantityChange}
+                                    />
+                                ))}
+                            </div>
                         )}
-                    </div>
+                    </>
                 )}
             </main>
 
@@ -170,7 +174,7 @@ export default function MenuClient({
                 <div className="fixed bottom-0 left-0 right-0 glass-card p-4 shadow-2xl">
                     <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
                         <div>
-                            <p className="text-sm text-gray-600">{selectedItems.size} وجبة محددة</p>
+                            <p className="text-sm text-mhg-gold">{selectedItems.size} وجبة محددة</p>
                             <p className="text-2xl font-bold text-mhg-blue">{total.toFixed(2)} جنيه</p>
                         </div>
                         <button

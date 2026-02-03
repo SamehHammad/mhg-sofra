@@ -18,10 +18,10 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 pb-12">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">
+          <h2 className="text-4xl font-bold text-mhg-gold mb-4">
             اختر نوع الوجبة
           </h2>
-          <p className="text-gray-600 text-lg">
+          <p className="text-mhg-gold text-lg">
             ابدأ بتحديد نوع الوجبة التي تريد طلبها
           </p>
         </div>

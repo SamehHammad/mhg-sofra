@@ -29,16 +29,16 @@ export default function AppHeader({ initialUsername }: { initialUsername?: strin
       activeClassName: 'bg-mhg-blue text-white shadow-md',
       inactiveClassName: 'bg-white/70 text-mhg-blue hover:bg-mhg-blue/10',
       className:
-        'px-6 py-3 rounded-xl font-bold bg-white hover:bg-gray-50 text-gray-700 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2',
+        'px-6 py-3 rounded-xl font-bold bg-white hover:bg-gray-50 text-mhg-blue-deep shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2',
     },
     {
       href: '/billing',
-      label: 'الحساب والفواتير',
+      label: 'حساب الطلبات',
       Icon: Calculator,
       activeClassName: 'bg-mhg-gold text-mhg-brown shadow-md',
       inactiveClassName: 'bg-white/70 text-mhg-gold-deep hover:bg-mhg-gold/10',
       className:
-        'px-6 py-3 rounded-xl font-bold bg-white hover:bg-gray-50 text-gray-700 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2',
+        'px-6 py-3 rounded-xl font-bold bg-white hover:bg-gray-50 text-mhg-blue-deep shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2',
     },
     {
       href: '/admin/login',
@@ -106,47 +106,58 @@ export default function AppHeader({ initialUsername }: { initialUsername?: strin
       )}
 
       <header className="sticky top-0 z-40">
-        <div className="glass-card mx-4 mt-4 mb-8 p-4 md:p-6">
+        <div className="glass-card mx-4 mt-4 mb-8 px-3 pt-1">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
-              <div className="flex items-center justify-between gap-3 md:justify-start">
-                <Link href={"/"}>
-                <Image src="/logo.png" alt="MHG Sofra" width={80} height={80} className="h-16 md:h-20 w-auto" priority />
+              <div className="flex items-center justify-between gap-3 md:justify-start max-h-20">
+                <Link href={"/"} className='mt-1 max-h-20'>
+                <Image src="/logo.png" alt="MHG Sofra" width={112} height={112} className="h-20 md:h-28 w-24 md:w-32" priority />
                 </Link>
 
                 {username && (
-                  <div className="text-left md:hidden">
-                    <p className="text-xs text-gray-600">مرحباً</p>
-                    <p className="text-lg font-bold text-mhg-blue cursor-pointer" onClick={() => setShowEditModal(true)}>
-                      {username}
-                    </p>
-                  </div>
+                  <div className="md:hidden animate-user-chip-in">
+  <button
+    type="button"
+    onClick={() => setShowEditModal(true)}
+    className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-2 py-1.5 shadow-sm backdrop-blur-sm transition-all duration-150 hover:bg-white/15 active:scale-95 focus:outline-none focus:ring-2 focus:ring-mhg-blue/30 w-full max-w-[220px] mx-auto"
+    aria-label="تعديل الاسم"
+  >
+    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-mhg-blue/25 text-xs font-bold text-white shadow-inner shrink-0">
+      {(username?.trim()?.[0] || 'U').toUpperCase()}
+    </span>
+    <span className="flex flex-col min-w-0">
+      <span className="text-[10px] font-normal text-mhg-gold/80 leading-tight">مرحباً</span>
+      <span className="truncate text-[15px] font-bold text-white leading-tight">
+        {username}
+      </span>
+    </span>
+  </button>
+</div>
                 )}
               </div>
 
-              <nav className="flex items-center justify-center gap-2 md:hidden">
-                {quickLinks.map((link) => (
-                  (() => {
-                    const isActive = pathname === link.href || pathname?.startsWith(link.href);
-                    const tabClass = isActive ? link.activeClassName : link.inactiveClassName;
-                    const iconClass = isActive ? 'text-white' : 'currentColor';
+              <nav className="flex items-center justify-center -mt-4 mb-4 gap-2 md:hidden">
+  <div className="flex w-full justify-center gap-2">
 
-                    return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    title={link.label}
-                    aria-label={link.label}
-                    className={`relative group p-2.5 rounded-2xl transition-colors shadow-sm border border-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${tabClass}`}
-                  >
-                    <link.Icon className={`w-5 h-5 ${iconClass}`} />
-                    <span className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs font-semibold text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                      {link.label}
-                    </span>
-                  </Link>
-                    );
-                  })()
-                ))}
+                {quickLinks.map((link) => {
+  const isActive = pathname === link.href || pathname?.startsWith(link.href);
+  const tabClass = isActive ? link.activeClassName : link.inactiveClassName;
+  const iconClass = isActive ? 'text-white' : 'currentColor';
+  return (
+    <Link
+      key={link.href}
+      href={link.href}
+      title={link.label}
+      aria-label={link.label}
+      className={`flex flex-col items-center justify-center gap-1 p-2 rounded-2xl transition-colors shadow-sm border border-white/50 focus:outline-none focus:ring-2 focus:ring-mhg-blue/40 min-w-[60px] ${tabClass}`}
+      style={{minWidth:'60px'}}
+    >
+      <link.Icon className={`w-6 h-6 sm:w-8 sm:h-8 ${iconClass}`} />
+      <span className="text-xs font-bold mt-1 leading-tight" style={{fontSize:'12px'}}>{link.label}</span>
+    </Link>
+  );
+})}
+</div>
               </nav>
 
               <nav className="hidden md:flex items-center justify-center gap-4">
@@ -159,13 +170,23 @@ export default function AppHeader({ initialUsername }: { initialUsername?: strin
               </nav>
 
               {username && (
-                <div className="text-right hidden md:block">
-                  <p className="text-sm text-gray-600">مرحباً</p>
-                  <div className="flex items-center justify-end gap-2">
-                    <p className="text-xl font-bold text-mhg-blue cursor-pointer" onClick={() => setShowEditModal(true)}>
-                      {username}
-                    </p>
-                  </div>
+                <div className="hidden md:block animate-user-chip-in">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(true)}
+                    className="group flex items-center justify-end gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-2 text-right shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-white/15 hover:shadow-md active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-mhg-blue/40"
+                    aria-label="تعديل الاسم"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-xs font-semibold text-mhg-gold/90">مرحباً</span>
+                      <span className="block max-w-[260px] truncate text-lg font-extrabold text-white transition-colors group-hover:text-mhg-gold-soft">
+                        {username}
+                      </span>
+                    </span>
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-mhg-blue/20 text-base font-extrabold text-white shadow-inner">
+                      {(username?.trim()?.[0] || 'U').toUpperCase()}
+                    </span>
+                  </button>
                 </div>
               )}
             </div>

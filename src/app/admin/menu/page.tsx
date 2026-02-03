@@ -303,7 +303,7 @@ export default function AdminMenuPage() {
     return (
         <div className="min-h-screen p-4">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">إدارة القوائم</h1>
+                <h1 className="text-3xl font-bold text-mhg-gold mb-6">إدارة القوائم</h1>
 
                 <AdminNav />
 
@@ -360,11 +360,11 @@ export default function AdminMenuPage() {
                 </div>
 
                 <div className="glass-card p-6 mb-6">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">استيراد وجبات من Excel</h2>
+                    <h2 className="text-xl font-bold text-mhg-gold mb-4">استيراد وجبات من Excel</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                            <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                 المطعم الافتراضي *
                             </label>
                             <select
@@ -382,7 +382,7 @@ export default function AdminMenuPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                            <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                 نوع الوجبة الافتراضي
                             </label>
                             <select
@@ -402,7 +402,7 @@ export default function AdminMenuPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                            <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                 ملف Excel (.xlsx) *
                             </label>
                             <input
@@ -411,13 +411,13 @@ export default function AdminMenuPage() {
                                 onChange={(e) => setImportFile(e.target.files?.[0] ?? null)}
                                 className="input-modern"
                             />
-                            <div className="text-xs text-gray-600 mt-2">
+                            <div className="text-xs text-mhg-gold mt-2">
                                 الأعمدة المطلوبة: name, price (يمكن أيضاً استخدام: اسم/السعر)
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                            <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                 وضع الاستيراد
                             </label>
                             <select
@@ -441,8 +441,8 @@ export default function AdminMenuPage() {
 
                     {importResult?.success && (
                         <div className="mt-4 bg-white rounded-xl p-4 border border-gray-100">
-                            <div className="font-bold text-gray-800 mb-2">نتيجة الاستيراد</div>
-                            <div className="text-sm text-gray-700">
+                            <div className="font-bold text-mhg-gold mb-2">نتيجة الاستيراد</div>
+                            <div className="text-sm text-mhg-blue-deep">
                                 تم إنشاء/تحديث: {importResult.createdCount} | تم تخطي: {importResult.skippedCount} | أخطاء: {importResult.errorCount}
                             </div>
 
@@ -462,13 +462,13 @@ export default function AdminMenuPage() {
                 {/* Manual Form */}
                 {showForm && (
                     <div className="glass-card p-6 mb-6 animate-[message-in_0.3s_ease-out]">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4">
+                        <h2 className="text-xl font-bold text-mhg-gold mb-4">
                             {editingId ? 'تعديل الوجبة' : 'إضافة وجبة يدوياً'}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                         اسم الوجبة *
                                     </label>
                                     <input
@@ -481,7 +481,7 @@ export default function AdminMenuPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                         السعر (جنيه) *
                                     </label>
                                     <input
@@ -495,7 +495,7 @@ export default function AdminMenuPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                         نوع الوجبة *
                                     </label>
                                     <select
@@ -513,7 +513,7 @@ export default function AdminMenuPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                         المطعم *
                                     </label>
                                     <select
@@ -532,7 +532,7 @@ export default function AdminMenuPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                     الوصف
                                 </label>
                                 <textarea
@@ -555,11 +555,11 @@ export default function AdminMenuPage() {
                 {showScanner && (
                     <div className="space-y-6 mb-8 animate-[message-in_0.3s_ease-out]">
                         <div className="glass-card p-6">
-                            <h2 className="text-xl font-bold text-gray-800 mb-4">مسح المنيو من صورة</h2>
+                            <h2 className="text-xl font-bold text-mhg-gold mb-4">مسح المنيو من صورة</h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                         اختر المطعم لإضافة الوجبات إليه *
                                     </label>
                                     <select
@@ -577,7 +577,7 @@ export default function AdminMenuPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                         نوع الوجبة للوجبات الممسوحة *
                                     </label>
                                     <select
@@ -606,10 +606,10 @@ export default function AdminMenuPage() {
                         {scannedItems.length > 0 && (
                             <div className="glass-card p-6 border-2 border-mhg-gold/20">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-xl font-bold text-gray-800">
+                                    <h3 className="text-xl font-bold text-mhg-gold">
                                         مراجعة الوجبات المستخرجة ({scannedItems.length})
                                     </h3>
-                                    <div className="text-sm text-gray-600">
+                                    <div className="text-sm text-mhg-gold">
                                         يمكنك حذف الوجبات غير الصحيحة قبل الحفظ
                                     </div>
                                 </div>
@@ -618,7 +618,7 @@ export default function AdminMenuPage() {
                                     {scannedItems.map((item) => (
                                         <div key={item.id} className="bg-white p-3 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between group">
                                             <div>
-                                                <div className="font-bold text-gray-800">{item.name}</div>
+                                                <div className="font-bold text-mhg-gold">{item.name}</div>
                                                 <div className="text-mhg-blue font-bold">{item.price} جنيه</div>
                                             </div>
                                             <button
@@ -643,7 +643,7 @@ export default function AdminMenuPage() {
                                     <button
                                         onClick={() => setScannedItems([])}
                                         disabled={loading}
-                                        className="px-6 py-3 rounded-xl font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all"
+                                        className="px-6 py-3 rounded-xl font-bold bg-gray-100 text-mhg-blue-deep hover:bg-gray-200 transition-all"
                                     >
                                         إلغاء
                                     </button>
@@ -663,13 +663,13 @@ export default function AdminMenuPage() {
                             <div key={item.id} className="glass-card p-4">
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
-                                        <h3 className="text-lg font-bold text-gray-800">{item.name}</h3>
-                                        <p className="text-sm text-gray-600 mb-2">
+                                        <h3 className="text-lg font-bold text-mhg-gold">{item.name}</h3>
+                                        <p className="text-sm text-mhg-gold mb-2">
                                             {item.restaurant?.name} •{' '}
                                             {MEAL_TYPES.find((mt) => mt.type === item.mealType)?.labelAr}
                                         </p>
                                         {item.description && (
-                                            <p className="text-sm text-gray-600 mb-2">{item.description}</p>
+                                            <p className="text-sm text-mhg-gold mb-2">{item.description}</p>
                                         )}
                                         <p className="text-lg font-bold text-mhg-blue">{item.price} جنيه</p>
                                     </div>
@@ -682,7 +682,7 @@ export default function AdminMenuPage() {
                                         </button>
                                         <button
                                             onClick={() => handleDelete(item.id)}
-                                            className="px-4 py-2 rounded-xl font-bold bg-red-600 hover:bg-red-700 text-white transition-all duration-300"
+                                            className="px-4 py-2 rounded-xl font-bold bg-mhg-brown hover:bg-mhg-brown-soft text-white transition-all duration-300"
                                         >
                                             حذف
                                         </button>

@@ -107,7 +107,7 @@ export default function AdminRestaurantsPage() {
     return (
         <div className="min-h-screen p-4">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">إدارة المطاعم</h1>
+                <h1 className="text-3xl font-bold text-mhg-gold mb-6">إدارة المطاعم</h1>
 
                 <AdminNav />
 
@@ -126,12 +126,12 @@ export default function AdminRestaurantsPage() {
 
                 {showForm && (
                     <div className="glass-card p-6 mb-6">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4">
+                        <h2 className="text-xl font-bold text-mhg-gold mb-4">
                             {editingId ? 'تعديل المطعم' : 'إضافة مطعم جديد'}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                     اسم المطعم *
                                 </label>
                                 <input
@@ -144,7 +144,7 @@ export default function AdminRestaurantsPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                     رقم الهاتف
                                 </label>
                                 <input
@@ -157,7 +157,7 @@ export default function AdminRestaurantsPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
+                                <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
                                     سعر التوصيل (جنيه) *
                                 </label>
                                 <input
@@ -185,14 +185,14 @@ export default function AdminRestaurantsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {restaurants.map((restaurant) => (
                             <div key={restaurant.id} className="glass-card p-6">
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">{restaurant.name}</h3>
+                                <h3 className="text-xl font-bold text-mhg-gold mb-2">{restaurant.name}</h3>
                                 {restaurant.phone && (
-                                    <p className="text-gray-600 mb-2">📞 {restaurant.phone}</p>
+                                    <p className="text-mhg-gold mb-2">📞 {restaurant.phone}</p>
                                 )}
                                 <p className="text-mhg-gold-deep font-bold mb-4">
                                     توصيل: {restaurant.deliveryPrice} جنيه
                                 </p>
-                                <p className="text-sm text-gray-600 mb-4">
+                                <p className="text-sm text-mhg-gold mb-4">
                                     {restaurant.menuItems?.length || 0} وجبة
                                 </p>
                                 <div className="flex gap-2">

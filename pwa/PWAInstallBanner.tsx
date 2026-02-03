@@ -14,38 +14,48 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [isDismissed, setIsDismissed] = useState(false);
+    const [isInstalled, setIsInstalled] = useState(false);
 
     useEffect(() => {
-        // Check if user already dismissed the banner in this session or forever
+        // Check if user already dismissed the banner in this session
         const dismissed = localStorage.getItem("pwa-banner-dismissed");
         if (dismissed) {
             setIsDismissed(true);
             return;
         }
 
+        // Detect if app is installed
+        const checkInstalled = () => {
+            // For iOS
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+            setIsInstalled(!!isStandalone);
+        };
+        checkInstalled();
+        window.addEventListener('appinstalled', checkInstalled);
+        window.addEventListener('resize', checkInstalled);
+
         const handleBeforeInstallPrompt = (e: any) => {
-            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
-            // Stash the event so it can be triggered later.
             setDeferredPrompt(e);
-            // Show the banner if not dismissed
             if (!isDismissed) {
                 setIsVisible(true);
             }
         };
-
         window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-        // Also check if already installed
-        window.addEventListener("appinstalled", () => {
-            setDeferredPrompt(null);
+        // Always show the banner if not installed and not dismissed
+        if (!isInstalled && !isDismissed) {
+            setIsVisible(true);
+        } else {
             setIsVisible(false);
-        });
+        }
 
         return () => {
             window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+            window.removeEventListener('appinstalled', checkInstalled);
+            window.removeEventListener('resize', checkInstalled);
         };
-    }, [isDismissed]);
+    }, [isDismissed, isInstalled]);
 
     const handleInstall = async () => {
         if (!deferredPrompt) return;
@@ -74,7 +84,7 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
         localStorage.setItem("pwa-banner-dismissed", "true");
     };
 
-    if (!isVisible || isDismissed) return null;
+    if (!isVisible || isDismissed || isInstalled) return null;
 
     const isAr = locale === "ar";
     const content = {
@@ -84,53 +94,63 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
     };
 
     return (
+        <div
+            className="fixed bottom-4 left-4 right-4 z-[100] md:hidden"
+        >
             <div
-               className="fixed bottom-4 left-4 right-4 z-[100] md:hidden"
+                className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border"
+                style={{
+                    background: 'rgb(var(--mhg-surface) / 0.97)',
+                    borderColor: 'rgb(var(--mhg-gold-soft) / 0.5)',
+                }}
+                dir={isAr ? "rtl" : "ltr"}
             >
-                <div
-                    className="relative overflow-hidden bg-white border border-gray-100 shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-2xl p-4 flex items-center gap-4"
-                    dir={isAr ? "rtl" : "ltr"}
-                >
-                    {/* Logo/Icon section */}
-                    <div className="relative w-12 h-12 flex-shrink-0 bg-primary/10 rounded-xl flex items-center justify-center overflow-hidden">
-                        {logo ? (
-                            <Image src={logo} alt={appName} fill className="object-contain p-2" />
-                        ) : (
-                            <Smartphone className="w-6 h-6 text-primary" />
-                        )}
-                    </div>
-
-                    {/* Text section */}
-                    <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-bold text-gray-900 truncate tracking-tight uppercase">
-                            {content.title}
-                        </h3>
-                        <p className="text-[11px] text-gray-500 truncate mt-0.5 font-medium">
-                            {content.subtitle}
-                        </p>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={handleInstall}
-                            className="bg-primary hover:bg-primary/90 text-white text-[11px] font-bold px-4 py-2 rounded-lg transition-all active:scale-95 flex items-center gap-1.5 shadow-sm"
-                        >
-                            <Download className="w-3 h-3" />
-                            {content.button}
-                        </button>
-                        <button
-                            onClick={handleDismiss}
-                            className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 transition-colors"
-                            aria-label="close"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-
-                    {/* Decorative background element */}
-                    <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+                {/* Logo/Icon section */}
+                <div className="relative w-12 h-12 flex-shrink-0 rounded-xl flex items-center justify-center overflow-hidden"
+                    style={{ background: 'rgb(var(--mhg-blue) / 0.08)' }}>
+                    {logo ? (
+                        <Image src={logo} alt={appName} fill className="object-contain p-2" />
+                    ) : (
+                        <Smartphone className="w-6 h-6" style={{ color: 'rgb(var(--mhg-blue-deep))' }} />
+                    )}
                 </div>
+                {/* Text section */}
+                <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-bold truncate tracking-tight uppercase"
+                        style={{ color: 'rgb(var(--mhg-blue-deep))' }}>
+                        {content.title}
+                    </h3>
+                    <p className="text-[11px] truncate mt-0.5 font-medium" style={{ color: 'rgb(var(--mhg-brown-soft) / 0.95)' }}>
+                        {content.subtitle}
+                    </p>
+                </div>
+                {/* Action buttons */}
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handleInstall}
+                        className="text-[11px] font-bold px-4 py-2 rounded-lg transition-all active:scale-95 flex items-center gap-1.5 shadow-sm"
+                        style={{
+                            background: 'linear-gradient(90deg, rgb(var(--mhg-blue)), rgb(var(--mhg-gold)))',
+                            color: 'white',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
+                        }}
+                    >
+                        <Download className="w-3 h-3" style={{ color: 'white' }} />
+                        {content.button}
+                    </button>
+                    <button
+                        onClick={handleDismiss}
+                        className="p-1.5 rounded-lg transition-colors"
+                        aria-label="close"
+                        style={{ background: 'rgba(var(--mhg-gold-soft), 0.16)', color: 'rgb(var(--mhg-brown-soft))' }}
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+                {/* Decorative background element */}
+                <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full blur-2xl pointer-events-none"
+                    style={{ background: 'rgba(var(--mhg-blue-deep), 0.08)' }} />
             </div>
+        </div>
     );
 }

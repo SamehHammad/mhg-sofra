@@ -216,7 +216,7 @@ export default function MenuScanner({
                         >
                             <div className="bg-mhg-gold/10 p-6 rounded-xl hover:bg-mhg-gold/15 transition-colors">
                                 <div className="text-4xl mb-2">📁</div>
-                                <h3 className="font-bold text-gray-800">رفع صورة</h3>
+                                <h3 className="font-bold text-mhg-gold">رفع صورة</h3>
                             </div>
                         </label>
 
@@ -230,12 +230,12 @@ export default function MenuScanner({
                         >
                             <div className="bg-mhg-blue/10 p-6 rounded-xl hover:bg-mhg-blue/15 transition-colors cursor-pointer">
                                 <div className="text-4xl mb-2">📸</div>
-                                <h3 className="font-bold text-gray-800">التقاط صورة</h3>
+                                <h3 className="font-bold text-mhg-gold">التقاط صورة</h3>
                             </div>
                         </button>
                     </div>
 
-                    <p className="text-gray-600 mt-4">
+                    <p className="text-mhg-gold mt-4">
                         اختر طريقة لإضافة صورة المنيو
                     </p>
                 </div>
@@ -259,7 +259,7 @@ export default function MenuScanner({
                         </button>
                         <button
                             onClick={stopCamera}
-                            className="bg-red-600 text-white rounded-full px-6 py-2 shadow-lg font-bold"
+                            className="bg-mhg-brown text-white rounded-full px-6 py-2 shadow-lg font-bold"
                         >
                             إلغاء
                         </button>
@@ -287,7 +287,7 @@ export default function MenuScanner({
                     {!uploading && (
                         <button
                             onClick={() => setPreview(null)}
-                            className="absolute top-2 right-2 bg-white/90 text-gray-800 rounded-full p-2 shadow-md hover:bg-white"
+                            className="absolute top-2 right-2 bg-white/90 text-mhg-gold rounded-full p-2 shadow-md hover:bg-white"
                         >
                             ✕ تغيير الصورة
                         </button>
