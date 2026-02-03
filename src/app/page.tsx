@@ -1,5 +1,16 @@
 import MealTypeCard from '@/components/MealTypeCard';
 import { MEAL_TYPES } from '@/lib/constants';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'الرئيسية',
+  description: 'اختر نوع الوجبة وابدأ الطلب من المطاعم المتاحة في سفرة MHG.',
+  openGraph: {
+    title: 'الرئيسية | MHG Sofra',
+    description: 'اختر نوع الوجبة وابدأ الطلب من المطاعم المتاحة في سفرة MHG.',
+    locale: 'ar_SA',
+  },
+};
 
 export default function HomePage() {
   return (

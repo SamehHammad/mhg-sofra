@@ -14,7 +14,7 @@ export const MEAL_TYPES: MealTypeOption[] = [
         labelAr: 'فطار',
         icon: '🌅',
         color: '#FF6B6B',
-        gradient: 'from-orange-400 to-red-500'
+        gradient: 'from-mhg-gold to-mhg-gold-deep'
     },
     {
         type: 'LUNCH',
@@ -22,7 +22,7 @@ export const MEAL_TYPES: MealTypeOption[] = [
         labelAr: 'غداء',
         icon: '🍽️',
         color: '#4ECDC4',
-        gradient: 'from-teal-400 to-cyan-500'
+        gradient: 'from-mhg-blue to-mhg-blue-deep'
     },
     {
         type: 'DINNER',
@@ -30,7 +30,7 @@ export const MEAL_TYPES: MealTypeOption[] = [
         labelAr: 'عشاء',
         icon: '🌙',
         color: '#9B59B6',
-        gradient: 'from-purple-400 to-indigo-500'
+        gradient: 'from-mhg-brown-soft to-mhg-brown'
     },
     {
         type: 'DESSERT',
@@ -38,7 +38,7 @@ export const MEAL_TYPES: MealTypeOption[] = [
         labelAr: 'تحلية',
         icon: '🍰',
         color: '#F39C12',
-        gradient: 'from-yellow-400 to-orange-500'
+        gradient: 'from-mhg-accent-red to-mhg-gold'
     }
 ];
 

@@ -19,7 +19,7 @@ export default function MenuItemCard({
 }: MenuItemCardProps) {
     return (
         <div
-            className={`glass-card p-4 cursor-pointer transition-all duration-300 ${isSelected ? 'ring-2 ring-indigo-600 bg-indigo-50/50' : ''
+            className={`glass-card p-4 cursor-pointer transition-all duration-300 ${isSelected ? 'ring-2 ring-mhg-gold bg-mhg-gold/10' : ''
                 }`}
             onClick={() => onToggle(menuItem.id)}
         >
@@ -27,7 +27,7 @@ export default function MenuItemCard({
                 <div className="flex-shrink-0 mt-1">
                     <div
                         className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${isSelected
-                            ? 'bg-indigo-600 border-indigo-600'
+                            ? 'bg-mhg-gold border-mhg-gold'
                             : 'border-gray-300 bg-white'
                             }`}
                     >
@@ -41,7 +41,7 @@ export default function MenuItemCard({
                         <p className="text-sm text-gray-600 mb-2">{menuItem.description}</p>
                     )}
                     <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-indigo-600">
+                        <span className="text-lg font-bold text-mhg-blue">
                             {menuItem.price} جنيه
                         </span>
 
@@ -56,7 +56,7 @@ export default function MenuItemCard({
                                 <span className="w-8 text-center font-bold">{quantity}</span>
                                 <button
                                     onClick={() => onQuantityChange(menuItem.id, quantity + 1)}
-                                    className="w-8 h-8 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center font-bold"
+                                    className="w-8 h-8 rounded-lg bg-mhg-blue hover:bg-mhg-blue-deep text-white flex items-center justify-center font-bold"
                                 >
                                     +
                                 </button>

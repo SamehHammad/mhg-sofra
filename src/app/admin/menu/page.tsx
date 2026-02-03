@@ -8,6 +8,13 @@ import ErrorMessage from '@/components/ErrorMessage';
 import MenuScanner from '@/components/MenuScanner';
 import { MEAL_TYPES } from '@/lib/constants';
 import { useNotification } from '@/context/NotificationContext';
+import {
+    bulkDeleteMenuItemsAction,
+    deleteMenuItemAction,
+    getAdminMenuDataAction,
+    importExcelMenuAction,
+    upsertMenuItemAction,
+} from '../actions';
 
 interface ScannedItem {
     id: string; // Temporary ID for review
@@ -41,20 +48,8 @@ export default function AdminMenuPage() {
     const { showNotification, showConfirm } = useNotification();
 
     useEffect(() => {
-        checkAuth();
         fetchData();
     }, []);
-
-    const checkAuth = async () => {
-        try {
-            const response = await fetch('/api/auth/admin');
-            if (!response.ok) {
-                router.push('/admin/login');
-            }
-        } catch (err) {
-            router.push('/admin/login');
-        }
-    };
 
     const handleDeleteAllMeals = (scope: 'restaurant' | 'all') => {
         const title = scope === 'all' ? 'حذف جميع الوجبات' : 'حذف وجبات المطعم';
@@ -66,25 +61,24 @@ export default function AdminMenuPage() {
         showConfirm(title, message, async () => {
             try {
                 setLoading(true);
-                const response = await fetch('/api/menu/bulk-delete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        deleteAll: scope === 'all',
-                        restaurantId: scope === 'restaurant' ? formData.restaurantId : undefined,
-                    }),
+                const result = await bulkDeleteMenuItemsAction({
+                    deleteAll: scope === 'all',
+                    restaurantId: scope === 'restaurant' ? formData.restaurantId : undefined,
                 });
 
-                const data = await response.json();
-                if (response.ok) {
-                    showNotification('تم الحذف', `تم حذف ${data.deletedCount} وجبة`, 'success');
+                if (result.ok) {
+                    showNotification('تم الحذف', `تم حذف ${result.deletedCount} وجبة`, 'success');
                     setImportResult(null);
                     setScannedItems([]);
                     setShowForm(false);
                     setEditingId(null);
                     fetchData();
                 } else {
-                    showNotification('خطأ', data.error || 'فشل حذف الوجبات', 'error');
+                    if (result.error === 'غير مصرح') {
+                        router.push('/admin/login');
+                        return;
+                    }
+                    showNotification('خطأ', result.error || 'فشل حذف الوجبات', 'error');
                 }
             } catch (err) {
                 showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
@@ -114,22 +108,28 @@ export default function AdminMenuPage() {
             fd.append('mealType', formData.mealType);
             fd.append('mode', importMode);
 
-            const response = await fetch('/api/menu/import-excel', {
-                method: 'POST',
-                body: fd,
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                setImportResult(data);
+            const result = await importExcelMenuAction(fd);
+            if (result.ok) {
+                const viewData = {
+                    success: true,
+                    createdCount: result.createdCount,
+                    skippedCount: result.skippedCount,
+                    errorCount: result.errorCount,
+                    results: [],
+                };
+                setImportResult(viewData);
                 showNotification(
                     'تم الاستيراد',
-                    `تم إنشاء/تحديث ${data.createdCount} وجبة. تم تخطي ${data.skippedCount}. أخطاء ${data.errorCount}.`,
-                    data.errorCount > 0 ? 'error' : 'success'
+                    `تم إنشاء/تحديث ${result.createdCount} وجبة. تم تخطي ${result.skippedCount}. أخطاء ${result.errorCount}.`,
+                    result.errorCount > 0 ? 'error' : 'success'
                 );
                 fetchData();
             } else {
-                showNotification('خطأ', data.error || 'فشل استيراد الملف', 'error');
+                if (result.error === 'غير مصرح') {
+                    router.push('/admin/login');
+                    return;
+                }
+                showNotification('خطأ', result.error || 'فشل استيراد الملف', 'error');
             }
         } catch (err) {
             showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
@@ -143,28 +143,19 @@ export default function AdminMenuPage() {
             setLoading(true);
             setError(null);
 
-            const [menuRes, restaurantsRes] = await Promise.all([
-                fetch('/api/menu'),
-                fetch('/api/restaurants'),
-            ]);
+            const result = await getAdminMenuDataAction();
+            if (!result.ok) {
+                router.push('/admin/login');
+                return;
+            }
 
-            const menuData = await menuRes.json();
-            const restaurantsData = await restaurantsRes.json();
-
-            if (menuRes.ok && restaurantsRes.ok) {
-                setMenuItems(menuData.menuItems);
-                setRestaurants(restaurantsData.restaurants);
-                if (restaurantsData.restaurants.length > 0) {
-                    // Set default restaurant if not already set
-                    if (!formData.restaurantId) {
-                        setFormData((prev) => ({
-                            ...prev,
-                            restaurantId: restaurantsData.restaurants[0].id,
-                        }));
-                    }
-                }
-            } else {
-                setError('حدث خطأ أثناء جلب البيانات');
+            setMenuItems(result.menuItems);
+            setRestaurants(result.restaurants);
+            if (result.restaurants.length > 0 && !formData.restaurantId) {
+                setFormData((prev) => ({
+                    ...prev,
+                    restaurantId: result.restaurants[0].id,
+                }));
             }
         } catch (err) {
             setError('حدث خطأ أثناء الاتصال بالخادم');
@@ -177,19 +168,16 @@ export default function AdminMenuPage() {
         e.preventDefault();
 
         try {
-            const url = editingId ? `/api/menu/${editingId}` : '/api/menu';
-            const method = editingId ? 'PUT' : 'POST';
-
-            const response = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    price: parseFloat(formData.price),
-                }),
+            const result = await upsertMenuItemAction({
+                id: editingId,
+                name: formData.name,
+                price: parseFloat(formData.price),
+                mealType: formData.mealType,
+                description: formData.description,
+                restaurantId: formData.restaurantId,
             });
 
-            if (response.ok) {
+            if (result.ok) {
                 showNotification('تم الحفظ', editingId ? 'تم تعديل الوجبة بنجاح' : 'تم إضافة الوجبة بنجاح', 'success');
                 setShowForm(false);
                 setEditingId(null);
@@ -202,8 +190,11 @@ export default function AdminMenuPage() {
                 });
                 fetchData();
             } else {
-                const data = await response.json();
-                showNotification('خطأ', data.error || 'حدث خطأ أثناء الحفظ', 'error');
+                if (result.error === 'غير مصرح') {
+                    router.push('/admin/login');
+                    return;
+                }
+                showNotification('خطأ', result.error || 'حدث خطأ أثناء الحفظ', 'error');
             }
         } catch (err) {
             showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
@@ -227,16 +218,16 @@ export default function AdminMenuPage() {
     const handleDelete = (id: string) => {
         showConfirm('حذف الوجبة', 'هل أنت متأكد من رغبتك في حذف هذه الوجبة؟', async () => {
             try {
-                const response = await fetch(`/api/menu/${id}`, {
-                    method: 'DELETE',
-                });
-
-                if (response.ok) {
+                const result = await deleteMenuItemAction(id);
+                if (result.ok) {
                     showNotification('تم الحذف', 'تم حذف الوجبة بنجاح', 'success');
                     fetchData();
                 } else {
-                    const data = await response.json();
-                    showNotification('خطأ', data.error || 'حدث خطأ أثناء الحذف', 'error');
+                    if (result.error === 'غير مصرح') {
+                        router.push('/admin/login');
+                        return;
+                    }
+                    showNotification('خطأ', result.error || 'حدث خطأ أثناء الحذف', 'error');
                 }
             } catch (err) {
                 showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
@@ -276,19 +267,15 @@ export default function AdminMenuPage() {
             // Sequentially save items
             for (const item of scannedItems) {
                 try {
-                    const response = await fetch('/api/menu', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name: item.name,
-                            price: item.price,
-                            mealType: formData.mealType, // Use currently selected meal type
-                            restaurantId: formData.restaurantId, // Use currently selected restaurant
-                            description: '',
-                        }),
+                    const result = await upsertMenuItemAction({
+                        name: item.name,
+                        price: item.price,
+                        mealType: formData.mealType,
+                        restaurantId: formData.restaurantId,
+                        description: '',
                     });
 
-                    if (response.ok) {
+                    if (result.ok) {
                         successCount++;
                     } else {
                         failCount++;

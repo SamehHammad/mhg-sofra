@@ -22,8 +22,8 @@ export default function AdminNav() {
                             key={item.href}
                             href={item.href}
                             className={`px-4 py-2 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 ${pathname === item.href
-                                    ? 'bg-indigo-600 text-white shadow-lg'
-                                    : 'bg-white hover:bg-indigo-50 text-gray-700'
+                                    ? 'bg-mhg-brown text-white shadow-lg'
+                                    : 'bg-white hover:bg-mhg-gold/10 text-gray-700'
                                 }`}
                         >
                             <span>{item.icon}</span>

@@ -199,7 +199,7 @@ export default function MenuScanner({
     return (
         <div className="space-y-4">
             {!isCameraOpen && !preview && (
-                <div className="border-2 border-dashed border-indigo-300 rounded-xl p-8 text-center hover:border-indigo-500 transition-all duration-300">
+                <div className="border-2 border-dashed border-mhg-gold/40 rounded-xl p-8 text-center hover:border-mhg-gold transition-all duration-300">
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4">
                         {/* File Upload Button */}
                         <input
@@ -214,7 +214,7 @@ export default function MenuScanner({
                             htmlFor="menu-image-upload"
                             className={`cursor-pointer w-full md:w-auto ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                            <div className="bg-indigo-50 p-6 rounded-xl hover:bg-indigo-100 transition-colors">
+                            <div className="bg-mhg-gold/10 p-6 rounded-xl hover:bg-mhg-gold/15 transition-colors">
                                 <div className="text-4xl mb-2">📁</div>
                                 <h3 className="font-bold text-gray-800">رفع صورة</h3>
                             </div>
@@ -228,7 +228,7 @@ export default function MenuScanner({
                             disabled={uploading}
                             className="w-full md:w-auto"
                         >
-                            <div className="bg-indigo-50 p-6 rounded-xl hover:bg-indigo-100 transition-colors cursor-pointer">
+                            <div className="bg-mhg-blue/10 p-6 rounded-xl hover:bg-mhg-blue/15 transition-colors cursor-pointer">
                                 <div className="text-4xl mb-2">📸</div>
                                 <h3 className="font-bold text-gray-800">التقاط صورة</h3>
                             </div>
@@ -255,7 +255,7 @@ export default function MenuScanner({
                             onClick={captureImage}
                             className="bg-white rounded-full p-4 shadow-lg hover:scale-110 transition-transform"
                         >
-                            <div className="w-8 h-8 rounded-full border-4 border-indigo-600"></div>
+                            <div className="w-8 h-8 rounded-full border-4 border-mhg-gold"></div>
                         </button>
                         <button
                             onClick={stopCamera}
@@ -278,7 +278,7 @@ export default function MenuScanner({
                     {uploading && (
                         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm rounded-xl flex items-center justify-center">
                             <div className="text-center">
-                                <div className="w-16 h-16 border-4 border-white border-t-indigo-600 rounded-full animate-spin mx-auto mb-4" />
+                                <div className="w-16 h-16 border-4 border-white border-t-mhg-gold rounded-full animate-spin mx-auto mb-4" />
                                 <p className="text-white font-bold">جاري تحليل الصورة واستخراج الوجبات...</p>
                                 <p className="text-white/80 text-sm mt-2">قد يستغرق ذلك بضع ثواني</p>
                             </div>
@@ -301,7 +301,7 @@ export default function MenuScanner({
                 </div>
             )}
 
-            <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl text-sm">
+            <div className="bg-mhg-blue/10 border border-mhg-blue/20 text-mhg-blue px-4 py-3 rounded-xl text-sm">
                 <p className="font-bold mb-1">💡 نصائح:</p>
                 <ul className="list-disc list-inside space-y-1">
                     <li>صور المنيو بشكل مستقيم وتجنب الميلان</li>

@@ -1,42 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminNav from '@/components/AdminNav';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { adminLogoutAction, getAdminStatsAction } from './actions';
+import { adminLogoutAction } from './actions';
 
-export default function AdminDashboard() {
-    const [stats, setStats] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+export default function AdminDashboardClient({ initialStats }: { initialStats: any }) {
+    const [stats] = useState<any>(initialStats);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
-
-    useEffect(() => {
-        fetchStats();
-    }, []);
-
-    const fetchStats = async () => {
-        try {
-            setLoading(true);
-            const result = await getAdminStatsAction();
-            if (!result.ok) {
-                router.push('/admin/login');
-                return;
-            }
-            setStats(result.stats);
-        } catch (err) {
-            console.error('Error fetching stats:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleLogout = async () => {
         try {
+            setLoading(true);
             await adminLogoutAction();
             router.push('/admin/login');
         } catch (err) {
             console.error('Error logging out:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -45,7 +28,11 @@ export default function AdminDashboard() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-3xl font-bold text-gray-800">لوحة التحكم</h1>
-                    <button onClick={handleLogout} className="px-4 py-2 rounded-xl font-bold bg-red-600 hover:bg-red-700 text-white transition-all duration-300">
+                    <button
+                        onClick={handleLogout}
+                        className="px-4 py-2 rounded-xl font-bold bg-red-600 hover:bg-red-700 text-white transition-all duration-300"
+                        disabled={loading}
+                    >
                         تسجيل الخروج
                     </button>
                 </div>
@@ -56,34 +43,26 @@ export default function AdminDashboard() {
 
                 {!loading && stats && (
                     <>
-                        {/* Stats Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <div className="glass-card p-6">
                                 <div className="text-4xl mb-2">🏪</div>
-                                <div className="text-3xl font-bold text-indigo-600 mb-1">
-                                    {stats.restaurantsCount}
-                                </div>
+                                <div className="text-3xl font-bold text-indigo-600 mb-1">{stats.restaurantsCount}</div>
                                 <div className="text-gray-600">مطعم مسجل</div>
                             </div>
 
                             <div className="glass-card p-6">
                                 <div className="text-4xl mb-2">📦</div>
-                                <div className="text-3xl font-bold text-indigo-600 mb-1">
-                                    {stats.ordersCount}
-                                </div>
+                                <div className="text-3xl font-bold text-indigo-600 mb-1">{stats.ordersCount}</div>
                                 <div className="text-gray-600">إجمالي الطلبات</div>
                             </div>
 
                             <div className="glass-card p-6">
                                 <div className="text-4xl mb-2">🔥</div>
-                                <div className="text-3xl font-bold text-indigo-600 mb-1">
-                                    {stats.todayOrders}
-                                </div>
+                                <div className="text-3xl font-bold text-indigo-600 mb-1">{stats.todayOrders}</div>
                                 <div className="text-gray-600">طلبات اليوم</div>
                             </div>
                         </div>
 
-                        {/* Quick Actions */}
                         <div className="glass-card p-6">
                             <h2 className="text-xl font-bold text-gray-800 mb-4">إجراءات سريعة</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

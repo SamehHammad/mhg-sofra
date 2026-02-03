@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { adminLoginAction } from '../actions';
 
 export default function AdminLoginPage() {
     const [username, setUsername] = useState('admin');
@@ -16,18 +17,12 @@ export default function AdminLoginPage() {
         setLoading(true);
 
         try {
-            const response = await fetch('/api/auth/admin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            });
+            const result = await adminLoginAction({ username, password });
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (result.ok) {
                 router.push('/admin');
             } else {
-                setError(data.error || 'فشل تسجيل الدخول');
+                setError(result.error || 'فشل تسجيل الدخول');
             }
         } catch (err) {
             setError('حدث خطأ أثناء الاتصال بالخادم');

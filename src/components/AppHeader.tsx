@@ -7,6 +7,7 @@ import { SESSION_KEYS } from '@/lib/constants';
 import { Calculator, LayoutDashboard, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { saveUsernameAction } from './actions';
 
 export default function AppHeader({ initialUsername }: { initialUsername?: string | null }) {
   const pathname = usePathname();
@@ -25,8 +26,8 @@ export default function AppHeader({ initialUsername }: { initialUsername?: strin
       href: '/orders',
       label: 'عرض الطلبات',
       Icon: ShoppingCart,
-      activeClassName: 'bg-indigo-600 text-white shadow-md',
-      inactiveClassName: 'bg-white/70 text-indigo-700 hover:bg-indigo-50',
+      activeClassName: 'bg-mhg-blue text-white shadow-md',
+      inactiveClassName: 'bg-white/70 text-mhg-blue hover:bg-mhg-blue/10',
       className:
         'px-6 py-3 rounded-xl font-bold bg-white hover:bg-gray-50 text-gray-700 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2',
     },
@@ -34,8 +35,8 @@ export default function AppHeader({ initialUsername }: { initialUsername?: strin
       href: '/billing',
       label: 'الحساب والفواتير',
       Icon: Calculator,
-      activeClassName: 'bg-emerald-600 text-white shadow-md',
-      inactiveClassName: 'bg-white/70 text-emerald-700 hover:bg-emerald-50',
+      activeClassName: 'bg-mhg-gold text-mhg-brown shadow-md',
+      inactiveClassName: 'bg-white/70 text-mhg-gold-deep hover:bg-mhg-gold/10',
       className:
         'px-6 py-3 rounded-xl font-bold bg-white hover:bg-gray-50 text-gray-700 shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2',
     },
@@ -43,8 +44,8 @@ export default function AppHeader({ initialUsername }: { initialUsername?: strin
       href: '/admin/login',
       label: 'لوحة الإدارة',
       Icon: LayoutDashboard,
-      activeClassName: 'bg-gray-900 text-white shadow-md',
-      inactiveClassName: 'bg-white/70 text-gray-800 hover:bg-gray-100',
+      activeClassName: 'bg-mhg-brown text-white shadow-md',
+      inactiveClassName: 'bg-white/70 text-mhg-brown hover:bg-mhg-brown/10',
       className:
         'px-6 py-3 rounded-xl font-bold bg-gray-800 hover:bg-gray-900 text-white shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2',
     },
@@ -66,13 +67,8 @@ export default function AppHeader({ initialUsername }: { initialUsername?: strin
 
   const saveUsername = async (newUsername: string) => {
     try {
-      const response = await fetch('/api/auth/username', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: newUsername }),
-      });
-
-      if (response.ok) {
+      const result = await saveUsernameAction(newUsername);
+      if (result.ok) {
         localStorage.setItem(SESSION_KEYS.USERNAME, newUsername);
         document.cookie = `${encodeURIComponent(SESSION_KEYS.USERNAME)}=${encodeURIComponent(newUsername)}; path=/; max-age=31536000`;
         setUsername(newUsername);
@@ -121,7 +117,7 @@ export default function AppHeader({ initialUsername }: { initialUsername?: strin
                 {username && (
                   <div className="text-left md:hidden">
                     <p className="text-xs text-gray-600">مرحباً</p>
-                    <p className="text-lg font-bold text-indigo-600 cursor-pointer" onClick={() => setShowEditModal(true)}>
+                    <p className="text-lg font-bold text-mhg-blue cursor-pointer" onClick={() => setShowEditModal(true)}>
                       {username}
                     </p>
                   </div>
@@ -166,7 +162,7 @@ export default function AppHeader({ initialUsername }: { initialUsername?: strin
                 <div className="text-right hidden md:block">
                   <p className="text-sm text-gray-600">مرحباً</p>
                   <div className="flex items-center justify-end gap-2">
-                    <p className="text-xl font-bold text-indigo-600 cursor-pointer" onClick={() => setShowEditModal(true)}>
+                    <p className="text-xl font-bold text-mhg-blue cursor-pointer" onClick={() => setShowEditModal(true)}>
                       {username}
                     </p>
                   </div>

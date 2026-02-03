@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import { MEAL_TYPES } from '@/lib/constants';
 import { useNotification } from '@/context/NotificationContext';
+import { deleteAdminOrderAction, deleteAllOrdersAction, getAdminOrdersAction } from '../actions';
 
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<any[]>([]);
@@ -21,20 +22,8 @@ export default function AdminOrdersPage() {
     const { showNotification, showConfirm } = useNotification();
 
     useEffect(() => {
-        checkAuth();
         fetchOrders();
     }, []);
-
-    const checkAuth = async () => {
-        try {
-            const response = await fetch('/api/auth/admin');
-            if (!response.ok) {
-                router.push('/admin/login');
-            }
-        } catch (err) {
-            router.push('/admin/login');
-        }
-    };
 
     const handleDeleteOne = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,22 +31,20 @@ export default function AdminOrdersPage() {
 
         setDeleting(true);
         try {
-            const response = await fetch(`/api/admin/orders/${deleteTargetOrderId}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password }),
-            });
+            const result = await deleteAdminOrderAction({ id: deleteTargetOrderId, password });
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (result.ok) {
                 showNotification('تم الحذف', 'تم حذف الطلب بنجاح', 'success');
                 setOrders((prev) => prev.filter((o) => o.id !== deleteTargetOrderId));
                 setShowPasswordModal(false);
                 setPassword('');
                 setDeleteTargetOrderId(null);
             } else {
-                showNotification('خطأ', data.error || 'فشل الحذف', 'error');
+                if (result.error === 'غير مصرح') {
+                    router.push('/admin/login');
+                    return;
+                }
+                showNotification('خطأ', result.error || 'فشل الحذف', 'error');
             }
         } catch (err) {
             showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
@@ -71,14 +58,13 @@ export default function AdminOrdersPage() {
             setLoading(true);
             setError(null);
 
-            const response = await fetch('/api/orders');
-            const data = await response.json();
-
-            if (response.ok) {
-                setOrders(data.orders);
-            } else {
-                setError(data.error || 'حدث خطأ أثناء جلب الطلبات');
+            const result = await getAdminOrdersAction();
+            if (!result.ok) {
+                router.push('/admin/login');
+                return;
             }
+
+            setOrders(result.orders);
         } catch (err) {
             setError('حدث خطأ أثناء الاتصال بالخادم');
         } finally {
@@ -90,21 +76,19 @@ export default function AdminOrdersPage() {
         e.preventDefault();
         setDeleting(true);
         try {
-            const response = await fetch('/api/admin/orders/delete-all', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password }),
-            });
+            const result = await deleteAllOrdersAction(password);
 
-            const data = await response.json();
-
-            if (response.ok) {
+            if (result.ok) {
                 showNotification('تم الحذف', 'تم حذف جميع الطلبات بنجاح', 'success');
                 setOrders([]);
                 setShowPasswordModal(false);
                 setPassword('');
             } else {
-                showNotification('خطأ', data.error || 'فشل الحذف', 'error');
+                if (result.error === 'غير مصرح') {
+                    router.push('/admin/login');
+                    return;
+                }
+                showNotification('خطأ', result.error || 'فشل الحذف', 'error');
             }
         } catch (err) {
             showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');

@@ -3,6 +3,25 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --mhg-ink: 17 17 17;
+    --mhg-surface: 255 255 255;
+    --mhg-surface-muted: 255 255 255;
+
+    --mhg-gold: 214 174 90;
+    --mhg-gold-soft: 244 224 150;
+    --mhg-gold-deep: 166 120 33;
+
+    --mhg-brown: 44 20 12;
+    --mhg-brown-soft: 74 38 21;
+
+    --mhg-blue: 12 79 133;
+    --mhg-blue-deep: 8 45 79;
+
+    --mhg-accent-red: 214 58 47;
+    --mhg-accent-green: 62 150 84;
+  }
+
   html {
     @apply antialiased;
   }
@@ -10,12 +29,12 @@
   body {
     @apply text-neutral-900;
     /* خلفية عصرية ناعمة جداً ومريحة للعين */
-    background-color: #f8faff;
+    background-color: rgb(var(--mhg-surface));
     background-image: 
-      radial-gradient(at 0% 0%, rgba(57, 73, 171, 0.03) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(57, 73, 171, 0.03) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(57, 73, 171, 0.03) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, rgba(57, 73, 171, 0.03) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(var(--mhg-blue), 0.06) 0px, transparent 55%),
+      radial-gradient(at 100% 0%, rgba(var(--mhg-gold), 0.07) 0px, transparent 55%),
+      radial-gradient(at 100% 100%, rgba(var(--mhg-brown), 0.08) 0px, transparent 60%),
+      radial-gradient(at 0% 100%, rgba(var(--mhg-gold-soft), 0.10) 0px, transparent 55%);
     background-attachment: fixed;
   }
   
@@ -28,11 +47,11 @@
 @layer components {
   /* كارت زجاجي عصري */
   .glass-card {
-    @apply bg-white border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-sm rounded-2xl transition-all duration-300;
+    @apply bg-white border border-white/60 shadow-[0_10px_30px_rgba(44,20,12,0.06)] backdrop-blur-sm rounded-2xl transition-all duration-300;
   }
   
   .glass-card:hover {
-    @apply shadow-[0_8px_30px_rgb(57,73,171,0.08)] -translate-y-1 bg-white/80;
+    @apply shadow-[0_14px_40px_rgba(12,79,133,0.12)] -translate-y-1 bg-white/85;
   }
 
   /* الأزرار الجديدة */
@@ -41,12 +60,12 @@
   }
   
   .btn-primary {
-    @apply btn text-white shadow-[0_8px_16px_-8px_rgba(57,73,171,0.5)];
-    background: linear-gradient(135deg, #3949AB 0%, #4f5bb0 100%);
+    @apply btn text-white shadow-[0_12px_26px_-12px_rgba(44,20,12,0.55)];
+    background: linear-gradient(135deg, rgb(var(--mhg-gold)) 0%, rgb(var(--mhg-gold-deep)) 100%);
   }
   
   .btn-primary:hover {
-    @apply shadow-[0_12px_24px_-10px_rgba(57,73,171,0.6)];
+    @apply shadow-[0_18px_34px_-14px_rgba(44,20,12,0.65)];
     transform: translateY(-2px);
   }
 
@@ -57,9 +76,11 @@
   }
   
   .input-modern:focus {
-    @apply border-[#3949AB]/30 ring-4 ring-[#3949AB]/5;
+    @apply ring-4;
+    border-color: rgba(var(--mhg-gold), 0.45);
+    --tw-ring-color: rgba(var(--mhg-gold), 0.14);
     transform: translateY(-1px);
-    box-shadow: 0 10px 30px -10px rgba(57,73,171,0.15);
+    box-shadow: 0 14px 34px -16px rgba(44,20,12,0.25);
   }
   
   .input-modern::placeholder {
@@ -100,12 +121,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E0E7FF;
+  background: rgba(var(--mhg-gold-soft), 0.55);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3949AB;
+  background: rgb(var(--mhg-gold));
 }
 
 /* RTL Support */

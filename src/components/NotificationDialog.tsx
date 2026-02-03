@@ -43,9 +43,9 @@ export default function NotificationDialog({
             case 'error':
                 return <div className="text-red-500 text-5xl mb-4">❌</div>;
             case 'confirm':
-                return <div className="text-blue-500 text-5xl mb-4">❓</div>;
+                return <div className="text-mhg-blue text-5xl mb-4">❓</div>;
             default:
-                return <div className="text-indigo-500 text-5xl mb-4">ℹ️</div>;
+                return <div className="text-mhg-gold-deep text-5xl mb-4">ℹ️</div>;
         }
     };
 
@@ -56,9 +56,9 @@ export default function NotificationDialog({
             case 'error':
                 return { button: 'bg-red-600 hover:bg-red-700', border: 'border-red-200' };
             case 'confirm':
-                return { button: 'bg-blue-600 hover:bg-blue-700', border: 'border-blue-200' };
+                return { button: 'bg-mhg-blue hover:bg-mhg-blue-deep', border: 'border-mhg-blue/25' };
             default:
-                return { button: 'bg-indigo-600 hover:bg-indigo-700', border: 'border-indigo-200' };
+                return { button: 'bg-mhg-gold hover:bg-mhg-gold-deep', border: 'border-mhg-gold/25' };
         }
     };
 

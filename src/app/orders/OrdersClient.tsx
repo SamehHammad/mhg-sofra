@@ -95,7 +95,7 @@ export default function OrdersClient({ summary }: { summary: OrdersSummary }) {
 
               <div className="space-y-6">
                 {Object.entries(mealTypes).map(([mealType, data]: [string, any]) => (
-                  <div key={mealType} className="border-r-4 border-indigo-600 pr-4">
+                  <div key={mealType} className="border-r-4 border-mhg-gold pr-4">
                     <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <h3 className="text-xl font-bold text-gray-800">{getMealTypeLabel(mealType)}</h3>
 
@@ -106,7 +106,7 @@ export default function OrdersClient({ summary }: { summary: OrdersSummary }) {
                           {data.restaurantPhone && (
                             <a
                               href={`tel:${String(data.restaurantPhone).replace(/[^\d+]/g, '')}`}
-                              className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 font-bold text-emerald-700 border border-emerald-100 hover:bg-emerald-100 transition-colors"
+                              className="inline-flex items-center gap-2 rounded-full bg-mhg-accent-green/10 px-3 py-1 font-bold text-mhg-accent-green border border-mhg-accent-green/20 hover:bg-mhg-accent-green/15 transition-colors"
                               aria-label={`اتصال بـ ${data.restaurantPhone}`}
                               title="اتصال"
                             >
@@ -117,7 +117,7 @@ export default function OrdersClient({ summary }: { summary: OrdersSummary }) {
                             </a>
                           )}
 
-                          <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 font-bold text-indigo-700 border border-indigo-100">
+                          <span className="inline-flex items-center rounded-full bg-mhg-gold/10 px-3 py-1 font-bold text-mhg-gold-deep border border-mhg-gold/20">
                             توصيل: {data.deliveryFee} جنيه
                           </span>
                         </div>
@@ -140,7 +140,7 @@ export default function OrdersClient({ summary }: { summary: OrdersSummary }) {
                           >
                             <div className="flex items-start justify-between mb-2">
                               <div className="font-bold text-gray-800">{order.user.username}</div>
-                              <div className="text-sm font-bold text-indigo-600">{order.totalAmount.toFixed(2)} جنيه</div>
+                              <div className="text-sm font-bold text-mhg-blue">{order.totalAmount.toFixed(2)} جنيه</div>
                             </div>
                             <div className="space-y-1">
                               {order.items.map((item: any) => (

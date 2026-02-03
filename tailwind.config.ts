@@ -9,6 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        'mhg-ink': 'rgb(var(--mhg-ink) / <alpha-value>)',
+        'mhg-surface': 'rgb(var(--mhg-surface) / <alpha-value>)',
+        'mhg-surface-muted': 'rgb(var(--mhg-surface-muted) / <alpha-value>)',
+        'mhg-gold': 'rgb(var(--mhg-gold) / <alpha-value>)',
+        'mhg-gold-soft': 'rgb(var(--mhg-gold-soft) / <alpha-value>)',
+        'mhg-gold-deep': 'rgb(var(--mhg-gold-deep) / <alpha-value>)',
+        'mhg-brown': 'rgb(var(--mhg-brown) / <alpha-value>)',
+        'mhg-brown-soft': 'rgb(var(--mhg-brown-soft) / <alpha-value>)',
+        'mhg-blue': 'rgb(var(--mhg-blue) / <alpha-value>)',
+        'mhg-blue-deep': 'rgb(var(--mhg-blue-deep) / <alpha-value>)',
+        'mhg-accent-red': 'rgb(var(--mhg-accent-red) / <alpha-value>)',
+        'mhg-accent-green': 'rgb(var(--mhg-accent-green) / <alpha-value>)',
         // اللون الأساسي #3949AB
         primary: {
           50: '#e8eaf6',

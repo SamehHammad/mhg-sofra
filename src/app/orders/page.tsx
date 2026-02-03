@@ -1,5 +1,16 @@
 import OrdersClient from './OrdersClient';
 import { getOrdersSummary } from './actions';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'الطلبات',
+    description: 'عرض جميع الطلبات مرتبة حسب التاريخ ونوع الوجبة في سفرة MHG.',
+    openGraph: {
+        title: 'الطلبات | MHG Sofra',
+        description: 'عرض جميع الطلبات مرتبة حسب التاريخ ونوع الوجبة في سفرة MHG.',
+        locale: 'ar_SA',
+    },
+};
 
 export default async function OrdersPage() {
     const summary = await getOrdersSummary();

@@ -6,6 +6,7 @@ import AdminNav from '@/components/AdminNav';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import { useNotification } from '@/context/NotificationContext';
+import { deleteRestaurantAction, getAdminRestaurantsAction, upsertRestaurantAction } from '../actions';
 
 export default function AdminRestaurantsPage() {
     const [restaurants, setRestaurants] = useState<any[]>([]);
@@ -22,34 +23,21 @@ export default function AdminRestaurantsPage() {
     const { showNotification, showConfirm } = useNotification();
 
     useEffect(() => {
-        checkAuth();
         fetchRestaurants();
     }, []);
-
-    const checkAuth = async () => {
-        try {
-            const response = await fetch('/api/auth/admin');
-            if (!response.ok) {
-                router.push('/admin/login');
-            }
-        } catch (err) {
-            router.push('/admin/login');
-        }
-    };
 
     const fetchRestaurants = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            const response = await fetch('/api/restaurants');
-            const data = await response.json();
-
-            if (response.ok) {
-                setRestaurants(data.restaurants);
-            } else {
-                setError(data.error || 'حدث خطأ أثناء جلب المطاعم');
+            const result = await getAdminRestaurantsAction();
+            if (!result.ok) {
+                router.push('/admin/login');
+                return;
             }
+
+            setRestaurants(result.restaurants);
         } catch (err) {
             setError('حدث خطأ أثناء الاتصال بالخادم');
         } finally {
@@ -61,27 +49,25 @@ export default function AdminRestaurantsPage() {
         e.preventDefault();
 
         try {
-            const url = editingId ? `/api/restaurants/${editingId}` : '/api/restaurants';
-            const method = editingId ? 'PUT' : 'POST';
-
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    deliveryPrice: parseFloat(formData.deliveryPrice),
-                }),
+            const result = await upsertRestaurantAction({
+                id: editingId,
+                name: formData.name,
+                phone: formData.phone,
+                deliveryPrice: parseFloat(formData.deliveryPrice),
             });
 
-            if (res.ok) {
+            if (result.ok) {
                 showNotification('تم الحفظ', editingId ? 'تم تعديل المطعم بنجاح' : 'تم إضافة المطعم بنجاح', 'success');
                 setShowForm(false);
                 setEditingId(null);
                 setFormData({ name: '', phone: '', deliveryPrice: '0' });
                 fetchRestaurants();
             } else {
-                const data = await res.json();
-                showNotification('خطأ', data.error || 'حدث خطأ أثناء الحفظ', 'error');
+                if (result.error === 'غير مصرح') {
+                    router.push('/admin/login');
+                    return;
+                }
+                showNotification('خطأ', result.error || 'حدث خطأ أثناء الحفظ', 'error');
             }
         } catch (err) {
             showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
@@ -101,16 +87,16 @@ export default function AdminRestaurantsPage() {
     const handleDelete = (id: string) => {
         showConfirm('حذف المطعم', 'هل أنت متأكد من رغبتك في حذف هذا المطعم؟ لا يمكن التراجع عن هذا الإجراء.', async () => {
             try {
-                const response = await fetch(`/api/restaurants/${id}`, {
-                    method: 'DELETE',
-                });
-
-                if (response.ok) {
+                const result = await deleteRestaurantAction(id);
+                if (result.ok) {
                     showNotification('تم الحذف', 'تم حذف المطعم بنجاح', 'success');
                     fetchRestaurants();
                 } else {
-                    const data = await response.json();
-                    showNotification('خطأ', data.error || 'حدث خطأ أثناء الحذف', 'error');
+                    if (result.error === 'غير مصرح') {
+                        router.push('/admin/login');
+                        return;
+                    }
+                    showNotification('خطأ', result.error || 'حدث خطأ أثناء الحذف', 'error');
                 }
             } catch (err) {
                 showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
