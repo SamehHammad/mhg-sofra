@@ -11,7 +11,7 @@ export const MEAL_TYPES: MealTypeOption[] = [
     {
         type: 'BREAKFAST',
         label: 'Breakfast',
-        labelAr: 'فطور',
+        labelAr: 'فطار',
         icon: '🌅',
         color: '#FF6B6B',
         gradient: 'from-orange-400 to-red-500'

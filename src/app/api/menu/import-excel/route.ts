@@ -25,7 +25,7 @@ function parseMealType(value: unknown): string | null {
     if (allowed.has(raw)) return raw;
 
     const map: Record<string, string> = {
-        فطور: 'BREAKFAST',
+        فطار: 'BREAKFAST',
         افطار: 'BREAKFAST',
         غداء: 'LUNCH',
         عشاء: 'DINNER',
