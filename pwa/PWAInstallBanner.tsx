@@ -17,18 +17,6 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
     const [isInstalled, setIsInstalled] = useState(false);
 
     useEffect(() => {
-        // TEMPORARY DEV: Always show the banner and simulate beforeinstallprompt
-        setIsVisible(true);
-        setIsDismissed(false);
-        setIsInstalled(false);
-        // Simulate beforeinstallprompt event so install button is always enabled
-        setDeferredPrompt({
-            prompt: () => Promise.resolve(),
-            userChoice: Promise.resolve({ outcome: 'accepted' })
-        });
-        // END TEMPORARY
-        // --- Revert this block to restore normal behavior ---
-        /*
         // Check if user already dismissed the banner in this session
         const dismissed = localStorage.getItem("pwa-banner-dismissed");
         if (dismissed) {
@@ -67,8 +55,7 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
             window.removeEventListener('appinstalled', checkInstalled);
             window.removeEventListener('resize', checkInstalled);
         };
-        */
-    }, []);
+    }, [isDismissed, isInstalled]);
 
     const handleInstall = async () => {
         if (!deferredPrompt) return;
@@ -111,7 +98,7 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
             className="fixed bottom-4 left-4 right-4 z-[100]"
         >
             <div
-                className="relative overflow-hidden rounded-2xl p-4 flex items-center gap-4 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border"
+                className="relative overflow-hidden rounded-2xl p-1 md:p-4 flex items-center gap-1 md:gap-2 shadow-[0_8px_32px_rgba(0,0,0,0.12)] border"
                 style={{
                     background: 'rgb(var(--mhg-surface) / 0.97)',
                     borderColor: 'rgb(var(--mhg-gold-soft) / 0.5)',
@@ -122,18 +109,18 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
                 <div className="relative w-12 h-12 flex-shrink-0 rounded-xl flex items-center justify-center overflow-hidden"
                     style={{ background: 'rgb(var(--mhg-blue) / 0.08)' }}>
                     {logo ? (
-                        <Image src={logo} alt={appName} fill className="object-contain p-2" />
+                        <Image src={logo} alt={appName} fill className="object-contain " />
                     ) : (
                         <Smartphone className="w-6 h-6" style={{ color: 'rgb(var(--mhg-blue-deep))' }} />
                     )}
                 </div>
                 {/* Text section */}
                 <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold truncate tracking-tight uppercase"
+                    <h3 className="text-[7px] md:text-[11px] truncate mt-0.5 font-medium"
                         style={{ color: 'rgb(var(--mhg-blue-deep))' }}>
                         {content.title}
                     </h3>
-                    <p className="text-[11px] truncate mt-0.5 font-medium" style={{ color: 'rgb(var(--mhg-brown-soft) / 0.95)' }}>
+                    <p className="text-xs md:text-sm font-bold" style={{ color: 'rgb(var(--mhg-brown-soft) / 0.95)' }}>
                         {content.subtitle}
                     </p>
                 </div>
@@ -141,14 +128,14 @@ export function PWAInstallBanner({ logo, locale, appName }: PWAInstallBannerProp
                 <div className="flex items-center gap-2">
                     <button
                         onClick={handleInstall}
-                        className="text-[11px] font-bold px-4 py-2 rounded-lg transition-all active:scale-95 flex items-center gap-2 shadow-sm"
+                        className="text-[7px] md:text-[11px] font-bold px-2 md:px-4 py-2 rounded-lg transition-all active:scale-95 flex items-center gap-2 shadow-sm"
                         style={{
                             background: 'linear-gradient(90deg, rgb(var(--mhg-blue)), rgb(var(--mhg-gold)))',
                             color: 'white',
                             boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
                         }}
                     >
-                        <Download className="w-2 h-2" style={{ color: 'white' }} />
+                        <Download className="w-[6px] h-[6px] md:w-2 md:h-2" style={{ color: 'white' }} />
                         {content.button}
                     </button>
                     <button

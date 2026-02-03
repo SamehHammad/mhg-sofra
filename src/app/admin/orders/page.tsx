@@ -148,7 +148,7 @@ export default function AdminOrdersPage() {
                                         <div className="text-2xl font-bold text-mhg-blue mb-1">
                                             {order.totalAmount.toFixed(2)} جنيه
                                         </div>
-                                        <div className="text-xs text-mhg-blue-deep/70">{order.orderNumber}</div>
+                                        <div className="text-xs text-mhg-blue-deep">{order.orderNumber}</div>
                                         <button
                                             type="button"
                                             onClick={() => {
