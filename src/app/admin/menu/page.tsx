@@ -26,6 +26,10 @@ export default function AdminMenuPage() {
     // Scanned items for review
     const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
 
+    const [importFile, setImportFile] = useState<File | null>(null);
+    const [importMode, setImportMode] = useState<'skip' | 'upsert'>('skip');
+    const [importResult, setImportResult] = useState<any | null>(null);
+
     const [formData, setFormData] = useState({
         name: '',
         price: '',
@@ -49,6 +53,88 @@ export default function AdminMenuPage() {
             }
         } catch (err) {
             router.push('/admin/login');
+        }
+    };
+
+    const handleDeleteAllMeals = (scope: 'restaurant' | 'all') => {
+        const title = scope === 'all' ? 'حذف جميع الوجبات' : 'حذف وجبات المطعم';
+        const message =
+            scope === 'all'
+                ? 'هل أنت متأكد؟ سيتم حذف جميع الوجبات من جميع المطاعم.'
+                : 'هل أنت متأكد؟ سيتم حذف جميع وجبات المطعم المحدد.';
+
+        showConfirm(title, message, async () => {
+            try {
+                setLoading(true);
+                const response = await fetch('/api/menu/bulk-delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        deleteAll: scope === 'all',
+                        restaurantId: scope === 'restaurant' ? formData.restaurantId : undefined,
+                    }),
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showNotification('تم الحذف', `تم حذف ${data.deletedCount} وجبة`, 'success');
+                    setImportResult(null);
+                    setScannedItems([]);
+                    setShowForm(false);
+                    setEditingId(null);
+                    fetchData();
+                } else {
+                    showNotification('خطأ', data.error || 'فشل حذف الوجبات', 'error');
+                }
+            } catch (err) {
+                showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
+            } finally {
+                setLoading(false);
+            }
+        });
+    };
+
+    const handleImportExcel = async () => {
+        if (!importFile) {
+            showNotification('تنبيه', 'الرجاء اختيار ملف Excel', 'error');
+            return;
+        }
+        if (!formData.restaurantId) {
+            showNotification('تنبيه', 'الرجاء اختيار مطعم افتراضي', 'error');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            setImportResult(null);
+
+            const fd = new FormData();
+            fd.append('file', importFile);
+            fd.append('restaurantId', formData.restaurantId);
+            fd.append('mealType', formData.mealType);
+            fd.append('mode', importMode);
+
+            const response = await fetch('/api/menu/import-excel', {
+                method: 'POST',
+                body: fd,
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setImportResult(data);
+                showNotification(
+                    'تم الاستيراد',
+                    `تم إنشاء/تحديث ${data.createdCount} وجبة. تم تخطي ${data.skippedCount}. أخطاء ${data.errorCount}.`,
+                    data.errorCount > 0 ? 'error' : 'success'
+                );
+                fetchData();
+            } else {
+                showNotification('خطأ', data.error || 'فشل استيراد الملف', 'error');
+            }
+        } catch (err) {
+            showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -241,6 +327,7 @@ export default function AdminMenuPage() {
                             setShowScanner(false);
                             setEditingId(null);
                             setScannedItems([]);
+                            setImportResult(null);
                             setFormData({
                                 name: '',
                                 price: '',
@@ -260,12 +347,129 @@ export default function AdminMenuPage() {
                             setShowForm(false);
                             setEditingId(null);
                             setScannedItems([]);
+                            setImportResult(null);
                         }}
                         className="btn px-6 py-3 rounded-xl font-bold bg-white text-indigo-600 border-2 border-indigo-600 hover:bg-indigo-50 transition-all duration-300 flex items-center gap-2"
                     >
                         <span>📸</span>
                         {showScanner ? 'إغلاق الماسح الضوئي' : 'مسح المنيو من صورة'}
                     </button>
+
+                    <button
+                        onClick={() => handleDeleteAllMeals('restaurant')}
+                        disabled={loading || !formData.restaurantId}
+                        className="px-6 py-3 rounded-xl font-bold bg-red-600 hover:bg-red-700 text-white transition-all duration-300"
+                    >
+                        حذف كل وجبات المطعم
+                    </button>
+
+                    <button
+                        onClick={() => handleDeleteAllMeals('all')}
+                        disabled={loading}
+                        className="px-6 py-3 rounded-xl font-bold bg-red-700 hover:bg-red-800 text-white transition-all duration-300"
+                    >
+                        حذف كل الوجبات
+                    </button>
+                </div>
+
+                <div className="glass-card p-6 mb-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">استيراد وجبات من Excel</h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                                المطعم الافتراضي *
+                            </label>
+                            <select
+                                value={formData.restaurantId}
+                                onChange={(e) => setFormData({ ...formData, restaurantId: e.target.value })}
+                                className="input-modern"
+                                required
+                            >
+                                {restaurants.map((restaurant) => (
+                                    <option key={restaurant.id} value={restaurant.id}>
+                                        {restaurant.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                                نوع الوجبة الافتراضي
+                            </label>
+                            <select
+                                value={formData.mealType}
+                                onChange={(e) => setFormData({ ...formData, mealType: e.target.value })}
+                                className="input-modern"
+                                required
+                            >
+                                {MEAL_TYPES.map((mt) => (
+                                    <option key={mt.type} value={mt.type}>
+                                        {mt.labelAr}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                                ملف Excel (.xlsx) *
+                            </label>
+                            <input
+                                type="file"
+                                accept=".xlsx,.xls"
+                                onChange={(e) => setImportFile(e.target.files?.[0] ?? null)}
+                                className="input-modern"
+                            />
+                            <div className="text-xs text-gray-600 mt-2">
+                                الأعمدة المطلوبة: name, price (يمكن أيضاً استخدام: اسم/السعر)
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                                وضع الاستيراد
+                            </label>
+                            <select
+                                value={importMode}
+                                onChange={(e) => setImportMode(e.target.value as any)}
+                                className="input-modern"
+                            >
+                                <option value="skip">تخطي الموجود</option>
+                                <option value="upsert">تحديث الموجود (حسب الاسم + النوع + المطعم)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={handleImportExcel}
+                        disabled={loading}
+                        className="btn-primary w-full"
+                    >
+                        {loading ? 'جاري الاستيراد...' : 'استيراد الوجبات'}
+                    </button>
+
+                    {importResult?.success && (
+                        <div className="mt-4 bg-white rounded-xl p-4 border border-gray-100">
+                            <div className="font-bold text-gray-800 mb-2">نتيجة الاستيراد</div>
+                            <div className="text-sm text-gray-700">
+                                تم إنشاء/تحديث: {importResult.createdCount} | تم تخطي: {importResult.skippedCount} | أخطاء: {importResult.errorCount}
+                            </div>
+
+                            {Array.isArray(importResult.results) && importResult.results.length > 0 && (
+                                <div className="mt-3 max-h-60 overflow-y-auto text-sm">
+                                    {importResult.results.map((r: any) => (
+                                        <div key={`${r.rowNumber}-${r.message}`} className="py-1 border-b border-gray-50">
+                                            <span className="font-bold">Row {r.rowNumber}:</span> {r.status} - {r.message}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Manual Form */}
