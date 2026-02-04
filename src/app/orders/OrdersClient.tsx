@@ -124,7 +124,7 @@ export default function OrdersClient({ summary }: { summary: OrdersSummary }) {
                       </div>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {data.orders.map((order: any) => {
                         if (hiddenOrderIds.has(order.id)) return null;
 
@@ -136,39 +136,77 @@ export default function OrdersClient({ summary }: { summary: OrdersSummary }) {
                         return (
                           <div
                             key={order.id}
-                            className="rounded-xl p-4 group relative shadow-md border border-[#f2e7c3] bg-white transition-shadow hover:shadow-lg"
+                            className="rounded-xl p-3 sm:p-4 group relative shadow-md border-2 border-mhg-gold/30 bg-white transition-all hover:shadow-lg hover:border-mhg-gold/50"
                           >
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="font-bold text-[16px]" style={{ color: '#D6AE5A' }}>{order.user.username}</span>
-                              <span className="text-lg font-extrabold" style={{ color: '#0062AC' }}>{order.totalAmount.toFixed(2)} جنيه</span>
+                            {/* Header: Username and Total */}
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 pb-3 border-b-2 border-mhg-gold/20">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl">👤</span>
+                                <span className="font-bold text-base sm:text-lg text-mhg-gold">{order.user.username}</span>
+                              </div>
+                              <div className="flex items-center gap-2 bg-mhg-blue/10 px-3 py-1.5 rounded-lg border border-mhg-blue/20">
+                                <span className="text-lg">💰</span>
+                                <span className="text-lg sm:text-xl font-extrabold text-mhg-blue">{order.totalAmount.toFixed(2)} جنيه</span>
+                              </div>
                             </div>
-                            <div className="divide-y divide-mhg-surface-muted/60">
+
+                            {/* Order Items */}
+                            <div className="space-y-2">
                               {order.items.map((item: any, idx: number) => (
-                                <div key={item.id} className="flex items-center justify-between py-1 first:pt-0 last:pb-0">
-                                  <span className="font-medium" style={{ color: '#181818' }}>
-                                    {item.menuItem.name}
-                                    {item.menuItem.mealShape && (
-                                      <span className="mr-2 text-xs font-medium text-mhg-blue-deep">
-                                        ({item.menuItem.mealShape === 'SANDWICH' ? 'ساندويتش' : item.menuItem.mealShape === 'PLATE' ? 'طبق' : 'علبة'})
-                                      </span>
-                                    )}
-                                    {item.selectedOption && (
-                                      <span className="mr-2 text-xs font-bold px-2 py-0.5 rounded bg-mhg-gold/10 text-mhg-gold border border-mhg-gold/20">
-                                        {item.selectedOption}
-                                      </span>
-                                    )}
-                                    {item.quantity > 1 && <span className="text-xs font-bold mr-1" style={{ color: '#D6AE5A' }}>× {item.quantity}</span>}
-                                  </span>
-                                  <span className="font-bold text-sm" style={{ color: '#0062AC' }}>{(item.price * item.quantity).toFixed(2)} جنيه</span>
+                                <div
+                                  key={item.id}
+                                  className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3 p-2 rounded-lg bg-gray-50/50 hover:bg-gray-50 transition-colors"
+                                >
+                                  {/* Item Name and Details */}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="font-semibold text-sm sm:text-base text-gray-900 mb-1">
+                                      {item.menuItem.name}
+                                    </div>
+
+                                    {/* Item Metadata */}
+                                    <div className="flex flex-wrap items-center gap-1.5">
+                                      {item.menuItem.mealShape && (
+                                        <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md bg-mhg-blue/10 text-mhg-blue border border-mhg-blue/20">
+                                          <span>
+                                            {item.menuItem.mealShape === 'SANDWICH' ? '🥪' : item.menuItem.mealShape === 'PLATE' ? '🍽️' : '📦'}
+                                          </span>
+                                          {item.menuItem.mealShape === 'SANDWICH' ? 'ساندويتش' : item.menuItem.mealShape === 'PLATE' ? 'طبق' : 'علبة'}
+                                        </span>
+                                      )}
+
+                                      {item.selectedOption && (
+                                        <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-md bg-mhg-gold/15 text-mhg-gold-deep border border-mhg-gold/30">
+                                          <span>🔖</span>
+                                          {item.selectedOption}
+                                        </span>
+                                      )}
+
+                                      {item.quantity > 1 && (
+                                        <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-md bg-mhg-accent-green/10 text-mhg-accent-green border border-mhg-accent-green/20">
+                                          <span>✕</span>
+                                          {item.quantity}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Item Price */}
+                                  <div className="flex items-center gap-1 self-start sm:self-center">
+                                    <span className="font-bold text-sm sm:text-base text-mhg-blue whitespace-nowrap">
+                                      {(item.price * item.quantity).toFixed(2)} جنيه
+                                    </span>
+                                  </div>
                                 </div>
                               ))}
                             </div>
+
+                            {/* Delete Button */}
                             {canDelete && (
                               <button
                                 type="button"
                                 onClick={() => onDelete(order.id)}
                                 disabled={deletingId === order.id}
-                                className="absolute -top-4 left-1 z-10 rounded-lg p-2 shadow-sm border border-[#B22222] bg-white text-[#B22222] hover:bg-[#B22222] hover:text-white transition-colors disabled:opacity-50"
+                                className="absolute -top-3 -left-3 sm:-top-4 sm:left-1 z-10 rounded-full sm:rounded-lg p-2 shadow-lg border-2 border-red-600 bg-white text-red-600 hover:bg-red-600 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 title="حذف الطلب"
                                 aria-label="حذف الطلب"
                               >

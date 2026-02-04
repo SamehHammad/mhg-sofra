@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminNav from '@/components/AdminNav';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -14,6 +14,7 @@ import {
     getAdminMenuDataAction,
     importExcelMenuAction,
     importJsonMenuAction,
+    saveImportedMealsAction,
     upsertMenuItemAction,
 } from '../actions';
 
@@ -41,10 +42,19 @@ export default function AdminMenuPage() {
     const [jsonImportMode, setJsonImportMode] = useState<'skip' | 'upsert'>('skip');
     const [jsonImportResult, setJsonImportResult] = useState<any | null>(null);
 
+    // Imported meals for preview
+    const [importedMeals, setImportedMeals] = useState<any[]>([]);
+    const [editingImportedIndex, setEditingImportedIndex] = useState<number | null>(null);
+
+    // Lazy loading and search state
+    const [displayedItemsCount, setDisplayedItemsCount] = useState(20);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedRestaurantFilter, setSelectedRestaurantFilter] = useState('');
+
     const [formData, setFormData] = useState({
         name: '',
         price: '',
-        mealType: 'LUNCH',
+        mealType: 'BREAKFAST',
         description: '',
         restaurantId: '',
         options: [] as string[],
@@ -57,6 +67,56 @@ export default function AdminMenuPage() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    // Filter and search logic
+    const filteredMenuItems = useMemo(() => {
+        let filtered = menuItems;
+
+        // Filter by restaurant
+        if (selectedRestaurantFilter) {
+            filtered = filtered.filter(item => item.restaurantId === selectedRestaurantFilter);
+        }
+
+        // Search by name
+        if (searchQuery.trim()) {
+            filtered = filtered.filter(item =>
+                item.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        return filtered;
+    }, [menuItems, selectedRestaurantFilter, searchQuery]);
+
+    // Items to display (with lazy loading)
+    const displayedItems = useMemo(() => {
+        // If searching, show all results
+        if (searchQuery.trim()) {
+            return filteredMenuItems;
+        }
+        // Otherwise, show limited items
+        return filteredMenuItems.slice(0, displayedItemsCount);
+    }, [filteredMenuItems, displayedItemsCount, searchQuery]);
+
+    // Infinite scroll with Intersection Observer
+    useEffect(() => {
+        // Only enable infinite scroll when not searching
+        if (searchQuery.trim()) return;
+        if (displayedItems.length >= filteredMenuItems.length) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    setDisplayedItemsCount(prev => Math.min(prev + 20, filteredMenuItems.length));
+                }
+            },
+            { threshold: 0.1, rootMargin: '100px' }
+        );
+
+        const sentinel = document.getElementById('scroll-sentinel');
+        if (sentinel) observer.observe(sentinel);
+
+        return () => observer.disconnect();
+    }, [searchQuery, displayedItems.length, filteredMenuItems.length]);
 
     const handleActionClick = (section: 'none' | 'manual' | 'scanner' | 'excel' | 'json') => {
         if (activeSection === section) {
@@ -179,28 +239,29 @@ export default function AdminMenuPage() {
         try {
             setLoading(true);
             setJsonImportResult(null);
+            setImportedMeals([]);
 
             const fd = new FormData();
             fd.append('file', jsonFile);
-            fd.append('mode', jsonImportMode);
             if (formData.restaurantId) fd.append('restaurantId', formData.restaurantId);
             if (formData.mealType) fd.append('mealType', formData.mealType);
 
             const result = await importJsonMenuAction(fd);
             if (result.ok) {
-                const viewData = {
-                    success: true,
-                    createdCount: result.createdCount,
-                    skippedCount: result.skippedCount,
-                    errorCount: result.errorCount,
-                };
-                setJsonImportResult(viewData);
-                showNotification(
-                    'تم الاستيراد',
-                    `تم إنشاء/تحديث ${result.createdCount} وجبة. تم تخطي ${result.skippedCount}. أخطاء ${result.errorCount}.`,
-                    result.errorCount > 0 ? 'error' : 'success'
-                );
-                fetchData();
+                setImportedMeals(result.parsedMeals);
+                if (result.errors.length > 0) {
+                    showNotification(
+                        'تحذير',
+                        `تم تحليل ${result.parsedMeals.length} وجبة. ${result.errors.length} أخطاء.`,
+                        'error'
+                    );
+                } else {
+                    showNotification(
+                        'تم التحليل',
+                        `تم تحليل ${result.parsedMeals.length} وجبة بنجاح. يرجى المراجعة قبل الحفظ.`,
+                        'success'
+                    );
+                }
             } else {
                 if (result.error === 'غير مصرح') {
                     router.push('/admin/login');
@@ -384,12 +445,105 @@ export default function AdminMenuPage() {
         }
     };
 
+    // Remove an imported meal from the preview list
+    const removeImportedMeal = (index: number) => {
+        setImportedMeals((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    // Update an imported meal
+    const updateImportedMeal = (index: number, updates: Partial<any>) => {
+        setImportedMeals((prev) =>
+            prev.map((meal, i) => (i === index ? { ...meal, ...updates } : meal))
+        );
+    };
+
+    // Save all imported meals to database
+    const saveAllImportedMeals = async () => {
+        if (importedMeals.length === 0) return;
+
+        try {
+            setLoading(true);
+            const result = await saveImportedMealsAction({
+                meals: importedMeals,
+                mode: jsonImportMode,
+            });
+
+            if (result.ok) {
+                showNotification(
+                    'تم الحفظ',
+                    `تم حفظ ${result.createdCount} وجبة. تم تخطي ${result.skippedCount}. أخطاء ${result.errorCount}.`,
+                    result.errorCount > 0 ? 'error' : 'success'
+                );
+                setImportedMeals([]);
+                setActiveSection('none');
+                fetchData();
+            } else {
+                if (result.error === 'غير مصرح') {
+                    router.push('/admin/login');
+                    return;
+                }
+                showNotification('خطأ', result.error || 'حدث خطأ أثناء الحفظ', 'error');
+            }
+        } catch (err) {
+            showNotification('خطأ', 'حدث خطأ أثناء الاتصال بالخادم', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen p-4">
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-3xl font-bold text-mhg-gold mb-6">إدارة القوائم</h1>
 
                 <AdminNav />
+
+                {/* Search and Filter Section */}
+                <div className="mb-6 glass-card p-4">
+                    <div className="flex flex-col md:flex-row gap-4 items-center">
+                        {/* Search Input */}
+                        <div className="flex-1 w-full">
+                            <input
+                                type="text"
+                                placeholder="🔍 ابحث عن وجبة..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-mhg-blue focus:ring-2 focus:ring-mhg-blue/20 outline-none text-gray-900 font-semibold"
+                            />
+                        </div>
+
+                        {/* Restaurant Filter */}
+                        <div className="w-full md:w-64">
+                            <select
+                                value={selectedRestaurantFilter}
+                                onChange={(e) => setSelectedRestaurantFilter(e.target.value)}
+                                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-mhg-blue focus:ring-2 focus:ring-mhg-blue/20 outline-none text-gray-900 font-semibold"
+                            >
+                                <option value="">جميع المطاعم</option>
+                                {restaurants.map((restaurant) => (
+                                    <option key={restaurant.id} value={restaurant.id}>
+                                        {restaurant.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Meal Count Display */}
+                        <div className="flex items-center gap-2 bg-mhg-gold/10 px-4 py-3 rounded-xl border-2 border-mhg-gold/30">
+                            <span className="text-2xl">🍽️</span>
+                            <div className="text-center">
+                                <div className="text-xs text-mhg-gold font-bold">إجمالي الوجبات</div>
+                                <div className="text-xl font-bold text-mhg-blue-deep">
+                                    {searchQuery || selectedRestaurantFilter ? (
+                                        <span>{filteredMenuItems.length} / {menuItems.length}</span>
+                                    ) : (
+                                        menuItems.length
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div className="mb-6 flex gap-3 flex-wrap items-center bg-white/50 p-4 rounded-xl border border-white/20 shadow-sm backdrop-blur-sm">
                     <button
@@ -658,11 +812,99 @@ export default function AdminMenuPage() {
                             {loading ? 'جاري الاستيراد...' : 'استيراد الوجبات من JSON'}
                         </button>
 
-                        {jsonImportResult?.success && (
-                            <div className="mt-4 bg-white rounded-xl p-4 border border-gray-100">
-                                <div className="font-bold text-mhg-gold mb-2">نتيجة الاستيراد</div>
-                                <div className="text-sm text-mhg-blue-deep">
-                                    تم إنشاء/تحديث: {jsonImportResult.createdCount} | تم تخطي: {jsonImportResult.skippedCount} | أخطاء: {jsonImportResult.errorCount}
+                        {/* Preview Imported Meals */}
+                        {importedMeals.length > 0 && (
+                            <div className="mt-6 glass-card p-6 border-2 border-mhg-gold/20">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-xl font-bold text-mhg-gold">
+                                        مراجعة الوجبات المستوردة ({importedMeals.length})
+                                    </h3>
+                                    <div className="text-sm text-mhg-gold">
+                                        يمكنك تعديل أو حذف الوجبات قبل الحفظ
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
+                                    {importedMeals.map((meal, index) => (
+                                        <div key={index} className="bg-white p-4 rounded-lg shadow-md border-2 border-gray-200">
+                                            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-700 mb-1">الاسم</label>
+                                                    <input
+                                                        type="text"
+                                                        value={meal.name}
+                                                        onChange={(e) => updateImportedMeal(index, { name: e.target.value })}
+                                                        className="w-full px-3 py-2 text-sm font-semibold text-gray-900 bg-gray-50 border-2 border-gray-300 rounded-lg focus:border-mhg-blue focus:ring-2 focus:ring-mhg-blue/20 outline-none"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-700 mb-1">السعر</label>
+                                                    <input
+                                                        type="number"
+                                                        value={meal.price}
+                                                        onChange={(e) => updateImportedMeal(index, { price: parseFloat(e.target.value) })}
+                                                        className="w-full px-3 py-2 text-sm font-semibold text-gray-900 bg-gray-50 border-2 border-gray-300 rounded-lg focus:border-mhg-blue focus:ring-2 focus:ring-mhg-blue/20 outline-none"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-700 mb-1">النوع</label>
+                                                    <select
+                                                        value={meal.mealType}
+                                                        onChange={(e) => updateImportedMeal(index, { mealType: e.target.value })}
+                                                        className="w-full px-3 py-2 text-sm font-semibold text-gray-900 bg-gray-50 border-2 border-gray-300 rounded-lg focus:border-mhg-blue focus:ring-2 focus:ring-mhg-blue/20 outline-none"
+                                                    >
+                                                        {MEAL_TYPES.map((mt) => (
+                                                            <option key={mt.type} value={mt.type}>
+                                                                {mt.labelAr}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-gray-700 mb-1">الشكل</label>
+                                                    <select
+                                                        value={meal.mealShape || 'PLATE'}
+                                                        onChange={(e) => updateImportedMeal(index, { mealShape: e.target.value })}
+                                                        className="w-full px-3 py-2 text-sm font-semibold text-gray-900 bg-gray-50 border-2 border-gray-300 rounded-lg focus:border-mhg-blue focus:ring-2 focus:ring-mhg-blue/20 outline-none"
+                                                    >
+                                                        {MEAL_SHAPES.map((ms) => (
+                                                            <option key={ms.type} value={ms.type}>
+                                                                {ms.labelAr}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="mt-3 flex items-center justify-between">
+                                                <div className="text-sm font-semibold text-gray-700">
+                                                    {meal.restaurantName} {meal.options?.length > 0 && `• خيارات: ${meal.options.join(', ')}`}
+                                                </div>
+                                                <button
+                                                    onClick={() => removeImportedMeal(index)}
+                                                    className="px-3 py-1 text-xs rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                                                >
+                                                    حذف
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <button
+                                        onClick={saveAllImportedMeals}
+                                        disabled={loading}
+                                        className="btn-primary flex-1"
+                                    >
+                                        {loading ? 'جاري الحفظ...' : `حفظ جميع الوجبات (${importedMeals.length})`}
+                                    </button>
+                                    <button
+                                        onClick={() => setImportedMeals([])}
+                                        disabled={loading}
+                                        className="px-6 py-3 rounded-xl font-bold bg-gray-100 text-mhg-blue-deep hover:bg-gray-200 transition-all"
+                                    >
+                                        إلغاء
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -957,39 +1199,58 @@ export default function AdminMenuPage() {
 
                 {
                     !loading && !error && (
-                        <div className="space-y-4">
-                            {menuItems.map((item) => (
-                                <div key={item.id} className="glass-card p-4">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-bold text-mhg-gold">{item.name}</h3>
-                                            <p className="text-sm text-mhg-gold mb-2">
-                                                {item.restaurant?.name} •{' '}
-                                                {MEAL_TYPES.find((mt) => mt.type === item.mealType)?.labelAr}
-                                            </p>
-                                            {item.description && (
-                                                <p className="text-sm text-mhg-gold mb-2">{item.description}</p>
-                                            )}
-                                            <p className="text-lg font-bold text-mhg-blue">{item.price} جنيه</p>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleEdit(item)}
-                                                className="px-4 py-2 rounded-xl font-bold bg-mhg-blue hover:bg-mhg-blue-deep text-white transition-all duration-300"
-                                            >
-                                                تعديل
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(item.id)}
-                                                className="px-4 py-2 rounded-xl font-bold bg-mhg-brown hover:bg-mhg-brown-soft text-white transition-all duration-300"
-                                            >
-                                                حذف
-                                            </button>
+                        <>
+                            <div className="space-y-4">
+                                {displayedItems.map((item) => (
+                                    <div key={item.id} className="glass-card p-4">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-1">
+                                                <h3 className="text-lg font-bold text-mhg-gold">{item.name}</h3>
+                                                <p className="text-sm text-mhg-gold mb-2">
+                                                    {item.restaurant?.name} •{' '}
+                                                    {MEAL_TYPES.find((mt) => mt.type === item.mealType)?.labelAr}
+                                                </p>
+                                                {item.description && (
+                                                    <p className="text-sm text-mhg-gold mb-2">{item.description}</p>
+                                                )}
+                                                <p className="text-lg font-bold text-mhg-blue">{item.price} جنيه</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => handleEdit(item)}
+                                                    className="px-4 py-2 rounded-xl font-bold bg-mhg-blue hover:bg-mhg-blue-deep text-white transition-all duration-300"
+                                                >
+                                                    تعديل
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(item.id)}
+                                                    className="px-4 py-2 rounded-xl font-bold bg-mhg-brown hover:bg-mhg-brown-soft text-white transition-all duration-300"
+                                                >
+                                                    حذف
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
+                                ))}
+                            </div>
+
+                            {/* Scroll Sentinel for Infinite Loading */}
+                            {!searchQuery && displayedItems.length < filteredMenuItems.length && (
+                                <div id="scroll-sentinel" className="py-8 text-center">
+                                    <div className="inline-flex items-center gap-2 text-mhg-gold">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-mhg-gold"></div>
+                                        <span className="font-bold">جاري تحميل المزيد...</span>
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
+                            )}
+
+                            {/* Show message when all items are loaded */}
+                            {!searchQuery && displayedItems.length >= filteredMenuItems.length && filteredMenuItems.length > 20 && (
+                                <div className="py-4 text-center text-mhg-gold font-bold">
+                                    ✓ تم عرض جميع الوجبات ({filteredMenuItems.length})
+                                </div>
+                            )}
+                        </>
                     )
                 }
                 {/* Edit Modal */}

@@ -517,7 +517,6 @@ export async function importJsonMenuAction(formData: FormData) {
 
     try {
         const file = formData.get('file');
-        const mode = String(formData.get('mode') ?? 'skip').trim().toLowerCase();
         const defaultRestaurantId = String(formData.get('restaurantId') ?? '').trim();
         const defaultMealType = String(formData.get('mealType') ?? '').trim();
 
@@ -543,11 +542,11 @@ export async function importJsonMenuAction(formData: FormData) {
             return { ok: false, error: 'يجب أن يحتوي الملف على مصفوفة من الوجبات' } as const;
         }
 
-        let createdCount = 0;
-        let skippedCount = 0;
-        let errorCount = 0;
+        const parsedMeals: any[] = [];
+        const errors: any[] = [];
 
-        for (const item of data) {
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
             try {
                 const name = String(item.name ?? '').trim();
                 const price = Number(item.price);
@@ -576,13 +575,13 @@ export async function importJsonMenuAction(formData: FormData) {
                 const options = Array.isArray(item.options) ? item.options.map((o: any) => String(o).trim()).filter(Boolean) : [];
 
                 if (!name || !price || price <= 0 || !restaurantId) {
-                    errorCount++;
+                    errors.push({ index: i, name: name || 'غير معروف', error: 'بيانات غير كاملة' });
                     continue;
                 }
 
                 const validMealTypes = ['APPETIZER', 'BREAKFAST', 'LUNCH', 'DINNER', 'DESSERT'];
                 if (!validMealTypes.includes(mealType)) {
-                    errorCount++;
+                    errors.push({ index: i, name, error: 'نوع وجبة غير صالح' });
                     continue;
                 }
 
@@ -592,58 +591,102 @@ export async function importJsonMenuAction(formData: FormData) {
                 });
 
                 if (!restaurant) {
-                    errorCount++;
+                    errors.push({ index: i, name, error: 'المطعم غير موجود' });
                     continue;
                 }
 
+                parsedMeals.push({
+                    name,
+                    price,
+                    mealType,
+                    description: description || null,
+                    restaurantId,
+                    restaurantName: restaurant.name,
+                    options,
+                    mealShape,
+                });
+            } catch (err) {
+                errors.push({ index: i, name: item.name || 'غير معروف', error: 'خطأ في المعالجة' });
+            }
+        }
+
+        return { ok: true, parsedMeals, errors } as const;
+    } catch (error) {
+        console.error('Error importing json menu:', error);
+        return { ok: false, error: 'حدث خطأ أثناء استيراد الملف' } as const;
+    }
+}
+
+export async function saveImportedMealsAction(input: {
+    meals: Array<{
+        name: string;
+        price: number;
+        mealType: string;
+        description?: string | null;
+        restaurantId: string;
+        options?: string[];
+        mealShape?: string | null;
+    }>;
+    mode: 'skip' | 'upsert';
+}) {
+    const admin = await requireAdmin();
+    if (!admin) return { ok: false, error: 'غير مصرح' } as const;
+
+    try {
+        let createdCount = 0;
+        let skippedCount = 0;
+        let errorCount = 0;
+
+        for (const meal of input.meals) {
+            try {
                 const existing = await prisma.menuItem.findFirst({
                     where: {
-                        restaurantId,
-                        name,
-                        mealType: mealType as any,
+                        restaurantId: meal.restaurantId,
+                        name: meal.name,
+                        mealType: meal.mealType as any,
                     },
                     select: { id: true },
                 });
 
-                if (existing && mode !== 'upsert') {
+                if (existing && input.mode !== 'upsert') {
                     skippedCount++;
                     continue;
                 }
 
-                if (existing && mode === 'upsert') {
+                if (existing && input.mode === 'upsert') {
                     await prisma.menuItem.update({
                         where: { id: existing.id },
                         data: {
-                            price,
-                            description: description || null,
-                            mealShape: mealShape as any,
-                            options,
+                            price: meal.price,
+                            description: meal.description || null,
+                            mealShape: meal.mealShape as any,
+                            options: meal.options || [],
                         },
                     });
                     createdCount++;
                 } else {
                     await prisma.menuItem.create({
                         data: {
-                            name,
-                            price,
-                            mealType: mealType as any,
-                            description: description || null,
-                            restaurantId,
-                            options,
-                            mealShape: mealShape as any,
+                            name: meal.name,
+                            price: meal.price,
+                            mealType: meal.mealType as any,
+                            description: meal.description || null,
+                            restaurantId: meal.restaurantId,
+                            options: meal.options || [],
+                            mealShape: meal.mealShape as any,
                         },
                     });
                     createdCount++;
                 }
             } catch (err) {
-                console.error('Error processing item:', err);
+                console.error('Error saving meal:', err);
                 errorCount++;
             }
         }
 
         return { ok: true, createdCount, skippedCount, errorCount } as const;
     } catch (error) {
-        console.error('Error importing json menu:', error);
-        return { ok: false, error: 'حدث خطأ أثناء استيراد الملف' } as const;
+        console.error('Error saving imported meals:', error);
+        return { ok: false, error: 'حدث خطأ أثناء حفظ الوجبات' } as const;
     }
 }
