@@ -35,7 +35,7 @@ export default async function BillingPage() {
         <BillingClient
             initialDate={initialDate}
             initialMealType={initialMealType}
-            initialRestaurants={initialRestaurants}
+            initialRestaurants={JSON.parse(JSON.stringify(initialRestaurants))}
         />
     );
 }

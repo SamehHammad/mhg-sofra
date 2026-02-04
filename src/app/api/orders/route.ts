@@ -109,6 +109,17 @@ export async function POST(request: Request) {
             },
         });
 
+        // Send notification
+        // Note: In Next.js App Router API routes, we can just call the function.
+        // But since sendNotificationToAll is async and we want to return response quickly,
+        // we might not await it? Or just await it to be safe.
+        const { sendNotificationToAllExcept } = await import('@/lib/notifications');
+        await sendNotificationToAllExcept(
+            username,
+            'طلب جديد! 🍔',
+            `تم عمل اوردر جديد من ${order.restaurant.name}`
+        );
+
         return NextResponse.json({ order });
     } catch (error) {
         console.error('Error creating order:', error);

@@ -3,11 +3,10 @@
 const CACHE_NAME = 'my-app-cache-v1';
 const urlsToCache = [
   '/',
-  // أضف هنا أي صفحات أو أصول أساسية تريد تخزينها مؤقتًا
-  // مثال: '/styles/globals.css', '/logo.png'
+  '/manifest.json',
+  '/logo2.png'
 ];
 
-// 1. عند التثبيت (Install)، قم بتخزين الأصول الأساسية مؤقتًا
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -19,7 +18,6 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// 2. عند التفعيل (Activate)، قم بتنظيف الكاش القديم
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
@@ -36,17 +34,42 @@ self.addEventListener('activate', (event) => {
   return self.clients.claim();
 });
 
-// 3. عند طلب الشبكة (Fetch)، حاول جلب الطلب من الشبكة أولاً
 self.addEventListener('fetch', (event) => {
-  // تجاهل الطلبات التي ليست GET
-  if (event.request.method !== 'GET') {
-    return;
-  }
+  if (event.request.method !== 'GET') return;
 
   event.respondWith(
     fetch(event.request).catch(() => {
-      // إذا فشلت الشبكة، حاول البحث في الكاش
       return caches.match(event.request);
     })
+  );
+});
+
+self.addEventListener('push', function (event) {
+  if (event.data) {
+    const data = event.data.json();
+    const options = {
+      body: data.body,
+      icon: data.icon || '/logo2.png',
+      badge: '/logo2.png',
+      dir: 'rtl',
+      lang: 'ar',
+      vibrate: [100, 50, 100],
+      data: {
+        dateOfArrival: Date.now(),
+        primaryKey: '1',
+        url: data.data?.url || '/'
+      }
+    };
+    event.waitUntil(
+      self.registration.showNotification(data.title, options)
+    );
+  }
+});
+
+self.addEventListener('notificationclick', function (event) {
+  console.log('[Service Worker] Notification click Received.');
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow(event.notification.data.url)
   );
 });

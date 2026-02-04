@@ -6,6 +6,7 @@ import ErrorMessage from '@/components/ErrorMessage';
 import { MEAL_TYPES } from '@/lib/constants';
 import { BillingSummary } from '@/lib/types';
 import { calculateBillingAction, getRestaurantsForMealTypeAction } from './actions';
+import { useNotification } from '@/context/NotificationContext';
 
 export default function BillingClient({
     initialDate,
@@ -23,6 +24,9 @@ export default function BillingClient({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [restaurants, setRestaurants] = useState<any[]>(initialRestaurants);
+    const [showNotificationModal, setShowNotificationModal] = useState(false);
+    const [sendingNotifications, setSendingNotifications] = useState(false);
+    const { showNotification } = useNotification();
 
     useEffect(() => {
         if (initialRestaurants.length > 0) {
@@ -39,10 +43,12 @@ export default function BillingClient({
         try {
             setLoading(true);
             setError(null);
+            setShowNotificationModal(false);
 
             const result = await calculateBillingAction({ date, mealType, restaurantId });
             if (result.ok) {
                 setBilling(result.billing);
+                setShowNotificationModal(true);
             } else {
                 setError(result.error || 'حدث خطأ أثناء حساب الفاتورة');
                 setBilling(null);
@@ -55,10 +61,32 @@ export default function BillingClient({
         }
     };
 
+    const handleSendNotifications = async () => {
+        if (!billing) return;
+        setSendingNotifications(true);
+        try {
+            // Dynamically import to avoid server-side issues in some setups, or just use the action
+            const { sendBillingNotificationsAction } = await import('./actions');
+            const result = await sendBillingNotificationsAction(billing);
+            if (result.ok) {
+                showNotification('نجاح', 'تم إرسال الإشعارات بنجاح', 'success');
+            } else {
+                showNotification('خطأ', 'حدث خطأ أثناء إرسال الإشعارات', 'error');
+            }
+        } catch (error) {
+            console.error(error);
+            showNotification('خطأ', 'حدث خطأ غير متوقع', 'error');
+        } finally {
+            setSendingNotifications(false);
+            setShowNotificationModal(false);
+        }
+    };
+
     const handleMealTypeChange = async (newMealType: string) => {
         setMealType(newMealType);
         setRestaurantId('');
         setBilling(null);
+        setShowNotificationModal(false);
 
         try {
             setLoading(true);
@@ -147,6 +175,36 @@ export default function BillingClient({
                 {loading && <LoadingSpinner />}
 
                 {error && <ErrorMessage message={error} />}
+
+                {/* Notification Modal */}
+                {showNotificationModal && billing && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 print:hidden">
+                        <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+                            <h3 className="text-xl font-bold text-mhg-gold mb-4 text-center">
+                                حساب الفاتورة اكتمل
+                            </h3>
+                            <p className="text-gray-600 mb-6 text-center">
+                                تم حساب الفاتورة بنجاح. هل ترغب في إرسال إشعار لكل مستخدم بقيمة فاتورته؟
+                            </p>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={handleSendNotifications}
+                                    disabled={sendingNotifications}
+                                    className="flex-1 bg-mhg-blue text-white py-2 rounded-lg hover:bg-mhg-blue-deep transition disabled:opacity-50"
+                                >
+                                    {sendingNotifications ? 'جارِ الإرسال...' : 'نعم، أرسل الإشعارات'}
+                                </button>
+                                <button
+                                    onClick={() => setShowNotificationModal(false)}
+                                    disabled={sendingNotifications}
+                                    className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition"
+                                >
+                                    لا، شكراً
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {billing && (
                     <div className="glass-card p-8">

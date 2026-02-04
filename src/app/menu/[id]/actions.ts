@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { sendNotificationToUser } from '@/lib/notifications';
 
 export async function createOrderAction(input: {
     username: string;
@@ -44,7 +45,8 @@ export async function createOrderAction(input: {
 
         const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 
-        await prisma.order.create({
+
+        const order = await prisma.order.create({
             data: {
                 orderNumber,
                 userId: user.id,
@@ -56,6 +58,14 @@ export async function createOrderAction(input: {
                 },
             },
         });
+
+        // Send notification to user
+        await sendNotificationToUser(
+            user.username,
+            'تم استلام الطلب ✅',
+            `تم استلام طلبك بنجاح! رقم الطلب: ${orderNumber}`,
+            '/orders'
+        );
 
         return { ok: true } as const;
     } catch (error) {

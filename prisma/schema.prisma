@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -19,6 +19,7 @@ model User {
   updatedAt DateTime @updatedAt
   
   orders    Order[]
+  pushSubscriptions PushSubscription[]
   
   @@index([username])
 }
@@ -107,6 +108,20 @@ model Admin {
   updatedAt    DateTime @updatedAt
   
   @@index([username])
+}
+
+// Push Subscription Model
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  keys      Json
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 // Enums

@@ -2,6 +2,9 @@
 
 import { prisma } from '@/lib/prisma';
 import { calculateBilling } from '@/lib/billing';
+import { sendNotificationToUser } from '@/lib/notifications';
+import { BillingSummary } from '@/lib/types';
+import { MEAL_TYPES } from '@/lib/constants';
 
 export async function getRestaurantsForMealTypeAction(mealType: string) {
     const restaurants = await prisma.restaurant.findMany({
@@ -77,5 +80,29 @@ export async function calculateBillingAction(input: {
     } catch (error) {
         console.error('Error calculating billing:', error);
         return { ok: false, error: 'حدث خطأ أثناء حساب الفاتورة' } as const;
+    }
+}
+
+export async function sendBillingNotificationsAction(billing: BillingSummary) {
+    try {
+        const results = await Promise.all(
+            billing.users.map(async (user) => {
+                const mealTypeLabel = MEAL_TYPES.find(mt => mt.type === billing.mealType)?.labelAr || billing.mealType;
+                // Format: يا (الاسم) حسابك في (الوجبه) من يوم(تاريخ اليوم) = ( السعر شامل التوصيل )
+                const message = `يا ${user.username} حسابك في ${mealTypeLabel} من يوم ${billing.date} = ${user.total.toFixed(2)} شامل التوصيل`;
+                const sent = await sendNotificationToUser(
+                    user.username,
+                    'فاتورة جديدة 🧾',
+                    message,
+                    '/' // Or link to specific billing detail if available
+                );
+                return { username: user.username, sent };
+            })
+        );
+
+        return { ok: true, results };
+    } catch (error) {
+        console.error("Error sending billing notifications:", error);
+        return { ok: false, error: 'حدث خطأ أثناء إرسال الإشعارات' };
     }
 }

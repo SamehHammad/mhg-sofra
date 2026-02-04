@@ -19,7 +19,7 @@ export default function Providers({
         <AppHeader initialUsername={initialUsername ?? null} />
         {children}
       </NotificationProvider>
-      <PWARegister />
+      <PWARegister username={initialUsername} />
       <PWAInstallBanner logo={'/logo2.png'} locale={"ar"} appName={"MHG Sofra"} />
     </LanguageProvider>
   );
