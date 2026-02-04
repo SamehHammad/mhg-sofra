@@ -147,6 +147,11 @@ export default function OrdersClient({ summary }: { summary: OrdersSummary }) {
                                 <div key={item.id} className="flex items-center justify-between py-1 first:pt-0 last:pb-0">
                                   <span className="font-medium" style={{ color: '#181818' }}>
                                     {item.menuItem.name}
+                                    {item.menuItem.mealShape && (
+                                      <span className="mr-2 text-xs font-medium text-mhg-blue-deep">
+                                        ({item.menuItem.mealShape === 'SANDWICH' ? 'ساندويتش' : item.menuItem.mealShape === 'PLATE' ? 'طبق' : 'علبة'})
+                                      </span>
+                                    )}
                                     {item.selectedOption && (
                                       <span className="mr-2 text-xs font-bold px-2 py-0.5 rounded bg-mhg-gold/10 text-mhg-gold border border-mhg-gold/20">
                                         {item.selectedOption}

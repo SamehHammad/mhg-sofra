@@ -7,6 +7,7 @@ interface OrderWithDetails {
         price: number;
         quantity: number;
         selectedOption?: string | null;
+        mealShape?: string | null;
     }[];
 }
 
@@ -42,6 +43,7 @@ export function calculateBilling(
                 price: item.price,
                 quantity: item.quantity,
                 selectedOption: item.selectedOption,
+                mealShape: item.mealShape,
             });
             user.subtotal += item.price * item.quantity;
         });

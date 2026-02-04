@@ -285,6 +285,11 @@ export default function BillingClient({
                                             >
                                                 <span className="text-mhg-blue-deep">
                                                     {item.name}
+                                                    {item.mealShape && (
+                                                        <span className="mr-2 text-xs font-medium px-2 py-0.5 rounded bg-mhg-blue/10 text-mhg-blue-deep border border-mhg-blue/20">
+                                                            ({item.mealShape === 'SANDWICH' ? 'ساندويتش' : item.mealShape === 'PLATE' ? 'طبق' : 'علبة'})
+                                                        </span>
+                                                    )}
                                                     {item.selectedOption && (
                                                         <span className="mr-2 text-xs font-bold px-2 py-0.5 rounded bg-mhg-gold/10 text-mhg-gold border border-mhg-gold/20">
                                                             {item.selectedOption}

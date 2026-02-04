@@ -20,12 +20,21 @@ export interface Restaurant {
     updatedAt: Date;
 }
 
+export type MealShape = 'SANDWICH' | 'PLATE' | 'BOX';
+
+export const MEAL_SHAPES: { type: MealShape; labelAr: string }[] = [
+    { type: 'SANDWICH', labelAr: 'ساندويتش' },
+    { type: 'PLATE', labelAr: 'طبق' },
+    { type: 'BOX', labelAr: 'علبة' },
+];
+
 export interface MenuItem {
     id: string;
     name: string;
     price: number;
     mealType: MealType;
     description: string | null;
+    mealShape?: MealShape | null;
     options: string[];
     isAvailable: boolean;
     restaurantId: string;
@@ -68,6 +77,7 @@ export interface BillingUser {
         price: number;
         quantity: number;
         selectedOption?: string | null;
+        mealShape?: string | null;
     }[];
     subtotal: number;
     deliveryShare: number;

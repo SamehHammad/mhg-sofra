@@ -1,0 +1,401 @@
+[
+    {
+        "name": "طحينة",
+        "price": 40,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [],
+        "mealShape": "طبق"
+    },
+    {
+        "name": "فلفل",
+        "price": 12,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [],
+        "mealShape": "طبق"
+    },
+    {
+        "name": "بيض بسطرمة",
+        "price": 50,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [],
+        "mealShape": "طبق"
+    },
+    {
+        "name": "بيض أومليت",
+        "price": 40,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [],
+        "mealShape": "طبق"
+    },
+    {
+        "name": "بيض مسلوق 3 بيضه صغير بالطحينة",
+        "price": 40,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [],
+        "mealShape": "طبق"
+    },
+    {
+        "name": "بيض مسلوق 5 بيضه كبير بالطحينة",
+        "price": 60,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [],
+        "mealShape": "طبق"
+    },
+    {
+        "name": "بيض مسلوق 2 بيضه صغير بالطحينة",
+        "price": 35,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [],
+        "mealShape": "طبق"
+    },
+    {
+        "name": "بابا غنوج",
+        "price": 22,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بابا غنوج علي بيض مسلوق",
+        "price": 27,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "جبنة قريش",
+        "price": 22,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "جبنة قريش علي بيض مسلوق",
+        "price": 27,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بيض مسلوق",
+        "price": 23,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بيض مسلوق دوبل",
+        "price": 30,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بيض أومليت",
+        "price": 26,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بيض أومليت دوبل",
+        "price": 35,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بيض أومليت بسطرمة",
+        "price": 30,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بيض بسطرمة دوبل",
+        "price": 37,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "باذنجان",
+        "price": 22,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "باذنجان علي بيض مسلوق",
+        "price": 25,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "عجينة",
+        "price": 22,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "مسقعة",
+        "price": 22,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "شكشوكة",
+        "price": 23,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "ديناميت",
+        "price": 33,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بطاطس جمبري",
+        "price": 40,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بطاطس شيبسي",
+        "price": 35,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بطاطس عجه",
+        "price": 35,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بطاطس بانيه",
+        "price": 35,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "بطاطس هالبينو بقسماط",
+        "price": 35,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "طعمية علي جبنة الكيري",
+        "price": 30,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    },
+    {
+        "name": "جبنة مقلية",
+        "price": 35,
+        "mealType": "BREAKFAST",
+        "description": "",
+        "restaurantId": "AM_BASHANDY_001",
+        "restaurant": "عم بشندي",
+        "isAvailable": true,
+        "options": [
+            "شامي",
+            "بلدي"
+        ],
+        "mealShape": "ساندوتش"
+    }
+]

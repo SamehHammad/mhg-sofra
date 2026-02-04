@@ -236,6 +236,7 @@ export async function upsertMenuItemAction(input: {
     description?: string;
     restaurantId: string;
     options?: string[];
+    mealShape?: string;
 }) {
     const admin = await requireAdmin();
     if (!admin) return { ok: false, error: 'غير مصرح' } as const;
@@ -258,6 +259,7 @@ export async function upsertMenuItemAction(input: {
                     description: input.description ? input.description.trim() : null,
                     restaurantId,
                     options: input.options || [],
+                    mealShape: input.mealShape ? (input.mealShape as any) : null,
                 },
                 include: { restaurant: true },
             })
@@ -269,6 +271,7 @@ export async function upsertMenuItemAction(input: {
                     description: input.description ? input.description.trim() : null,
                     restaurantId,
                     options: input.options || [],
+                    mealShape: input.mealShape ? (input.mealShape as any) : null,
                 },
                 include: { restaurant: true },
             });
@@ -412,6 +415,7 @@ export async function importExcelMenuAction(formData: FormData) {
         const priceCol = idx('price') ?? idx('السعر') ?? idx('سعر');
         const mealTypeCol = idx('mealtype') ?? idx('meal type') ?? idx('نوع') ?? idx('نوع الوجبة');
         const descriptionCol = idx('description') ?? idx('الوصف');
+        const mealShapeCol = idx('mealshape') ?? idx('shape') ?? idx('شكل') ?? idx('شكل الوجبة') ?? idx('نوع الطبق');
 
         if (nameCol === undefined || priceCol === undefined) {
             return { ok: false, error: 'يجب أن يحتوي الملف على أعمدة name و price (أو اسم/السعر)' } as const;
@@ -431,6 +435,17 @@ export async function importExcelMenuAction(formData: FormData) {
                 'LUNCH';
 
             const description = descriptionCol !== undefined ? String(row[descriptionCol] ?? '').trim() : '';
+
+            let mealShape: string | null = null;
+            if (mealShapeCol !== undefined) {
+                const raw = String(row[mealShapeCol] ?? '').trim().toUpperCase();
+                if (['SANDWICH', 'PLATE', 'BOX'].includes(raw)) mealShape = raw;
+                else if (raw.includes('سند') || raw.includes('ساند')) mealShape = 'SANDWICH';
+                else if (raw.includes('طبق')) mealShape = 'PLATE';
+                else if (raw.includes('علب')) mealShape = 'BOX';
+            }
+
+
 
             const emptyRow = !name && (price === null || price === undefined) && !description;
             if (emptyRow) continue;
@@ -467,6 +482,7 @@ export async function importExcelMenuAction(formData: FormData) {
                         data: {
                             price,
                             description: description || null,
+                            mealShape: mealShape as any,
                         },
                     });
                     createdCount++;
@@ -478,6 +494,7 @@ export async function importExcelMenuAction(formData: FormData) {
                             mealType: mealType as any,
                             description: description || null,
                             restaurantId,
+                            mealShape: mealShape as any,
                         },
                     });
                     createdCount++;
@@ -538,6 +555,22 @@ export async function importJsonMenuAction(formData: FormData) {
                 let restaurantId = String(item.restaurantId ?? '').trim();
                 const description = String(item.description ?? '').trim();
 
+                // Parse mealShape with Arabic support
+                let mealShape: string | null = null;
+                const rawMealShape = String(item.mealShape ?? '').trim();
+                if (rawMealShape) {
+                    const upperShape = rawMealShape.toUpperCase();
+                    if (['SANDWICH', 'PLATE', 'BOX'].includes(upperShape)) {
+                        mealShape = upperShape;
+                    } else if (rawMealShape.includes('ساند') || rawMealShape.includes('سند')) {
+                        mealShape = 'SANDWICH';
+                    } else if (rawMealShape.includes('طبق')) {
+                        mealShape = 'PLATE';
+                    } else if (rawMealShape.includes('علب')) {
+                        mealShape = 'BOX';
+                    }
+                }
+
                 if (defaultRestaurantId) restaurantId = defaultRestaurantId;
                 if (defaultMealType) mealType = defaultMealType;
                 const options = Array.isArray(item.options) ? item.options.map((o: any) => String(o).trim()).filter(Boolean) : [];
@@ -583,6 +616,7 @@ export async function importJsonMenuAction(formData: FormData) {
                         data: {
                             price,
                             description: description || null,
+                            mealShape: mealShape as any,
                             options,
                         },
                     });
@@ -596,6 +630,7 @@ export async function importJsonMenuAction(formData: FormData) {
                             description: description || null,
                             restaurantId,
                             options,
+                            mealShape: mealShape as any,
                         },
                     });
                     createdCount++;

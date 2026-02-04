@@ -1,5 +1,5 @@
 // Constants for MHG Sofra
-import { MealTypeOption } from './types';
+import { MealTypeOption, MealShape } from './types';
 
 // Admin credentials (password: sam7@123)
 // Hash generated with bcrypt, rounds: 10
@@ -40,6 +40,12 @@ export const MEAL_TYPES: MealTypeOption[] = [
         color: '#F39C12',
         gradient: 'from-mhg-accent-red to-mhg-gold'
     }
+];
+
+export const MEAL_SHAPES: { type: MealShape; labelAr: string }[] = [
+    { type: 'SANDWICH', labelAr: 'ساندويتش' },
+    { type: 'PLATE', labelAr: 'طبق' },
+    { type: 'BOX', labelAr: 'علبة' },
 ];
 
 // Session storage keys

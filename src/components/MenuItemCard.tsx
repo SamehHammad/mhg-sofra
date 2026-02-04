@@ -51,7 +51,14 @@ export default function MenuItemCard({
                 </div>
 
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <h4 className="font-bold text-mhg-gold mb-1 leading-snug break-words">{menuItem.name}</h4>
+                    <h4 className="font-bold text-mhg-gold mb-1 leading-snug break-words">
+                        {menuItem.name}
+                        {menuItem.mealShape && (
+                            <span className="mr-2 text-sm font-medium text-mhg-gold/80">
+                                ({menuItem.mealShape === 'SANDWICH' ? 'ساندويتش' : menuItem.mealShape === 'PLATE' ? 'طبق' : 'علبة'})
+                            </span>
+                        )}
+                    </h4>
                     {menuItem.description && (
                         <p className="text-sm text-mhg-gold/90 mb-2 leading-snug break-words">{menuItem.description}</p>
                     )}
@@ -67,8 +74,8 @@ export default function MenuItemCard({
                                         type="button"
                                         onClick={() => handleOptionSelect(option)}
                                         className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${localSelectedOption === option || selectedOption === option
-                                                ? 'bg-mhg-gold text-white'
-                                                : 'bg-white/10 text-mhg-gold border border-mhg-gold/30 hover:bg-mhg-gold/20'
+                                            ? 'bg-mhg-gold text-white'
+                                            : 'bg-white/10 text-mhg-gold border border-mhg-gold/30 hover:bg-mhg-gold/20'
                                             }`}
                                     >
                                         {option}

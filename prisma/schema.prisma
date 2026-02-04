@@ -47,6 +47,7 @@ model MenuItem {
   price        Float
   mealType     MealType
   description  String?  @db.Text
+  mealShape    MealShape? @default(PLATE)
   options      String[] @default([])
   isAvailable  Boolean  @default(true)
   restaurantId String
@@ -134,6 +135,13 @@ enum MealType {
   DINNER
   DESSERT
 }
+
+enum MealShape {
+  SANDWICH
+  PLATE
+  BOX
+}
+
 
 enum OrderStatus {
   PENDING

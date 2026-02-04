@@ -6,7 +6,7 @@ import AdminNav from '@/components/AdminNav';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import MenuScanner from '@/components/MenuScanner';
-import { MEAL_TYPES } from '@/lib/constants';
+import { MEAL_TYPES, MEAL_SHAPES } from '@/lib/constants';
 import { useNotification } from '@/context/NotificationContext';
 import {
     bulkDeleteMenuItemsAction,
@@ -48,6 +48,7 @@ export default function AdminMenuPage() {
         description: '',
         restaurantId: '',
         options: [] as string[],
+        mealShape: 'PLATE' as string | null, // Default
     });
     const [currentOption, setCurrentOption] = useState('');
     const router = useRouter();
@@ -75,6 +76,7 @@ export default function AdminMenuPage() {
                     description: '',
                     restaurantId: restaurants[0]?.id || '',
                     options: [],
+                    mealShape: 'PLATE',
                 });
                 setCurrentOption('');
             }
@@ -251,6 +253,7 @@ export default function AdminMenuPage() {
                 description: formData.description,
                 restaurantId: formData.restaurantId,
                 options: formData.options,
+                mealShape: formData.mealShape ?? undefined,
             });
 
             if (result.ok) {
@@ -264,6 +267,7 @@ export default function AdminMenuPage() {
                     description: '',
                     restaurantId: restaurants[0]?.id || '',
                     options: [],
+                    mealShape: 'PLATE',
                 });
                 setCurrentOption('');
                 fetchData();
@@ -288,6 +292,7 @@ export default function AdminMenuPage() {
             description: item.description || '',
             restaurantId: item.restaurantId,
             options: item.options || [],
+            mealShape: item.mealShape || 'PLATE',
         });
         setCurrentOption('');
         // setActiveSection('manual'); // Using modal instead
@@ -749,6 +754,23 @@ export default function AdminMenuPage() {
                                 />
                             </div>
 
+                            <div>
+                                <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
+                                    شكل الوجبة
+                                </label>
+                                <select
+                                    value={formData.mealShape || 'PLATE'}
+                                    onChange={(e) => setFormData({ ...formData, mealShape: e.target.value })}
+                                    className="input-modern"
+                                >
+                                    {MEAL_SHAPES.map((ms) => (
+                                        <option key={ms.type} value={ms.type}>
+                                            {ms.labelAr}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                             {/* Options Section */}
                             <div>
                                 <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
@@ -988,6 +1010,7 @@ export default function AdminMenuPage() {
                                             description: '',
                                             restaurantId: restaurants[0]?.id || '',
                                             options: [],
+                                            mealShape: 'PLATE',
                                         });
                                     }}
                                     className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-red-500"
@@ -1074,6 +1097,23 @@ export default function AdminMenuPage() {
                                             rows={3}
                                             placeholder="وصف الوجبة (اختياري)"
                                         />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-bold text-mhg-blue-deep mb-2">
+                                            شكل الوجبة
+                                        </label>
+                                        <select
+                                            value={formData.mealShape || 'PLATE'}
+                                            onChange={(e) => setFormData({ ...formData, mealShape: e.target.value })}
+                                            className="input-modern-light"
+                                        >
+                                            {MEAL_SHAPES.map((ms) => (
+                                                <option key={ms.type} value={ms.type}>
+                                                    {ms.labelAr}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
 
                                     <div>
