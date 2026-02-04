@@ -15,12 +15,14 @@ export const metadata: Metadata = {
 export default async function BillingPage({
     searchParams,
 }: {
-    searchParams: { date?: string; mealType?: string; restaurantId?: string };
+    searchParams: Promise<{ date?: string; mealType?: string; restaurantId?: string }>;
 }) {
+    const { date, mealType, restaurantId } = await searchParams;
+
     const today = new Date().toISOString().split('T')[0];
-    const initialDate = searchParams?.date || today;
-    const initialMealType = searchParams?.mealType || 'LUNCH';
-    const initialRestaurantId = searchParams?.restaurantId || '';
+    const initialDate = date || today;
+    const initialMealType = mealType || 'LUNCH';
+    const initialRestaurantId = restaurantId || '';
 
     const initialRestaurants = await prisma.restaurant.findMany({
         where: {

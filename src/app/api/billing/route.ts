@@ -54,6 +54,7 @@ export async function GET(request: Request) {
             orders as any,
             restaurant.deliveryPrice,
             restaurant.name,
+            restaurantId,
             mealType,
             date
         );

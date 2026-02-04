@@ -95,7 +95,7 @@ export async function sendBillingNotificationsAction(billing: BillingSummary) {
                     user.username,
                     'فاتورة جديدة 🧾',
                     message,
-                    `/billing?date=${billing.date}&mealType=${billing.mealType}&restaurantId=${billing.restaurantId}`
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/billing?date=${billing.date}&mealType=${billing.mealType}&restaurantId=${billing.restaurantId}`
                 );
                 return { username: user.username, sent };
             })

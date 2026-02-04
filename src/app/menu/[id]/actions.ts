@@ -64,7 +64,7 @@ export async function createOrderAction(input: {
             user.username,
             'تم استلام الطلب ✅',
             `تم استلام طلبك بنجاح! رقم الطلب: ${orderNumber}`,
-            '/orders'
+            `${process.env.NEXT_PUBLIC_BASE_URL}/orders`
         );
 
         return { ok: true } as const;
