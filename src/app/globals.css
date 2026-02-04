@@ -84,6 +84,12 @@
   .input-modern::placeholder {
     @apply text-white/50 font-normal;
   }
+
+  /* Fix for select options to define clear colors */
+  .input-modern option {
+    background-color: rgb(44, 20, 12); /* mhg-brown */
+    color: white;
+  }
 }
 
 

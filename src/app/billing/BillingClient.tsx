@@ -12,14 +12,16 @@ export default function BillingClient({
     initialDate,
     initialMealType,
     initialRestaurants,
+    initialRestaurantId,
 }: {
     initialDate: string;
     initialMealType: string;
     initialRestaurants: any[];
+    initialRestaurantId?: string;
 }) {
     const [date, setDate] = useState(initialDate);
     const [mealType, setMealType] = useState(initialMealType);
-    const [restaurantId, setRestaurantId] = useState('');
+    const [restaurantId, setRestaurantId] = useState(initialRestaurantId || '');
     const [billing, setBilling] = useState<BillingSummary | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -29,10 +31,44 @@ export default function BillingClient({
     const { showNotification } = useNotification();
 
     useEffect(() => {
-        if (initialRestaurants.length > 0) {
+        if (!initialRestaurantId && initialRestaurants.length > 0) {
             setRestaurantId(initialRestaurants[0].id);
+        } else if (initialRestaurantId) {
+            setRestaurantId(initialRestaurantId);
         }
-    }, [initialRestaurants]);
+    }, [initialRestaurants, initialRestaurantId]);
+
+    // Auto-fetch if all params are present (e.g. from notification link)
+    useEffect(() => {
+        if (initialDate && initialMealType && initialRestaurantId) {
+            // We need to define fetchBilling as a reusable function or move it outside
+            // For simplicity, let's just copy the logic or trigger it
+            // Better yet, let's extract fetchBilling Logic or just call it if we can
+            // Since fetchBilling depends on state, and state is sync, we can't call it immediately usually
+            // But here we rely on initial props, so we can call the action directly
+            const loadInitialBilling = async () => {
+                try {
+                    setLoading(true);
+                    const result = await calculateBillingAction({
+                        date: initialDate,
+                        mealType: initialMealType,
+                        restaurantId: initialRestaurantId
+                    });
+                    if (result.ok) {
+                        setBilling(result.billing);
+                    } else {
+                        // Don't show error immediately on load to avoid jarring UI if it's just empty
+                        console.error(result.error);
+                    }
+                } catch (err) {
+                    console.error(err);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            loadInitialBilling();
+        }
+    }, [initialDate, initialMealType, initialRestaurantId]);
 
     const fetchBilling = async () => {
         if (!date || !mealType || !restaurantId) {

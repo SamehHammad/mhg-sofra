@@ -75,6 +75,7 @@ export interface BillingSummary {
     date: string;
     mealType: MealType;
     restaurant: string;
+    restaurantId: string;
     deliveryFee: number;
     users: BillingUser[];
     grandTotal: number;

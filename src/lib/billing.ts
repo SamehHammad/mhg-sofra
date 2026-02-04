@@ -13,6 +13,7 @@ export function calculateBilling(
     orders: OrderWithDetails[],
     deliveryFee: number,
     restaurantName: string,
+    restaurantId: string,
     mealType: string,
     date: string
 ): BillingSummary {
@@ -62,6 +63,7 @@ export function calculateBilling(
         date,
         mealType: mealType as any,
         restaurant: restaurantName,
+        restaurantId,
         deliveryFee,
         users,
         grandTotal,

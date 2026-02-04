@@ -72,6 +72,7 @@ export async function calculateBillingAction(input: {
             orders as any,
             restaurant.deliveryPrice,
             restaurant.name,
+            restaurantId,
             mealType,
             date
         );
@@ -94,7 +95,7 @@ export async function sendBillingNotificationsAction(billing: BillingSummary) {
                     user.username,
                     'فاتورة جديدة 🧾',
                     message,
-                    '/' // Or link to specific billing detail if available
+                    `/billing?date=${billing.date}&mealType=${billing.mealType}&restaurantId=${billing.restaurantId}`
                 );
                 return { username: user.username, sent };
             })
