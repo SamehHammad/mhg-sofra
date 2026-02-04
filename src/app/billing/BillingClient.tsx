@@ -284,7 +284,13 @@ export default function BillingClient({
                                                 className="flex items-center justify-between text-sm"
                                             >
                                                 <span className="text-mhg-blue-deep">
-                                                    {item.name} {item.quantity > 1 && `× ${item.quantity}`}
+                                                    {item.name}
+                                                    {item.selectedOption && (
+                                                        <span className="mr-2 text-xs font-bold px-2 py-0.5 rounded bg-mhg-gold/10 text-mhg-gold border border-mhg-gold/20">
+                                                            {item.selectedOption}
+                                                        </span>
+                                                    )}
+                                                    {item.quantity > 1 && ` × ${item.quantity}`}
                                                 </span>
                                                 <span className="font-bold text-mhg-gold">
                                                     {(item.price * item.quantity).toFixed(2)} جنيه

@@ -7,7 +7,7 @@ export async function createOrderAction(input: {
     username: string;
     restaurantId: string;
     mealType: string;
-    items: { menuItemId: string; quantity: number }[];
+    items: { menuItemId: string; quantity: number; selectedOption?: string | null }[];
 }) {
     const { username, restaurantId, mealType, items } = input;
 
@@ -40,6 +40,7 @@ export async function createOrderAction(input: {
                 menuItemId: item.menuItemId,
                 quantity: item.quantity || 1,
                 price: menuItem.price,
+                selectedOption: item.selectedOption || null,
             };
         });
 

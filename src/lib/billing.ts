@@ -6,6 +6,7 @@ interface OrderWithDetails {
         menuItem: { name: string };
         price: number;
         quantity: number;
+        selectedOption?: string | null;
     }[];
 }
 
@@ -40,6 +41,7 @@ export function calculateBilling(
                 name: item.menuItem.name,
                 price: item.price,
                 quantity: item.quantity,
+                selectedOption: item.selectedOption,
             });
             user.subtotal += item.price * item.quantity;
         });

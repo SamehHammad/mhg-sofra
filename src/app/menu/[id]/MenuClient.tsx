@@ -21,6 +21,7 @@ export default function MenuClient({
     const { showNotification } = useNotification();
 
     const [selectedItems, setSelectedItems] = useState<Map<string, number>>(new Map());
+    const [selectedOptions, setSelectedOptions] = useState<Map<string, string>>(new Map());
     const [searchQuery, setSearchQuery] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
@@ -38,6 +39,12 @@ export default function MenuClient({
         const next = new Map(selectedItems);
         next.set(itemId, quantity);
         setSelectedItems(next);
+    };
+
+    const handleOptionChange = (itemId: string, option: string) => {
+        const next = new Map(selectedOptions);
+        next.set(itemId, option);
+        setSelectedOptions(next);
     };
 
     const normalizeText = (value: string) => value.toLowerCase().trim();
@@ -83,6 +90,7 @@ export default function MenuClient({
             const items = Array.from(selectedItems.entries()).map(([menuItemId, quantity]) => ({
                 menuItemId,
                 quantity,
+                selectedOption: selectedOptions.get(menuItemId) || null,
             }));
 
             const result = await createOrderAction({
@@ -162,6 +170,8 @@ export default function MenuClient({
                                         onToggle={handleToggleItem}
                                         quantity={selectedItems.get(item.id) || 1}
                                         onQuantityChange={handleQuantityChange}
+                                        selectedOption={selectedOptions.get(item.id)}
+                                        onOptionChange={handleOptionChange}
                                     />
                                 ))}
                             </div>

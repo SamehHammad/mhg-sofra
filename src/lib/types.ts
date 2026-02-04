@@ -26,6 +26,7 @@ export interface MenuItem {
     price: number;
     mealType: MealType;
     description: string | null;
+    options: string[];
     isAvailable: boolean;
     restaurantId: string;
     createdAt: Date;
@@ -55,6 +56,7 @@ export interface OrderItem {
     menuItemId: string;
     quantity: number;
     price: number;
+    selectedOption: string | null;
     createdAt: Date;
     menuItem?: MenuItem;
 }
@@ -65,6 +67,7 @@ export interface BillingUser {
         name: string;
         price: number;
         quantity: number;
+        selectedOption?: string | null;
     }[];
     subtotal: number;
     deliveryShare: number;

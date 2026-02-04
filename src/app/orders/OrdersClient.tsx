@@ -134,38 +134,44 @@ export default function OrdersClient({ summary }: { summary: OrdersSummary }) {
                           username.trim() === String(order.user.username).trim();
 
                         return (
-  <div
-    key={order.id}
-    className="rounded-xl p-4 group relative shadow-md border border-[#f2e7c3] bg-white transition-shadow hover:shadow-lg"
-  >
-    <div className="flex items-center justify-between mb-3">
-      <span className="font-bold text-[16px]" style={{color:'#D6AE5A'}}>{order.user.username}</span>
-      <span className="text-lg font-extrabold" style={{color:'#0062AC'}}>{order.totalAmount.toFixed(2)} جنيه</span>
-    </div>
-    <div className="divide-y divide-mhg-surface-muted/60">
-      {order.items.map((item: any, idx: number) => (
-        <div key={item.id} className="flex items-center justify-between py-1 first:pt-0 last:pb-0">
-          <span className="font-medium" style={{color:'#181818'}}>
-            {item.menuItem.name} {item.quantity > 1 && <span className="text-xs font-bold" style={{color:'#D6AE5A'}}>× {item.quantity}</span>}
-          </span>
-          <span className="font-bold text-sm" style={{color:'#0062AC'}}>{(item.price * item.quantity).toFixed(2)} جنيه</span>
-        </div>
-      ))}
-    </div>
-    {canDelete && (
-      <button
-        type="button"
-        onClick={() => onDelete(order.id)}
-        disabled={deletingId === order.id}
-        className="absolute -top-4 left-1 z-10 rounded-lg p-2 shadow-sm border border-[#B22222] bg-white text-[#B22222] hover:bg-[#B22222] hover:text-white transition-colors disabled:opacity-50"
-        title="حذف الطلب"
-        aria-label="حذف الطلب"
-      >
-        <Trash2 className="w-4 h-4" />
-      </button>
-    )}
-  </div>
-);
+                          <div
+                            key={order.id}
+                            className="rounded-xl p-4 group relative shadow-md border border-[#f2e7c3] bg-white transition-shadow hover:shadow-lg"
+                          >
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="font-bold text-[16px]" style={{ color: '#D6AE5A' }}>{order.user.username}</span>
+                              <span className="text-lg font-extrabold" style={{ color: '#0062AC' }}>{order.totalAmount.toFixed(2)} جنيه</span>
+                            </div>
+                            <div className="divide-y divide-mhg-surface-muted/60">
+                              {order.items.map((item: any, idx: number) => (
+                                <div key={item.id} className="flex items-center justify-between py-1 first:pt-0 last:pb-0">
+                                  <span className="font-medium" style={{ color: '#181818' }}>
+                                    {item.menuItem.name}
+                                    {item.selectedOption && (
+                                      <span className="mr-2 text-xs font-bold px-2 py-0.5 rounded bg-mhg-gold/10 text-mhg-gold border border-mhg-gold/20">
+                                        {item.selectedOption}
+                                      </span>
+                                    )}
+                                    {item.quantity > 1 && <span className="text-xs font-bold mr-1" style={{ color: '#D6AE5A' }}>× {item.quantity}</span>}
+                                  </span>
+                                  <span className="font-bold text-sm" style={{ color: '#0062AC' }}>{(item.price * item.quantity).toFixed(2)} جنيه</span>
+                                </div>
+                              ))}
+                            </div>
+                            {canDelete && (
+                              <button
+                                type="button"
+                                onClick={() => onDelete(order.id)}
+                                disabled={deletingId === order.id}
+                                className="absolute -top-4 left-1 z-10 rounded-lg p-2 shadow-sm border border-[#B22222] bg-white text-[#B22222] hover:bg-[#B22222] hover:text-white transition-colors disabled:opacity-50"
+                                title="حذف الطلب"
+                                aria-label="حذف الطلب"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        );
                       })}
                     </div>
                   </div>

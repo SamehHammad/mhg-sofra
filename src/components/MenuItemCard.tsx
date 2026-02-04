@@ -1,6 +1,7 @@
 'use client';
 
 import { MenuItem } from '@/lib/types';
+import { useState } from 'react';
 
 interface MenuItemCardProps {
     menuItem: MenuItem;
@@ -8,6 +9,8 @@ interface MenuItemCardProps {
     onToggle: (id: string) => void;
     quantity?: number;
     onQuantityChange?: (id: string, quantity: number) => void;
+    selectedOption?: string;
+    onOptionChange?: (id: string, option: string) => void;
 }
 
 export default function MenuItemCard({
@@ -16,7 +19,20 @@ export default function MenuItemCard({
     onToggle,
     quantity = 1,
     onQuantityChange,
+    selectedOption,
+    onOptionChange,
 }: MenuItemCardProps) {
+    const [localSelectedOption, setLocalSelectedOption] = useState<string>(selectedOption || '');
+
+    const hasOptions = menuItem.options && menuItem.options.length > 0;
+
+    const handleOptionSelect = (option: string) => {
+        setLocalSelectedOption(option);
+        if (onOptionChange) {
+            onOptionChange(menuItem.id, option);
+        }
+    };
+
     return (
         <div
             className={`glass-card h-full p-4 cursor-pointer transition-all duration-300 hover:shadow-md ${isSelected ? 'ring-2 ring-mhg-gold bg-mhg-gold/10' : ''}`}
@@ -39,6 +55,29 @@ export default function MenuItemCard({
                     {menuItem.description && (
                         <p className="text-sm text-mhg-gold/90 mb-2 leading-snug break-words">{menuItem.description}</p>
                     )}
+
+                    {/* Options Display */}
+                    {hasOptions && (
+                        <div className="mb-3" onClick={(e) => e.stopPropagation()}>
+                            <div className="text-xs text-mhg-gold/80 mb-1.5 font-bold">الخيارات:</div>
+                            <div className="flex flex-wrap gap-2">
+                                {menuItem.options.map((option) => (
+                                    <button
+                                        key={option}
+                                        type="button"
+                                        onClick={() => handleOptionSelect(option)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${localSelectedOption === option || selectedOption === option
+                                                ? 'bg-mhg-gold text-white'
+                                                : 'bg-white/10 text-mhg-gold border border-mhg-gold/30 hover:bg-mhg-gold/20'
+                                            }`}
+                                    >
+                                        {option}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="mt-auto flex items-center justify-between gap-2">
                         <span className="text-lg font-bold text-mhg-blue whitespace-nowrap">
                             {menuItem.price} جنيه

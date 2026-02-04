@@ -47,6 +47,7 @@ model MenuItem {
   price        Float
   mealType     MealType
   description  String?  @db.Text
+  options      String[] @default([])
   isAvailable  Boolean  @default(true)
   restaurantId String
   createdAt    DateTime @default(now())
@@ -85,12 +86,13 @@ model Order {
 
 // OrderItem Model - Junction table
 model OrderItem {
-  id         String   @id @default(cuid())
-  orderId    String
-  menuItemId String
-  quantity   Int      @default(1)
-  price      Float    // Store price at time of order
-  createdAt  DateTime @default(now())
+  id             String   @id @default(cuid())
+  orderId        String
+  menuItemId     String
+  quantity       Int      @default(1)
+  price          Float    // Store price at time of order
+  selectedOption String?  // Store selected option (e.g., "شامي", "بلدي")
+  createdAt      DateTime @default(now())
   
   order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id])

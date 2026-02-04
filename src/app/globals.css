@@ -67,7 +67,7 @@
     transform: translateY(-2px);
   }
 
-  /* حقول الإدخال */
+  /* حقول الإدخال (Dark Mode / Glass) */
   .input-modern {
     @apply w-full px-4 py-3 bg-white/10 border border-white/15 rounded-xl text-base outline-none transition-all duration-300 font-medium text-white;
     box-shadow: 0 10px 30px -18px rgba(0,0,0,0.60);
@@ -85,10 +85,22 @@
     @apply text-white/50 font-normal;
   }
 
-  /* Fix for select options to define clear colors */
   .input-modern option {
     background-color: rgb(44, 20, 12); /* mhg-brown */
     color: white;
+  }
+
+  /* حقول الإدخال (Light Mode / White Card) */
+  .input-modern-light {
+    @apply w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base outline-none transition-all duration-300 font-medium text-gray-900 shadow-sm;
+  }
+
+  .input-modern-light:focus {
+    @apply ring-2 ring-mhg-blue/20 border-mhg-blue bg-white shadow-md;
+  }
+
+  .input-modern-light::placeholder {
+      @apply text-gray-400 font-normal;
   }
 }
 
@@ -181,4 +193,3 @@
     border: 1px solid #e5e7eb;
   }
 }
-
