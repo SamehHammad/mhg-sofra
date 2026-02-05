@@ -64,7 +64,7 @@ export async function createOrderAction(input: {
         await sendNotificationToUser(
             user.username,
             'تم استلام الطلب ✅',
-            `تم استلام طلبك بنجاح! رقم الطلب: ${orderNumber}`,
+            `تم استلام طلبك بنجاح`,
             `${process.env.NEXT_PUBLIC_BASE_URL}/orders`
         );
 
